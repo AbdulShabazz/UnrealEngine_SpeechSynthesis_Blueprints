@@ -1317,3 +1317,21 @@ LogConfig: Set CVar [[con.DebugEarlyDefault:1]]
 [2023.10.21-06.05.22:170][202]LogFileHelpers: InternalPromptForCheckoutAndSave took 88 ms (total: 203 ms)
 [2023.10.21-06.05.22:172][202]AssetCheck: New page: Asset Save: SpeechSynthesis_BP
 [2023.10.21-06.05.22:172][202]LogContentValidation: Display: Validating /Script/Engine.Blueprint /Game/SpeechSynthesis_BP.SpeechSynthesis_BP
+[2023.10.21-06.08.09:147][611]LogUObjectHash: Compacting FUObjectHashTables data took   1.48ms
+[2023.10.21-06.08.09:149][611]LogFileHelpers: Editor autosave (incl. external actors) for '/Temp/Untitled_1' took 0.018
+[2023.10.21-06.08.09:150][611]OBJ SavePackage: Generating thumbnails for [0] asset(s) in package [/Game/SpeechSynthesis_BP] ([2] browsable assets)...
+[2023.10.21-06.08.09:150][611]OBJ SavePackage: Finished generating thumbnails for package [/Game/SpeechSynthesis_BP]
+[2023.10.21-06.08.09:153][611]LogSavePackage: Moving output files for package: /Temp/Autosaves/Game/SpeechSynthesis_BP_Auto1
+[2023.10.21-06.08.09:153][611]LogSavePackage: Moving '../../../../../../Users/ahsha/Documents/Unreal Projects/SpeechSynthesisBP/Saved/SpeechSynthesis_BP_Auto1E60AE765471EC3AF1C0A7FB3B65F50A8.tmp' to '../../../../../../Users/ahsha/Documents/Unreal Projects/SpeechSynthesisBP/Saved/Autosaves/Game/SpeechSynthesis_BP_Auto1.uasset'
+[2023.10.21-06.08.09:154][611]LogFileHelpers: Auto-saving content packages took 0.004
+[2023.10.21-06.09.26:704][238]LogSlate: Took 0.004070 seconds to synchronously load lazily loaded font '../../../Engine/Content/Slate/Fonts/Roboto-BoldCondensedItalic.ttf' (160K)
+[2023.10.21-06.10.43:560][833]BlueprintLog: New page: Compile SpeechSynthesis_BP
+[2023.10.21-06.10.43:592][833]LogUObjectHash: Compacting FUObjectHashTables data took   0.90ms
+[2023.10.21-06.10.48:439][117]LogUObjectHash: Compacting FUObjectHashTables data took   1.14ms
+[2023.10.21-06.10.48:444][117]LogFileHelpers: InternalPromptForCheckoutAndSave started...
+[2023.10.21-06.10.48:517][117]Cmd: OBJ SAVEPACKAGE PACKAGE="/Game/SpeechSynthesis_BP" FILE="../../../../../../Users/ahsha/Documents/Unreal Projects/SpeechSynthesisBP/Content/SpeechSynthesis_BP.uasset" SILENT=true
+[2023.10.21-06.10.48:522][117]LogSavePackage: Moving output files for package: /Game/SpeechSynthesis_BP
+[2023.10.21-06.10.48:523][117]LogSavePackage: Moving '../../../../../../Users/ahsha/Documents/Unreal Projects/SpeechSynthesisBP/Saved/SpeechSynthesis_BP9411DAD1475760C998B00386670083C4.tmp' to '../../../../../../Users/ahsha/Documents/Unreal Projects/SpeechSynthesisBP/Content/SpeechSynthesis_BP.uasset'
+[2023.10.21-06.10.48:531][117]LogFileHelpers: InternalPromptForCheckoutAndSave took 85 ms (total: 289 ms)
+[2023.10.21-06.10.48:533][117]AssetCheck: New page: Asset Save: SpeechSynthesis_BP
+[2023.10.21-06.10.48:533][117]LogContentValidation: Display: Validating /Script/Engine.Blueprint /Game/SpeechSynthesis_BP.SpeechSynthesis_BP
