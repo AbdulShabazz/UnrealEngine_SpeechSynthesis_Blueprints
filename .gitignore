@@ -35,4 +35,8 @@
 .vs/**
 Binaries/**
 Intermediate/**
+Release/**
+Debug/**
+Saved/Crashes/**
+
 
