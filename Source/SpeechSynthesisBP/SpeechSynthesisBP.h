@@ -6,12 +6,12 @@
 #include "GameFramework/Actor.h"
 #include "Kismet/BlueprintFunctionLibrary.h"
 
-#include "SpeechSynthesisBP.generated.h"
+//#include "SpeechSynthesisBP.generated.h"
 
 UCLASS(ClassGroup=(Custom), meta = (BlueprintSpawnableComponent))
 class SPEECHSYNTHESISBP_API USpeechSynthesisComponent : public UActorComponent
 {
-	GENERATED_BODY()
+	//GENERATED_BODY()
 
 public:
 
