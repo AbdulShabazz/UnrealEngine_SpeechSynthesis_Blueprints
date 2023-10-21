@@ -1294,3 +1294,86 @@ LogConfig: Set CVar [[con.DebugEarlyDefault:1]]
 [2023.10.21-05.11.19:482][990]LogHttp: Warning: 0000070D15203C00: libcurl info message cache 0 (Could not resolve host: datarouter.ol.epicgames.com)
 [2023.10.21-05.11.19:482][990]LogHttp: Warning: 0000070D15203C00: libcurl info message cache 1 (Closing connection 2)
 [2023.10.21-05.11.19:482][990]LogHttp: Warning: Retry exhausted on https://datarouter.ol.epicgames.com/datarouter/api/v1/public/data?SessionID=%7B6497B432-4A5D-934C-3712-1F8020B85505%7D&AppID=UEEditor.Rocket.Release&AppVersion=5.3.0-27405482%2B%2B%2BUE5%2BRelease-5.3&UserID=e7fef82847f8ff4ed52ca68b0de161bf%7Cb78c0648796d41afbec2f74998a6fee6%7C8f84c891-5076-4f23-8ed9-d6868dfbce90&AppEnvironment=datacollector-binary&UploadType=eteventstream
+[2023.10.21-05.25.02:152][718]LogShaderCompilers: Display: ================================================
+[2023.10.21-05.25.02:152][718]LogShaderCompilers: Display: === FShaderJobCache stats ===
+[2023.10.21-05.25.02:152][718]LogShaderCompilers: Display: Total job queries 28, among them cache hits 11 (39.29%)
+[2023.10.21-05.25.02:152][718]LogShaderCompilers: Display: Tracking 16 distinct input hashes that result in 15 distinct outputs (93.75%)
+[2023.10.21-05.25.02:152][718]LogShaderCompilers: Display: RAM used: 317.22 KiB of 1.60 GiB budget. Usage: 0.02%
+[2023.10.21-05.25.02:152][718]LogShaderCompilers: Display: === Shader Compilation stats ===
+[2023.10.21-05.25.02:152][718]LogShaderCompilers: Display: Shaders Compiled: 16
+[2023.10.21-05.25.02:152][718]LogShaderCompilers: Display: Jobs assigned 17, completed 16 (94.12%)
+[2023.10.21-05.25.02:152][718]LogShaderCompilers: Display: Average time worker was idle: 221.56 s
+[2023.10.21-05.25.02:152][718]LogShaderCompilers: Display: Time job spent in pending queue: average 0.28 s, longest 0.75 s
+[2023.10.21-05.25.02:152][718]LogShaderCompilers: Display: Job execution time: average 1.29 s, max 2.48 s
+[2023.10.21-05.25.02:152][718]LogShaderCompilers: Display: Job life time (pending + execution): average 1.59 s, max 2.49
+[2023.10.21-05.25.02:152][718]LogShaderCompilers: Display: Shader code size: average 32.62 KiB, min 4.008 KiB, max 48.312 KiB
+[2023.10.21-05.25.02:152][718]LogShaderCompilers: Display: Time at least one job was in flight (either pending or executed): 3.57 s
+[2023.10.21-05.25.02:152][718]LogShaderCompilers: Display: Jobs were issued in 17 batches (only local compilation was used), average 1.00 jobs/batch
+[2023.10.21-05.25.02:152][718]LogShaderCompilers: Display: Average processing rate: 4.48 jobs/sec
+[2023.10.21-05.25.02:152][718]LogShaderCompilers: Display: Total thread time: 6.26 s
+[2023.10.21-05.25.02:152][718]LogShaderCompilers: Display: Total thread preprocess time: 0.744 s
+[2023.10.21-05.25.02:152][718]LogShaderCompilers: Display: Percentage time preprocessing: 11.88%
+[2023.10.21-05.25.02:152][718]LogShaderCompilers: Display: Effective parallelization: 1.75 (times faster than compiling all shaders on one thread). Compare with number of workers: 8
+[2023.10.21-05.25.02:152][718]LogShaderCompilers: Display: Top 5 most expensive shader types by average time:
+[2023.10.21-05.25.02:152][718]LogShaderCompilers: Display:                                TMaterialCHSFNoLightMapPolicy (compiled    1 times, average 0.70 sec, max 0.70 sec, min 0.70 sec)
+[2023.10.21-05.25.02:152][718]LogShaderCompilers: Display:                                 TBasePassPSFNoLightMapPolicy (compiled    4 times, average 0.49 sec, max 0.53 sec, min 0.43 sec)
+[2023.10.21-05.25.02:152][718]LogShaderCompilers: Display:                                 TBasePassVSFNoLightMapPolicy (compiled    4 times, average 0.43 sec, max 0.47 sec, min 0.37 sec)
+[2023.10.21-05.25.02:152][718]LogShaderCompilers: Display:                                                 FLumenCardVS (compiled    2 times, average 0.43 sec, max 0.47 sec, min 0.38 sec)
+[2023.10.21-05.25.02:152][718]LogShaderCompilers: Display:                                      FLandscapeGrassWeightVS (compiled    1 times, average 0.33 sec, max 0.33 sec, min 0.33 sec)
+[2023.10.21-05.25.02:152][718]LogShaderCompilers: Display: Top 5 shader types by total compile time:
+[2023.10.21-05.25.02:152][718]LogShaderCompilers: Display:                                 TBasePassPSFNoLightMapPolicy - 31.16% of total time (compiled    4 times, average 0.49 sec, max 0.53 sec, min 0.43 sec)
+[2023.10.21-05.25.02:152][718]LogShaderCompilers: Display:                                 TBasePassVSFNoLightMapPolicy - 27.56% of total time (compiled    4 times, average 0.43 sec, max 0.47 sec, min 0.37 sec)
+[2023.10.21-05.25.02:152][718]LogShaderCompilers: Display:                                                 FLumenCardVS - 13.58% of total time (compiled    2 times, average 0.43 sec, max 0.47 sec, min 0.38 sec)
+[2023.10.21-05.25.02:152][718]LogShaderCompilers: Display:                                TMaterialCHSFNoLightMapPolicy - 11.12% of total time (compiled    1 times, average 0.70 sec, max 0.70 sec, min 0.70 sec)
+[2023.10.21-05.25.02:152][718]LogShaderCompilers: Display:                                          FLumenCardPS<false> - 7.06% of total time (compiled    2 times, average 0.22 sec, max 0.27 sec, min 0.17 sec)
+[2023.10.21-05.25.02:152][718]LogShaderCompilers: Display: ================================================
+[2023.10.21-05.30.04:865][302]LogSlate: Took 0.003701 seconds to synchronously load lazily loaded font '../../../Engine/Content/Slate/Fonts/Roboto-Italic.ttf' (157K)
+[2023.10.21-05.33.51:724][302]LogSlate: Window 'Pick Parent Class' being destroyed
+[2023.10.21-05.33.51:739][302]LogContentBrowser: Deferred new asset file creation: NewBlueprint
+[2023.10.21-05.33.51:759][302]LogContentBrowser: Creating deferred item: NewBlueprint
+[2023.10.21-05.33.51:768][303]LogAutomationController: Ignoring very large delta of 369.35 seconds in calls to FAutomationControllerManager::Tick() and not penalizing unresponsive tests
+[2023.10.21-05.33.51:784][303]LogContentBrowser: Renaming the item being created (Deferred Item: NewBlueprint).
+[2023.10.21-05.34.11:679][484]LogContentBrowser: Attempting asset rename: NewBlueprint -> SpeechSynthesis_BP
+[2023.10.21-05.34.11:709][484]LogContentBrowser: End creating deferred item NewBlueprint
+[2023.10.21-05.34.52:266][905]LogAssetEditorSubsystem: Opening Asset editor for Blueprint /Game/SpeechSynthesis_BP.SpeechSynthesis_BP
+[2023.10.21-05.34.52:267][905]LogWorldSubsystemInput: UEnhancedInputDeveloperSettings::bEnableWorldSubsystem is false, the world subsystem will not be created!
+[2023.10.21-05.34.52:267][905]LogChaos: FPhysicsSolverBase::AsyncDt:-1.000000
+[2023.10.21-05.34.52:279][905]LogSlate: Warning: The command 'BlueprintEditorSpawnNodes.AddActorRefAction->CommandInfo' has the same default chord as 'BlueprintEditorSpawnNodes.(Class=/Script/BlueprintGraph.K2Node_Knot Key=R Shift=false Ctrl=false Alt=false)' [R]
+[2023.10.21-05.34.53:503][905]LogViewport: Scene viewport resized to 891x506, mode Windowed.
+[2023.10.21-05.35.11:616][908]LogSlate: Took 0.003766 seconds to synchronously load lazily loaded font '../../../Engine/Content/Slate/Fonts/Roboto-BoldCondensed.ttf' (158K)
+[2023.10.21-05.38.25:237][480]LogD3D12RHI: Warning: Descriptor cache ran out of sub allocated descriptor blocks! Moving to Context local View heap strategy
+[2023.10.21-05.38.25:237][480]LogD3D12RHI: This should only happen in the Editor where it doesn't matter as much. If it happens in game you should increase the device global heap size!
+[2023.10.21-05.39.01:785][673]LogD3D12RHI: OnlineHeap RollOver Detected. Increase the heap size to prevent creation of additional heaps
+[2023.10.21-05.42.18:474][417]LogOutputDevice: Warning: 
+
+Script Stack (0 frames) :
+
+[2023.10.21-05.42.18:843][417]LogStats: FPlatformStackWalk::StackWalkAndDump -  0.369 s
+[2023.10.21-05.42.18:844][417]LogOutputDevice: Error: === Handled ensure: ===
+[2023.10.21-05.42.18:844][417]LogOutputDevice: Error: 
+[2023.10.21-05.42.18:844][417]LogOutputDevice: Error: Ensure condition failed: !PersistentLayout->PrimaryArea.IsValid()  [File:D:\build\++UE5\Sync\Engine\Source\Runtime\Slate\Private\Framework\Docking\TabManager.cpp] [Line: 944] 
+[2023.10.21-05.42.18:844][417]LogOutputDevice: Error: 
+[2023.10.21-05.42.18:844][417]LogOutputDevice: Error: Stack: 
+[2023.10.21-05.42.18:844][417]LogOutputDevice: Error: [Callstack] 0x00007ff9f2d540a0 UnrealEditor-Slate.dll!FTabManager::PersistLayout() [D:\build\++UE5\Sync\Engine\Source\Runtime\Slate\Private\Framework\Docking\TabManager.cpp:944]
+[2023.10.21-05.42.18:844][417]LogOutputDevice: Error: [Callstack] 0x00007ff9f2d71c84 UnrealEditor-Slate.dll!FTabManager::SavePersistentLayout() [D:\build\++UE5\Sync\Engine\Source\Runtime\Slate\Private\Framework\Docking\TabManager.cpp:969]
+[2023.10.21-05.42.18:844][417]LogOutputDevice: Error: [Callstack] 0x00007ff9f2ce0ced UnrealEditor-Slate.dll!`FTabManager::RequestSavePersistentLayout'::`2'::<lambda_1>::operator()() [D:\build\++UE5\Sync\Engine\Source\Runtime\Slate\Private\Framework\Docking\TabManager.cpp:984]
+[2023.10.21-05.42.18:844][417]LogOutputDevice: Error: [Callstack] 0x00007ff9f1a16870 UnrealEditor-Core.dll!FTSTicker::FElement::Fire() [D:\build\++UE5\Sync\Engine\Source\Runtime\Core\Private\Containers\Ticker.cpp:157]
+[2023.10.21-05.42.18:844][417]LogOutputDevice: Error: [Callstack] 0x00007ff9f1a3541b UnrealEditor-Core.dll!FTSTicker::Tick() [D:\build\++UE5\Sync\Engine\Source\Runtime\Core\Private\Containers\Ticker.cpp:110]
+[2023.10.21-05.42.18:844][417]LogOutputDevice: Error: [Callstack] 0x00007ff6d0b0cea9 UnrealEditor.exe!FEngineLoop::Tick() [D:\build\++UE5\Sync\Engine\Source\Runtime\Launch\Private\LaunchEngineLoop.cpp:6073]
+[2023.10.21-05.42.18:844][417]LogOutputDevice: Error: [Callstack] 0x00007ff6d0b2d28c UnrealEditor.exe!GuardedMain() [D:\build\++UE5\Sync\Engine\Source\Runtime\Launch\Private\Launch.cpp:188]
+[2023.10.21-05.42.18:844][417]LogOutputDevice: Error: [Callstack] 0x00007ff6d0b2d37a UnrealEditor.exe!GuardedMainWrapper() [D:\build\++UE5\Sync\Engine\Source\Runtime\Launch\Private\Windows\LaunchWindows.cpp:118]
+[2023.10.21-05.42.18:844][417]LogOutputDevice: Error: [Callstack] 0x00007ff6d0b30854 UnrealEditor.exe!LaunchWindowsStartup() [D:\build\++UE5\Sync\Engine\Source\Runtime\Launch\Private\Windows\LaunchWindows.cpp:258]
+[2023.10.21-05.42.18:844][417]LogOutputDevice: Error: [Callstack] 0x00007ff6d0b46984 UnrealEditor.exe!WinMain() [D:\build\++UE5\Sync\Engine\Source\Runtime\Launch\Private\Windows\LaunchWindows.cpp:298]
+[2023.10.21-05.42.18:844][417]LogOutputDevice: Error: [Callstack] 0x00007ff6d0b49d7a UnrealEditor.exe!__scrt_common_main_seh() [D:\a\_work\1\s\src\vctools\crt\vcstartup\src\startup\exe_common.inl:288]
+[2023.10.21-05.42.18:844][417]LogOutputDevice: Error: [Callstack] 0x00007ffa9258257d KERNEL32.DLL!UnknownFunction []
+[2023.10.21-05.42.18:844][417]LogOutputDevice: Error: [Callstack] 0x00007ffa938aaa78 ntdll.dll!UnknownFunction []
+[2023.10.21-05.42.18:844][417]LogOutputDevice: Error: 
+[2023.10.21-05.42.18:850][417]LogStats:                SubmitErrorReport -  0.000 s
+[2023.10.21-05.42.48:708][417]LogAudioMixer: Warning: AudioMixerPlatformInterface Timeout [30 Seconds] waiting for h/w. InstanceID=1
+[2023.10.21-05.42.48:709][417]LogStats:                    SendNewReport - 29.858 s
+[2023.10.21-05.42.48:709][417]LogStats:             FDebug::EnsureFailed - 30.235 s
+[2023.10.21-05.42.48:832][417]LogAudioMixer: Display: FMixerNullCallback: Simulating a h/w device callback at [21ms], ThreadID=12460
+[2023.10.21-05.42.48:841][418]LogAutomationController: Ignoring very large delta of 30.37 seconds in calls to FAutomationControllerManager::Tick() and not penalizing unresponsive tests
+[2023.10.21-05.42.49:202][420]LogAudioMixer: Display: Successful Swap new Device is (NumChannels=8, SampleRate=48000, DeviceID={0.0.0.00000000}.{1634e99c-6bb5-4ad3-b266-c5222784de21}, Name=Speakers (Realtek(R) Audio)), Reason=AudioMixerPlatformInterface. Timeout waiting for h/w., InstanceID=1, DurationMS=150.66
+[2023.10.21-05.42.49:202][420]LogAudioMixer: Display: Output buffers initialized: Frames=1024, Channels=8, Samples=8192, InstanceID=1
+[2023.10.21-05.42.49:203][420]LogAudioMixer: Display: Starting AudioMixerPlatformInterface::RunInternal(), InstanceID=1
