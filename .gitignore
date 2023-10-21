@@ -38,5 +38,5 @@ Intermediate/**
 Release/**
 Debug/**
 Saved/Crashes/**
-
+Saved/Config/CrashReportClient/**
 
