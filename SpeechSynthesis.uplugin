@@ -1,0 +1,27 @@
+{
+	"FileVersion": 3,
+	"Version": 1,
+	"VersionName": "1.0",
+	"FriendlyName": "SpeechSynthesis",
+	"Description": "Concatenative speech synthesis library implemented in Blueprints.",
+	"Category": "Accessibility",
+	"CreatedBy": "AbdulShabazz",
+	"CreatedByURL": "https://github.com/AbdulShabazz",
+	"DocsURL": "",
+	"MarketplaceURL": "",
+	"SupportURL": "https://github.com/AbdulShabazz",
+	"CanContainContent": false,
+	"IsBetaVersion": true,
+	"IsExperimentalVersion": true,
+	"Installed": false,
+	"Modules": [
+		{
+			"Name": "SpeechSynthesis",
+			"Type": "Runtime",
+			"LoadingPhase": "PreLoadingScreen",
+			"TargetDenyList": [
+				"Server"
+			]
+		}
+	]
+}
