@@ -79,7 +79,7 @@ SH (_Sh_e)
   
 semivowels > liquid > ARPABET UV >  
 L (_L_ove)  
-EL (Bo_ttle_)  
+EL (Bott_le_)  
 R (_R_ed)  
   
 semivowels > glides > ARPABET UV >  
