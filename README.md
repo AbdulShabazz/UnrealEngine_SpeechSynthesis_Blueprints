@@ -3,7 +3,7 @@
 
 ## Based upon MaryTTS 2.5
 
-This is a multilingual open-source text-to-speech and speech-to-speech platform (re-speecher) suitable for use in theatrical production, based on MaryTTS text-to-speech library,
+This is a multilingual open-source text-to-speech and speech-to-speech platform (re-speecher) suitable for use in theatrical production, based on the MaryTTS text-to-speech library,
  compatible with any platform that has a Java runtime installed, it is developed for the Unreal Engine 3D graphics game engine.
 
 <img title='Schwa (phoneme) UE Blueprint' style='margin-top:24px;' alt='Schwa (phoneme) UE Blueprint' src='IMG/Schwa.Phoneme.BP.PNG'/><br>
