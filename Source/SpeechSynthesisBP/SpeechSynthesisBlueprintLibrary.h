@@ -9,8 +9,11 @@
 namespace TTSSpeechSynthesis
 {
 
+	/**
+	 *
+	 */
 	UCLASS()
-	class SPEECHSYNTHESISBP_API FTTSVoice
+	class SPEECHSYNTHESISBP_API FTTSVoice : public UBlueprintFunctionLibrary
 	{
 		GENERATED_BODY()
 
@@ -27,8 +30,13 @@ namespace TTSSpeechSynthesis
 		};
 	};
 
-	class ARPABETSpeechSynthesis
+	/**
+	 *
+	 */
+	UCLASS()
+	class SPEECHSYNTHESISBP_API ARPABETSpeechSynthesis : public UBlueprintFunctionLibrary
 	{
+		GENERATED_BODY()
 
 	public:
 
@@ -56,411 +64,409 @@ namespace TTSSpeechSynthesis
 	public:
 		// vowels > front > ARPABET UV >
 
-		/** Activates speech synthesis channel phoneme functionality 'IY' */
+		/** Activates speech synthesis channel phoneme functionality 'IY' ( B_ea_t ) */
 		UFUNCTION(BlueprintCallable, Category = TextToSpeech, meta = ( DisplayName = "ARPABETSpeechSynthesis: vowels > front > IY ( B_ea_t )" ))
-		ARPABETSpeechSynthesis& ARPABETSpeechSynthesis_e(UPARAM(DisplayName = "ARPABETSpeechSynthesis") ARPABETSpeechSynthesis& InOutARPABETSpeechSynthesisObjRef,
+		void ARPABETSpeechSynthesis_IY(
 			UPARAM(DisplayName = "FTTSVoice") FTTSVoice InVoice)
 		{
-			return *this;
+
 		};
 
-		/** Activates speech synthesis channel phoneme functionality 'IH' */
+		/** Activates speech synthesis channel phoneme functionality 'IH' ( B_i_t ) */
 		UFUNCTION(BlueprintCallable, Category = TextToSpeech, meta = ( DisplayName = "ARPABETSpeechSynthesis: vowels > front > IH ( B_i_t )" ))
-		ARPABETSpeechSynthesis& ARPABETSpeechSynthesis_e(UPARAM(DisplayName = "ARPABETSpeechSynthesis") ARPABETSpeechSynthesis& InOutARPABETSpeechSynthesisObjRef,
+		void ARPABETSpeechSynthesis_IH(
 			UPARAM(DisplayName = "FTTSVoice") FTTSVoice InVoice)
 		{
-			return *this;
+
 		};
 
-		/** Activates speech synthesis channel phoneme functionality 'EH' */
+		/** Activates speech synthesis channel phoneme functionality 'EH' ( B_e_t ) */
 		UFUNCTION(BlueprintCallable, Category = TextToSpeech, meta = ( DisplayName = "ARPABETSpeechSynthesis: vowels > front > EH ( B_e_t )" ))
-		ARPABETSpeechSynthesis& ARPABETSpeechSynthesis_e(UPARAM(DisplayName = "ARPABETSpeechSynthesis") ARPABETSpeechSynthesis& InOutARPABETSpeechSynthesisObjRef,
+		void ARPABETSpeechSynthesis_EH(
 			UPARAM(DisplayName = "FTTSVoice") FTTSVoice InVoice)
 		{
-			return *this;
+
 		};
 
-		/** Activates speech synthesis channel phoneme functionality 'EY' */
+		/** Activates speech synthesis channel phoneme functionality 'EY' ( B_ai_t ) */
 		UFUNCTION(BlueprintCallable, Category = TextToSpeech, meta = ( DisplayName = "ARPABETSpeechSynthesis: vowels > front > EY ( B_ai_t )" ))
-		ARPABETSpeechSynthesis& ARPABETSpeechSynthesis_e(UPARAM(DisplayName = "ARPABETSpeechSynthesis") ARPABETSpeechSynthesis& InOutARPABETSpeechSynthesisObjRef,
+		void ARPABETSpeechSynthesis_EY(
 			UPARAM(DisplayName = "FTTSVoice") FTTSVoice InVoice)
 		{
-			return *this;
+
 		};
 
-		/** Activates speech synthesis channel phoneme functionality 'AE' */
+		/** Activates speech synthesis channel phoneme functionality 'AE' ( B_a_t ) */
 		UFUNCTION(BlueprintCallable, Category = TextToSpeech, meta = ( DisplayName = "ARPABETSpeechSynthesis: vowels > front > AE ( B_a_t )" ))
-		ARPABETSpeechSynthesis& ARPABETSpeechSynthesis_e(UPARAM(DisplayName = "ARPABETSpeechSynthesis") ARPABETSpeechSynthesis& InOutARPABETSpeechSynthesisObjRef,
+		void ARPABETSpeechSynthesis_AE(
 			UPARAM(DisplayName = "FTTSVoice") FTTSVoice InVoice)
 		{
-			return *this;
+
 		};
 
 		// vowels > back > ARPABET UV >
 
-		/** Activates speech synthesis channel phoneme functionality 'AA' */
-		UFUNCTION(BlueprintCallable, Category = TextToSpeech, meta = ( DisplayName = "ARPABETSpeechSynthesis: vowels > back > AA ( B_o_t )H ( B_i_t )" ))
-		ARPABETSpeechSynthesis& ARPABETSpeechSynthesis_e(UPARAM(DisplayName = "ARPABETSpeechSynthesis") ARPABETSpeechSynthesis& InOutARPABETSpeechSynthesisObjRef,
+		/** Activates speech synthesis channel phoneme functionality 'AA' ( B_o_t ) */
+		UFUNCTION(BlueprintCallable, Category = TextToSpeech, meta = ( DisplayName = "ARPABETSpeechSynthesis: vowels > back > AA ( B_o_t )" ))
+		void ARPABETSpeechSynthesis_AA(
 			UPARAM(DisplayName = "FTTSVoice") FTTSVoice InVoice)
 		{
-			return *this;
+
 		};
 
-		/** Activates speech synthesis channel phoneme functionality 'AO' */
+		/** Activates speech synthesis channel phoneme functionality 'AO' ( B_ough_t ) */
 		UFUNCTION(BlueprintCallable, Category = TextToSpeech, meta = ( DisplayName = "ARPABETSpeechSynthesis: vowels > back > AO ( B_ough_t )" ))
-		ARPABETSpeechSynthesis& ARPABETSpeechSynthesis_e(UPARAM(DisplayName = "ARPABETSpeechSynthesis") ARPABETSpeechSynthesis& InOutARPABETSpeechSynthesisObjRef,
+		void ARPABETSpeechSynthesis_AO(
 			UPARAM(DisplayName = "FTTSVoice") FTTSVoice InVoice)
 		{
-			return *this;
+
 		};
 
-		/** Activates speech synthesis channel phoneme functionality 'IY' */
+		/** Activates speech synthesis channel phoneme functionality 'OW' ( B_oa_t ) */
 		UFUNCTION(BlueprintCallable, Category = TextToSpeech, meta = ( DisplayName = "ARPABETSpeechSynthesis: vowels > back > OW ( B_oa_t )" ))
-		ARPABETSpeechSynthesis& ARPABETSpeechSynthesis_e(UPARAM(DisplayName = "ARPABETSpeechSynthesis") ARPABETSpeechSynthesis& InOutARPABETSpeechSynthesisObjRef,
+		void ARPABETSpeechSynthesis_IY(
 			UPARAM(DisplayName = "FTTSVoice") FTTSVoice InVoice)
 		{
-			return *this;
+
 		};
 
-		/** Activates speech synthesis channel phoneme functionality 'UH' */
+		/** Activates speech synthesis channel phoneme functionality 'UH' ( B_oo_k ) */
 		UFUNCTION(BlueprintCallable, Category = TextToSpeech, meta = ( DisplayName = "ARPABETSpeechSynthesis: vowels > back > UH ( B_oo_k )" ))
-		ARPABETSpeechSynthesis& ARPABETSpeechSynthesis_e(UPARAM(DisplayName = "ARPABETSpeechSynthesis") ARPABETSpeechSynthesis& InOutARPABETSpeechSynthesisObjRef,
+		void ARPABETSpeechSynthesis_UH(
 			UPARAM(DisplayName = "FTTSVoice") FTTSVoice InVoice)
 		{
-			return *this;
+
 		};
 
-		/** Activates speech synthesis channel phoneme functionality 'UW' */
+		/** Activates speech synthesis channel phoneme functionality 'UW' ( B_oot_ ) */
 		UFUNCTION(BlueprintCallable, Category = TextToSpeech, meta = ( DisplayName = "ARPABETSpeechSynthesis: vowels > back > UW ( B_oot_ )" ))
-		ARPABETSpeechSynthesis& ARPABETSpeechSynthesis_e(UPARAM(DisplayName = "ARPABETSpeechSynthesis") ARPABETSpeechSynthesis& InOutARPABETSpeechSynthesisObjRef,
+		void ARPABETSpeechSynthesis_UW(
 			UPARAM(DisplayName = "FTTSVoice") FTTSVoice InVoice)
 		{
-			return *this;
+
 		};
 
 		// vowels > mid > ARPABET UV >
 
-		/** Activates speech synthesis channel phoneme functionality 'ER' */
+		/** Activates speech synthesis channel phoneme functionality 'ER' ( B_ir_d ) */
 		UFUNCTION(BlueprintCallable, Category = TextToSpeech, meta = ( DisplayName = "ARPABETSpeechSynthesis: vowels > mid > ER ( B_ir_d )" ))
-		ARPABETSpeechSynthesis& ARPABETSpeechSynthesis_e(UPARAM(DisplayName = "ARPABETSpeechSynthesis") ARPABETSpeechSynthesis& InOutARPABETSpeechSynthesisObjRef,
+		void ARPABETSpeechSynthesis_ER(
 			UPARAM(DisplayName = "FTTSVoice") FTTSVoice InVoice)
 		{
-			return *this;
+
 		};
 
-		/** Activates speech synthesis channel phoneme functionality 'AX' */
+		/** Activates speech synthesis channel phoneme functionality 'AX' ( Ab_ou_t ) */
 		UFUNCTION(BlueprintCallable, Category = TextToSpeech, meta = ( DisplayName = "ARPABETSpeechSynthesis: vowels > mid > AX ( Ab_ou_t )" ))
-		ARPABETSpeechSynthesis& ARPABETSpeechSynthesis_e(UPARAM(DisplayName = "ARPABETSpeechSynthesis") ARPABETSpeechSynthesis& InOutARPABETSpeechSynthesisObjRef,
+		void ARPABETSpeechSynthesis_AX(
 			UPARAM(DisplayName = "FTTSVoice") FTTSVoice InVoice)
 		{
-			return *this;
+
 		};
 
-		/** Activates speech synthesis channel phoneme functionality 'AH' */
+		/** Activates speech synthesis channel phoneme functionality 'AH' ( B_u_tt ) */
 		UFUNCTION(BlueprintCallable, Category = TextToSpeech, meta = ( DisplayName = "ARPABETSpeechSynthesis: vowels > mid > AH ( B_u_tt )" ))
-		ARPABETSpeechSynthesis& ARPABETSpeechSynthesis_e(UPARAM(DisplayName = "ARPABETSpeechSynthesis") ARPABETSpeechSynthesis& InOutARPABETSpeechSynthesisObjRef,
+		void ARPABETSpeechSynthesis_AH(
 			UPARAM(DisplayName = "FTTSVoice") FTTSVoice InVoice)
 		{
-			return *this;
+
 		};
 
 		// vowels > diphthongs > ARPABET UV >
 
 		/** Activates speech synthesis channel phoneme functionality 'AY' */
 		UFUNCTION(BlueprintCallable, Category = TextToSpeech, meta = ( DisplayName = "ARPABETSpeechSynthesis: vowels > diphthongs > AY ( B_ite_ )" ))
-		ARPABETSpeechSynthesis& ARPABETSpeechSynthesis_e(UPARAM(DisplayName = "ARPABETSpeechSynthesis") ARPABETSpeechSynthesis& InOutARPABETSpeechSynthesisObjRef,
+		void ARPABETSpeechSynthesis_AY(
 			UPARAM(DisplayName = "FTTSVoice") FTTSVoice InVoice)
 		{
-			return *this;
+
 		};
 
-		/** Activates speech synthesis channel phoneme functionality 'AW' */
+		/** Activates speech synthesis channel phoneme functionality 'AW' ( B_ite_ ) */
 		UFUNCTION(BlueprintCallable, Category = TextToSpeech, meta = ( DisplayName = "ARPABETSpeechSynthesis: vowels > diphthongs > AW ( B_ou_t )" ))
-		ARPABETSpeechSynthesis& ARPABETSpeechSynthesis_e(UPARAM(DisplayName = "ARPABETSpeechSynthesis") ARPABETSpeechSynthesis& InOutARPABETSpeechSynthesisObjRef,
+		void ARPABETSpeechSynthesis_AW(
 			UPARAM(DisplayName = "FTTSVoice") FTTSVoice InVoice)
 		{
-			return *this;
+
 		};
 
-		/** Activates speech synthesis channel phoneme functionality 'OY' */
+		/** Activates speech synthesis channel phoneme functionality 'OY' ( B_o_y ) */
 		UFUNCTION(BlueprintCallable, Category = TextToSpeech, meta = ( DisplayName = "ARPABETSpeechSynthesis: vowels > diphthongs > OY ( B_o_y )" ))
-		ARPABETSpeechSynthesis& ARPABETSpeechSynthesis_e(UPARAM(DisplayName = "ARPABETSpeechSynthesis") ARPABETSpeechSynthesis& InOutARPABETSpeechSynthesisObjRef,
+		void ARPABETSpeechSynthesis_OY(
 			UPARAM(DisplayName = "FTTSVoice") FTTSVoice InVoice)
 		{
-			return *this;
+
 		};
 
-		/** Activates speech synthesis channel phoneme functionality 'IX' */
+		/** Activates speech synthesis channel phoneme functionality 'IX' ( Rabb_i_t ) */
 		UFUNCTION(BlueprintCallable, Category = TextToSpeech, meta = ( DisplayName = "ARPABETSpeechSynthesis: vowels > diphthongs > IX ( Rabb_i_t )" ))
-		ARPABETSpeechSynthesis& ARPABETSpeechSynthesis_e(UPARAM(DisplayName = "ARPABETSpeechSynthesis") ARPABETSpeechSynthesis& InOutARPABETSpeechSynthesisObjRef,
+		void ARPABETSpeechSynthesis_IX(
 			UPARAM(DisplayName = "FTTSVoice") FTTSVoice InVoice)
 		{
-			return *this;
+
 		};
 
 		// stopConsonants > voiced > ARPABET UV >
 
-		/** Activates speech synthesis channel phoneme functionality 'B' */
+		/** Activates speech synthesis channel phoneme functionality 'B' ( _B_eat ) */
 		UFUNCTION(BlueprintCallable, Category = TextToSpeech, meta = ( DisplayName = "ARPABETSpeechSynthesis: stopConsonants > voiced > B ( _B_eat )" ))
-		ARPABETSpeechSynthesis& ARPABETSpeechSynthesis_e(UPARAM(DisplayName = "ARPABETSpeechSynthesis") ARPABETSpeechSynthesis& InOutARPABETSpeechSynthesisObjRef,
+		void ARPABETSpeechSynthesis_B(
 			UPARAM(DisplayName = "FTTSVoice") FTTSVoice InVoice)
 		{
-			return *this;
+
 		};
 
-		/** Activates speech synthesis channel phoneme functionality 'D' */
+		/** Activates speech synthesis channel phoneme functionality 'D' ( _D_eep ) */
 		UFUNCTION(BlueprintCallable, Category = TextToSpeech, meta = ( DisplayName = "ARPABETSpeechSynthesis: stopConsonants > voiced > D ( _D_eep )" ))
-		ARPABETSpeechSynthesis& ARPABETSpeechSynthesis_e(UPARAM(DisplayName = "ARPABETSpeechSynthesis") ARPABETSpeechSynthesis& InOutARPABETSpeechSynthesisObjRef,
+		void ARPABETSpeechSynthesis_D(
 			UPARAM(DisplayName = "FTTSVoice") FTTSVoice InVoice)
 		{
-			return *this;
+
 		};
 
-		/** Activates speech synthesis channel phoneme functionality 'G' */
+		/** Activates speech synthesis channel phoneme functionality 'G' ( _G_o ) */
 		UFUNCTION(BlueprintCallable, Category = TextToSpeech, meta = ( DisplayName = "ARPABETSpeechSynthesis: stopConsonants > voiced > G ( _G_o )" ))
-		ARPABETSpeechSynthesis& ARPABETSpeechSynthesis_e(UPARAM(DisplayName = "ARPABETSpeechSynthesis") ARPABETSpeechSynthesis& InOutARPABETSpeechSynthesisObjRef,
+		void ARPABETSpeechSynthesis_G(
 			UPARAM(DisplayName = "FTTSVoice") FTTSVoice InVoice)
 		{
-			return *this;
+
 		};
 
 		// stopConsonants > voiced > > ARPABET UV >
 
-		/** Activates speech synthesis channel phoneme functionality 'P' */
+		/** Activates speech synthesis channel phoneme functionality 'P' ( _P_ea ) */
 		UFUNCTION(BlueprintCallable, Category = TextToSpeech, meta = ( DisplayName = "ARPABETSpeechSynthesis: stopConsonants > voiced > P ( _P_ea )" ))
-		ARPABETSpeechSynthesis& ARPABETSpeechSynthesis_e(UPARAM(DisplayName = "ARPABETSpeechSynthesis") ARPABETSpeechSynthesis& InOutARPABETSpeechSynthesisObjRef,
+		void ARPABETSpeechSynthesis_P(
 			UPARAM(DisplayName = "FTTSVoice") FTTSVoice InVoice)
 		{
-			return *this;
+
 		};
 
-		/** Activates speech synthesis channel phoneme functionality 'T' */
+		/** Activates speech synthesis channel phoneme functionality 'T' ( _T_ea ) */
 		UFUNCTION(BlueprintCallable, Category = TextToSpeech, meta = ( DisplayName = "ARPABETSpeechSynthesis: stopConsonants > voiced > T ( _T_ea )" ))
-		ARPABETSpeechSynthesis& ARPABETSpeechSynthesis_e(UPARAM(DisplayName = "ARPABETSpeechSynthesis") ARPABETSpeechSynthesis& InOutARPABETSpeechSynthesisObjRef,
+		void ARPABETSpeechSynthesis_T(
 			UPARAM(DisplayName = "FTTSVoice") FTTSVoice InVoice)
 		{
-			return *this;
+
 		};
 
-		/** Activates speech synthesis channel phoneme functionality 'K' */
+		/** Activates speech synthesis channel phoneme functionality 'K' ( _K_ick ) */
 		UFUNCTION(BlueprintCallable, Category = TextToSpeech, meta = ( DisplayName = "ARPABETSpeechSynthesis: stopConsonants > voiced > K ( _K_ick )" ))
-		ARPABETSpeechSynthesis& ARPABETSpeechSynthesis_e(UPARAM(DisplayName = "ARPABETSpeechSynthesis") ARPABETSpeechSynthesis& InOutARPABETSpeechSynthesisObjRef,
+		void ARPABETSpeechSynthesis_K(
 			UPARAM(DisplayName = "FTTSVoice") FTTSVoice InVoice)
 		{
-			return *this;
+
 		};
 
 		// fricatives > voiced > ARPABET UV >
 
-		/** Activates speech synthesis channel phoneme functionality 'V' */
+		/** Activates speech synthesis channel phoneme functionality 'V' ( _V_ery ) */
 		UFUNCTION(BlueprintCallable, Category = TextToSpeech, meta = ( DisplayName = "ARPABETSpeechSynthesis: fricatives > voiced > V ( _V_ery )" ))
-		ARPABETSpeechSynthesis& ARPABETSpeechSynthesis_e(UPARAM(DisplayName = "ARPABETSpeechSynthesis") ARPABETSpeechSynthesis& InOutARPABETSpeechSynthesisObjRef,
+		void ARPABETSpeechSynthesis_V(
 			UPARAM(DisplayName = "FTTSVoice") FTTSVoice InVoice)
 		{
-			return *this;
+
 		};
 
-		/** Activates speech synthesis channel phoneme functionality 'DH' */
+		/** Activates speech synthesis channel phoneme functionality 'DH' ( _Th_en ) */
 		UFUNCTION(BlueprintCallable, Category = TextToSpeech, meta = ( DisplayName = "ARPABETSpeechSynthesis: fricatives > voiced > DH ( _Th_en )" ))
-		ARPABETSpeechSynthesis& ARPABETSpeechSynthesis_e(UPARAM(DisplayName = "ARPABETSpeechSynthesis") ARPABETSpeechSynthesis& InOutARPABETSpeechSynthesisObjRef,
+		void ARPABETSpeechSynthesis_DH(
 			UPARAM(DisplayName = "FTTSVoice") FTTSVoice InVoice)
 		{
-			return *this;
+
 		};
 
 		// fricatives > unvoiced > ARPABET UV >
 
-		/** Activates speech synthesis channel phoneme functionality 'F' */
+		/** Activates speech synthesis channel phoneme functionality 'F' ( _F_ive ) */
 		UFUNCTION(BlueprintCallable, Category = TextToSpeech, meta = ( DisplayName = "ARPABETSpeechSynthesis: fricatives > unvoiced > F ( _F_ive )" ))
-		ARPABETSpeechSynthesis& ARPABETSpeechSynthesis_e(UPARAM(DisplayName = "ARPABETSpeechSynthesis") ARPABETSpeechSynthesis& InOutARPABETSpeechSynthesisObjRef,
+		void ARPABETSpeechSynthesis_F(
 			UPARAM(DisplayName = "FTTSVoice") FTTSVoice InVoice)
 		{
-			return *this;
+
 		};
 
-		/** Activates speech synthesis channel phoneme functionality 'TH' */
+		/** Activates speech synthesis channel phoneme functionality 'TH' ( _Th_ink ) */
 		UFUNCTION(BlueprintCallable, Category = TextToSpeech, meta = ( DisplayName = "ARPABETSpeechSynthesis: fricatives > unvoiced > TH ( _Th_ink )" ))
-		ARPABETSpeechSynthesis& ARPABETSpeechSynthesis_e(UPARAM(DisplayName = "ARPABETSpeechSynthesis") ARPABETSpeechSynthesis& InOutARPABETSpeechSynthesisObjRef,
+		void ARPABETSpeechSynthesis_TH(
 			UPARAM(DisplayName = "FTTSVoice") FTTSVoice InVoice)
 		{
-			return *this;
+
 		};
 
-		/** Activates speech synthesis channel phoneme functionality 'S' */
+		/** Activates speech synthesis channel phoneme functionality 'S' ( _S_ee ) */
 		UFUNCTION(BlueprintCallable, Category = TextToSpeech, meta = ( DisplayName = "ARPABETSpeechSynthesis: fricatives > unvoiced > S ( _S_ee )" ))
-		ARPABETSpeechSynthesis& ARPABETSpeechSynthesis_e(UPARAM(DisplayName = "ARPABETSpeechSynthesis") ARPABETSpeechSynthesis& InOutARPABETSpeechSynthesisObjRef,
+		void ARPABETSpeechSynthesis_S(
 			UPARAM(DisplayName = "FTTSVoice") FTTSVoice InVoice)
 		{
-			return *this;
+
 		};
 
-		/** Activates speech synthesis channel phoneme functionality 'IY' */
+		/** Activates speech synthesis channel phoneme functionality 'IY' ( _Sh_e ) */
 		UFUNCTION(BlueprintCallable, Category = TextToSpeech, meta = ( DisplayName = "ARPABETSpeechSynthesis: fricatives > unvoiced > SH ( _Sh_e )" ))
-		ARPABETSpeechSynthesis& ARPABETSpeechSynthesis_e(UPARAM(DisplayName = "ARPABETSpeechSynthesis") ARPABETSpeechSynthesis& InOutARPABETSpeechSynthesisObjRef,
+		void ARPABETSpeechSynthesis_IY(
 			UPARAM(DisplayName = "FTTSVoice") FTTSVoice InVoice)
 		{
-			return *this;
+
 		};
 
 		// semivowels > liquid > ARPABET UV >
 
-		/** Activates speech synthesis channel phoneme functionality 'L' */
+		/** Activates speech synthesis channel phoneme functionality 'L' ( _L_ove ) */
 		UFUNCTION(BlueprintCallable, Category = TextToSpeech, meta = ( DisplayName = "ARPABETSpeechSynthesis: semivowels > liquid > L ( _L_ove )" ))
-		ARPABETSpeechSynthesis& ARPABETSpeechSynthesis_e(UPARAM(DisplayName = "ARPABETSpeechSynthesis") ARPABETSpeechSynthesis& InOutARPABETSpeechSynthesisObjRef,
+		void ARPABETSpeechSynthesis_L(
 			UPARAM(DisplayName = "FTTSVoice") FTTSVoice InVoice)
 		{
-			return *this;
+
 		};
 
-		/** Activates speech synthesis channel phoneme functionality 'EL' */
-		UFUNCTION(BlueprintCallable, Category = TextToSpeech, meta = ( DisplayName = "ARPABETSpeechSynthesis: semivowels > liquid > EL ( Bo_ttle_ )" ))
-		ARPABETSpeechSynthesis& ARPABETSpeechSynthesis_e(UPARAM(DisplayName = "ARPABETSpeechSynthesis") ARPABETSpeechSynthesis& InOutARPABETSpeechSynthesisObjRef,
+		/** Activates speech synthesis channel phoneme functionality 'EL' ( Bott_le_ ) */
+		UFUNCTION(BlueprintCallable, Category = TextToSpeech, meta = ( DisplayName = "ARPABETSpeechSynthesis: semivowels > liquid > EL ( Bott_le_ )" ))
+		void ARPABETSpeechSynthesis_EL(
 			UPARAM(DisplayName = "FTTSVoice") FTTSVoice InVoice)
 		{
-			return *this;
+
 		};
 
-		/** Activates speech synthesis channel phoneme functionality 'R' */
+		/** Activates speech synthesis channel phoneme functionality 'R' ( _R_ed ) */
 		UFUNCTION(BlueprintCallable, Category = TextToSpeech, meta = ( DisplayName = "ARPABETSpeechSynthesis: semivowels > liquid > R ( _R_ed )" ))
-		ARPABETSpeechSynthesis& ARPABETSpeechSynthesis_e(UPARAM(DisplayName = "ARPABETSpeechSynthesis") ARPABETSpeechSynthesis& InOutARPABETSpeechSynthesisObjRef,
+		void ARPABETSpeechSynthesis_R(
 			UPARAM(DisplayName = "FTTSVoice") FTTSVoice InVoice)
 		{
-			return *this;
+
 		};
 
 		// semivowels > glides > ARPABET UV >
 
-		/** Activates speech synthesis channel phoneme functionality 'W' */
+		/** Activates speech synthesis channel phoneme functionality 'W' ( _W_ater ) */
 		UFUNCTION(BlueprintCallable, Category = TextToSpeech, meta = ( DisplayName = "ARPABETSpeechSynthesis: semivowels > glides > W ( _W_ater )" ))
-		ARPABETSpeechSynthesis& ARPABETSpeechSynthesis_e(UPARAM(DisplayName = "ARPABETSpeechSynthesis") ARPABETSpeechSynthesis& InOutARPABETSpeechSynthesisObjRef,
+		void ARPABETSpeechSynthesis_W(
 			UPARAM(DisplayName = "FTTSVoice") FTTSVoice InVoice)
 		{
-			return *this;
+
 		};
 
-		/** Activates speech synthesis channel phoneme functionality 'WH' */
+		/** Activates speech synthesis channel phoneme functionality 'WH' ( _Wh_at ) */
 		UFUNCTION(BlueprintCallable, Category = TextToSpeech, meta = ( DisplayName = "ARPABETSpeechSynthesis: semivowels > glides > WH ( _Wh_at )" ))
-		ARPABETSpeechSynthesis& ARPABETSpeechSynthesis_e(UPARAM(DisplayName = "ARPABETSpeechSynthesis") ARPABETSpeechSynthesis& InOutARPABETSpeechSynthesisObjRef,
+		void ARPABETSpeechSynthesis_WH(
 			UPARAM(DisplayName = "FTTSVoice") FTTSVoice InVoice)
 		{
-			return *this;
+
 		};
 
-		/** Activates speech synthesis channel phoneme functionality 'Y' */
+		/** Activates speech synthesis channel phoneme functionality 'Y' ( _Y_es ) */
 		UFUNCTION(BlueprintCallable, Category = TextToSpeech, meta = ( DisplayName = "ARPABETSpeechSynthesis: semivowels > glides > Y ( _Y_es )" ))
-		ARPABETSpeechSynthesis& ARPABETSpeechSynthesis_e(UPARAM(DisplayName = "ARPABETSpeechSynthesis") ARPABETSpeechSynthesis& InOutARPABETSpeechSynthesisObjRef,
+		void ARPABETSpeechSynthesis_Y(
 			UPARAM(DisplayName = "FTTSVoice") FTTSVoice InVoice)
 		{
-			return *this;
+
 		};
 
 		// nasals > non vocalic > ARPABET UV >
 
-		/** Activates speech synthesis channel phoneme functionality 'M' */
+		/** Activates speech synthesis channel phoneme functionality 'M' ( _M_ore ) */
 		UFUNCTION(BlueprintCallable, Category = TextToSpeech, meta = ( DisplayName = "ARPABETSpeechSynthesis: nasals > non vocalic > M ( _M_ore )" ))
-		ARPABETSpeechSynthesis& ARPABETSpeechSynthesis_e(UPARAM(DisplayName = "ARPABETSpeechSynthesis") ARPABETSpeechSynthesis& InOutARPABETSpeechSynthesisObjRef,
+		void ARPABETSpeechSynthesis_M(
 			UPARAM(DisplayName = "FTTSVoice") FTTSVoice InVoice)
 		{
-			return *this;
+
 		};
 
-		/** Activates speech synthesis channel phoneme functionality 'N' */
+		/** Activates speech synthesis channel phoneme functionality 'N' ( _N_ow ) */
 		UFUNCTION(BlueprintCallable, Category = TextToSpeech, meta = ( DisplayName = "ARPABETSpeechSynthesis: nasals > non vocalic > N ( _N_ow )" ))
-		ARPABETSpeechSynthesis& ARPABETSpeechSynthesis_e(UPARAM(DisplayName = "ARPABETSpeechSynthesis") ARPABETSpeechSynthesis& InOutARPABETSpeechSynthesisObjRef,
+		void ARPABETSpeechSynthesis_N(
 			UPARAM(DisplayName = "FTTSVoice") FTTSVoice InVoice)
 		{
-			return *this;
+
 		};
 
-		/** Activates speech synthesis channel phoneme functionality 'NX' */
+		/** Activates speech synthesis channel phoneme functionality 'NX' ( Si_ng_ ) */
 		UFUNCTION(BlueprintCallable, Category = TextToSpeech, meta = ( DisplayName = "ARPABETSpeechSynthesis: nasals > non vocalic > NX or NG ( Si_ng_ )" ))
-		ARPABETSpeechSynthesis& ARPABETSpeechSynthesis_NX(UPARAM(DisplayName = "ARPABETSpeechSynthesis") ARPABETSpeechSynthesis& InOutARPABETSpeechSynthesisObjRef,
+		void ARPABETSpeechSynthesis_NX(
 			UPARAM(DisplayName = "FTTSVoice") FTTSVoice InVoice)
 		{
-			return *this;
+
 		};
 
-		/** Activates speech synthesis channel phoneme functionality 'NG' */
+		/** Activates speech synthesis channel phoneme functionality 'NG' ( Si_ng_ ) */
 		UFUNCTION(BlueprintCallable, Category = TextToSpeech, meta = ( DisplayName = "ARPABETSpeechSynthesis: nasals > non vocalic > NX or NG ( Si_ng_ )" ))
-		ARPABETSpeechSynthesis& ARPABETSpeechSynthesis_NG(UPARAM(DisplayName = "ARPABETSpeechSynthesis") ARPABETSpeechSynthesis& InOutARPABETSpeechSynthesisObjRef,
+		void ARPABETSpeechSynthesis_NG(
 			UPARAM(DisplayName = "FTTSVoice") FTTSVoice InVoice)
 		{
-			return *this;
+
 		};
 
 		// nasals > vocalic > ARPABET UV >
 
-		/** Activates speech synthesis channel phoneme functionality 'EM' */
+		/** Activates speech synthesis channel phoneme functionality 'EM' ( Butt_o_n ) */
 		UFUNCTION(BlueprintCallable, Category = TextToSpeech, meta = ( DisplayName = "ARPABETSpeechSynthesis: nasals > vocalic > EM ( Butt_o_n )" ))
-		ARPABETSpeechSynthesis& ARPABETSpeechSynthesis_e(UPARAM(DisplayName = "ARPABETSpeechSynthesis") ARPABETSpeechSynthesis& InOutARPABETSpeechSynthesisObjRef,
+		void ARPABETSpeechSynthesis_EM(
 			UPARAM(DisplayName = "FTTSVoice") FTTSVoice InVoice)
 		{
-			return *this;
+
 		};
 
-		/** Activates speech synthesis channel phoneme functionality 'EN' */
+		/** Activates speech synthesis channel phoneme functionality 'EN' ( S_o_n ) */
 		UFUNCTION(BlueprintCallable, Category = TextToSpeech, meta = ( DisplayName = "ARPABETSpeechSynthesis: nasals > vocalic > EN ( S_o_n )" ))
-		ARPABETSpeechSynthesis& ARPABETSpeechSynthesis_e(UPARAM(DisplayName = "ARPABETSpeechSynthesis") ARPABETSpeechSynthesis& InOutARPABETSpeechSynthesisObjRef,
+		void ARPABETSpeechSynthesis_EN(
 			UPARAM(DisplayName = "FTTSVoice") FTTSVoice InVoice)
 		{
-			return *this;
+
 		};
 
 		// affricates > voiced > ARPABET UV >
 
-		/** Activates speech synthesis channel phoneme functionality 'CH' */
+		/** Activates speech synthesis channel phoneme functionality 'CH' ( _Ch_urch ) */
 		UFUNCTION(BlueprintCallable, Category = TextToSpeech, meta = ( DisplayName = "ARPABETSpeechSynthesis: nasals > vocalic > CH ( _Ch_urch )" ))
-		ARPABETSpeechSynthesis& ARPABETSpeechSynthesis_e(UPARAM(DisplayName = "ARPABETSpeechSynthesis") ARPABETSpeechSynthesis& InOutARPABETSpeechSynthesisObjRef,
+		void ARPABETSpeechSynthesis_CH(
 			UPARAM(DisplayName = "FTTSVoice") FTTSVoice InVoice)
 		{
-			return *this;
+
 		};
 
-		/** Activates speech synthesis channel phoneme functionality 'JH' */
+		/** Activates speech synthesis channel phoneme functionality 'JH' ( _J_ump ) */
 		UFUNCTION(BlueprintCallable, Category = TextToSpeech, meta = ( DisplayName = "ARPABETSpeechSynthesis: nasals > vocalic > JH ( _J_ump )" ))
-		ARPABETSpeechSynthesis& ARPABETSpeechSynthesis_e(UPARAM(DisplayName = "ARPABETSpeechSynthesis") ARPABETSpeechSynthesis& InOutARPABETSpeechSynthesisObjRef,
+		void ARPABETSpeechSynthesis_JH(
 			UPARAM(DisplayName = "FTTSVoice") FTTSVoice InVoice)
 		{
-			return *this;
+
 		};
 
 		// other > whisper > ARPABET UV >
 
-		/** Activates speech synthesis channel phoneme functionality 'H' */
+		/** Activates speech synthesis channel phoneme functionality 'H' ( _H_ow ) */
 		UFUNCTION(BlueprintCallable, Category = TextToSpeech, meta = ( DisplayName = "ARPABETSpeechSynthesis: other > whisper > H ( _H_ow )" ))
-		ARPABETSpeechSynthesis& ARPABETSpeechSynthesis_e(UPARAM(DisplayName = "ARPABETSpeechSynthesis") ARPABETSpeechSynthesis& InOutARPABETSpeechSynthesisObjRef,
+		void ARPABETSpeechSynthesis_H(
 			UPARAM(DisplayName = "FTTSVoice") FTTSVoice InVoice)
 		{
-			return *this;
+
 		};
 
 		// other > vocalic > ARPABET UV >
 
-		/** Activates speech synthesis channel phoneme functionality 'DX' */
+		/** Activates speech synthesis channel phoneme functionality 'DX' ( Ri_dd_le ) */
 		UFUNCTION(BlueprintCallable, Category = TextToSpeech, meta = ( DisplayName = "ARPABETSpeechSynthesis: other > vocalic > DX ( Ri_dd_le )" ))
-		ARPABETSpeechSynthesis& ARPABETSpeechSynthesis_e(UPARAM(DisplayName = "ARPABETSpeechSynthesis") ARPABETSpeechSynthesis& InOutARPABETSpeechSynthesisObjRef,
+		void ARPABETSpeechSynthesis_DX(
 			UPARAM(DisplayName = "FTTSVoice") FTTSVoice InVoice)
 		{
-			return *this;
+
 		};
 
 		// other > pause or glottal_stop > ARPABET UV >
 
-		/** Activates speech synthesis channel phoneme functionality 'Q' */
+		/** Activates speech synthesis channel phoneme functionality 'Q' ( _Q_uestion ) */
 		UFUNCTION(BlueprintCallable, Category = TextToSpeech, meta = ( DisplayName = "ARPABETSpeechSynthesis: other > pause or glottal_stop > Q ( _Q_uestion )" ))
-		ARPABETSpeechSynthesis& ARPABETSpeechSynthesis_e(UPARAM(DisplayName = "ARPABETSpeechSynthesis") ARPABETSpeechSynthesis& InOutARPABETSpeechSynthesisObjRef,
+		void ARPABETSpeechSynthesis_Q(
 			UPARAM(DisplayName = "FTTSVoice") FTTSVoice InVoice)
 		{
-			ARPABETSpeechSynthesis self = *this;
-			return self;
+
 		};
 
 		// Setup and Activation APIs
 
 		/** Activates speech synthesis channel phoneme functionality 'Voice' */
 		UFUNCTION(BlueprintCallable, Category = TextToSpeech, meta = ( DisplayName = "ARPABETSpeechSynthesis: Voice" ))
-		void Voice(UPARAM(DisplayName = "ARPABETSpeechSynthesis") ARPABETSpeechSynthesis& InARPABETSpeechSynthesisObjRef,
-			UPARAM(DisplayName = "FTTSVoice") FTTSVoice InVoice)
+		void Voice()
 		{
 
 		};
@@ -471,15 +477,14 @@ namespace TTSSpeechSynthesis
 
 		/** Activates speech synthesis channel phoneme functionality 'Init' */
 		UFUNCTION(BlueprintCallable, Category = TextToSpeech, meta = ( DisplayName = "ARPABETSpeechSynthesis: Init" ))
-		bool Init(UPARAM(DisplayName = "ARPABETSpeechSynthesis") ARPABETSpeechSynthesis& InARPABETSpeechSynthesisObjRef,
+		bool Init(
 			UPARAM(DisplayName = "FTTSVoice") FTTSVoice InVoice,
-			const FProsodyCurve& ProsodyCurve_ConstObjArray,
-			const FDurationCurve& DurationCurve_ConstObjArray,
-			const FEmotiveCurve& EmotiveCurve_ConstObjArray)
+			UPARAM(DisplayName = "FProsodyCurve") const FProsodyCurve& ProsodyCurve_ConstObjArray,
+			UPARAM(DisplayName = "FDurationCurve") const FDurationCurve& DurationCurve_ConstObjArray,
+			UPARAM(DisplayName = "FEmotiveCurve") const FEmotiveCurve& EmotiveCurve_ConstObjArray)
 		{
 			return true;
 		};
-
 
 	};
 }
