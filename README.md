@@ -1,5 +1,5 @@
 # Speech Synthesis for Unreal Engine 5
-(MARYTTS-based) Text-to-Speech library and respeecheer voice-mapping tool for Unreal Engine 5
+(MARYTTS-based) Text-to-Speech library and re-speecheer voice-mapping tool for Unreal Engine 5.
 
 ## Based upon MaryTTS 2.5
 
