@@ -15,9 +15,9 @@ using FrameRate = unsigned int;
 class USpeechSynthesisBlueprintLibrary {
 public:
     // Setter methods with input validation
-    void setVoiceArray(const VoiceArray& voices) {
+    void setVoiceArray(const VoiceArray& voices_FTTVoiceArray) {
         // Validation logic, if required
-        VoiceFVoiceArray = voices;
+        VoiceFVoiceArray = voices_FTTVoiceArray;
     }
 
     void setChannelCount(ChannelCount count) {
@@ -53,41 +53,47 @@ public:
         Sara.SetAmplitude(6.00f); // ~60db (0.00f to 12.00f); 6.00f is considered a normal speaking voice; 3.00f is considered a whisper.
 
         // Initialize SpeechLibrary with typed and named variables
-        const VoiceArray voices = { Sara };  // Only one voice chorus for simplicity
-        const ChannelCount channel_count = 2;
-        const SampleWidth sample_width = 2;
-        const FrameRate frame_rate = 44100;  // Standard audio frame rate
+        const VoiceArray voices_FTTVoiceArray = { Sara };  // Only one voice chorus for simplicity
+        const ChannelCount channel_count_uint32 = 2;
+        const SampleWidth sample_width_uint32 = 2;
+        const FrameRate frame_rate_hz_uint32 = 44100;  // Standard audio frame rate
 
         USpeechSynthesisBlueprintLibrary SpeechLibrary;
 
-        SpeechLibrary.setVoiceArray(voices);
-        SpeechLibrary.setChannelCount(channel_count);
-        SpeechLibrary.setSampleWidth(sample_width);
-        SpeechLibrary.setFrameRate(frame_rate);
+        SpeechLibrary.setVoiceArray(voices_FTTVoiceArray);
+        SpeechLibrary.setChannelCount(channel_count_uint32);
+        SpeechLibrary.setSampleWidth(sample_width_uint32);
+        SpeechLibrary.setFrameRate(frame_rate_hz_uint32);
 
         // Initialize VoiceObj and proceed with speech synthesis
         // Assuming the Init method and phoneme methods are refactored to return error codes for robustness
         // For example, if SynthesisInit returns a boolean indicating success, the code could be:
         if (SpeechLibrary.Init(ProsodyCurveObjArray, DurationCurveObjArray, EmotiveCurveObjArray))
         {
-            // Proceed with speech synthesis
-            ARPABETAudio Voice =
-                SpeechLibrary.
-                ARPABETSpeechSynthesis_h().
-                ARPABETSpeechSynthesis_el().
-                ARPABETSpeechSynthesis_l().
-                ARPABETSpeechSynthesis_o().
-                ARPABETSpeechSynthesis_w().
-                ARPABETSpeechSynthesis_ur().
-                ARPABETSpeechSynthesis_l().
-                ARPABETSpeechSynthesis_d().
-                Voice();
+            // Proceed with artificial speech synthesis: 'Hello World!'
+           
+            SpeechLibrary.ARPABETSpeechSynthesis_H();
+            SpeechLibrary.ARPABETSpeechSynthesis_EH();
+            SpeechLibrary.ARPABETSpeechSynthesis_L();
+            SpeechLibrary.ARPABETSpeechSynthesis_OW();
+            SpeechLibrary.ARPABETSpeechSynthesis_W();
+            SpeechLibrary.ARPABETSpeechSynthesis_ER();
+            SpeechLibrary.ARPABETSpeechSynthesis_L();
+            SpeechLibrary.ARPABETSpeechSynthesis_D();
+
+            // Compile ...
+
+            ARPABETAudio Voice = SpeechLibrary.Voice();
+
+            // Play back the synthesized speech
 
             Voice.PlayBack();
+
             //Voice.Save.AsWAVFile("Sara"); // lossless (Windows)
             //Voice.Save.AsFLACFile("Sara"); // lossless (Linux, MAC)
             //Voice.Save.AsMP3File("Sara"); // lossy 
             //Voice.Save.AsAACFile("Sara"); // lossy
+
         } else {
             // Handle initialization error
             // ...
