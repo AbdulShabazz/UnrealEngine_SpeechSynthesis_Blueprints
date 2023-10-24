@@ -6,12 +6,8 @@
 #include "Components/AudioComponent.h"
 #include "DurationCurve.generated.h"
 
-/**
- * 
- */
-UCLASS()
+UCLASS(Blueprintable)
 class SPEECHSYNTHESISBP_API UDurationCurve : public UAudioComponent
 {
 	GENERATED_BODY()
-	
 };
