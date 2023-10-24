@@ -1,4 +1,4 @@
-# Speech Synthesis for Unreal Engine 5
+# Improved Speech Synthesis for Unreal Engine 5
 (MARYTTS-based) Text-to-Speech library and re-speecheer voice-mapping tool for Unreal Engine 5.
 
 ## Based upon MaryTTS 2.5
@@ -20,9 +20,10 @@ This is a multilingual open-source text-to-speech and speech-to-speech platform 
 
 The library is made available under the Lesser General Public License LGPL version 3.0 -- see LICENSE.md for details.
 
-## APIs
+## Available APIs
 
-The Speech Synthesis Library uses the ARPABET phoneme alphabet set, which is a subset of the International Phonetic Alphabet (IPA), over its less ASCII-friendly standardized IPA phonetic superset.
+The Speech Synthesis Library uses the ARPABET phoneme alphabet set, which is a subset of the International Phonetic Alphabet (IPA), over its less ASCII-friendly standardized IPA phonetic superset. 
+(Context-sensitive search may need to be disabled in your blueprint event graph editor to view the phoneme glyphs correctly.)
 
 ARPA ARPABET - Wikipedia  
 [+] Much easier to type on a computer  
@@ -108,4 +109,105 @@ DX (Ri_dd_le)
   
 other > pause or glottal_stop > ARPABET UV >  
 Q (_Q_uestion)  
-  
+
+
+### Example:  
+
+```cpp
+
+#include "SpeechSynthesisAudioComponent.h"
+
+#if WITH_DEV_AUTOMATION_TESTS
+
+using namespace TTSSpeechSynthesis;
+
+class main {
+public:
+
+    main() {
+        UTTSVoice Sara = UTTSVoice::Sara();
+        Sara.SetAmplitude(6.00f); // ~60db (0.00f to 12.00f); 6.00f is considered a normal speaking voice; 3.00f is considered a whisper.
+
+        // Initialize SpeechLibrary with typed and named variables
+
+        const VoiceArray voices_FTTVoiceArray = { Sara };  // Only one voice chorus for simplicity
+        const ChannelCount channel_count_uint32 = 2;
+        const SampleWidth sample_width_uint32 = 2;
+        const FrameRate frame_rate_hz_uint32 = 44100;  // Standard audio frame rate
+
+        USpeechSynthesisBPLibrary SpeechLibrary;
+
+        SpeechLibrary.SetVoices(voices_FTTVoiceArray);
+        SpeechLibrary.SetChannelCount(channel_count_uint32);
+        SpeechLibrary.SetSampleWidth(sample_width_uint32);
+        SpeechLibrary.SetFrameRate(frame_rate_hz_uint32);
+
+        UProsodyCurve ProsodyCurveObjArray{};
+        UDurationCurve DurationCurveObjArray{};
+        UEmotiveCurve EmotiveCurveObjArray{};
+
+        // Initialize VoiceObj and proceed with speech synthesis
+        // Assuming the Init method and phoneme methods are refactored to return error codes for robustness
+        // For example, if SynthesisInit returns a boolean indicating success, the code could be:
+
+        if (SpeechLibrary.Init(ProsodyCurveObjArray, DurationCurveObjArray, EmotiveCurveObjArray))
+        {
+            // Proceed with artificial speech synthesis: 'Hello World!'
+           
+            SpeechLibrary.ARPABETSpeechSynthesis_H();
+            SpeechLibrary.ARPABETSpeechSynthesis_EH();
+            SpeechLibrary.ARPABETSpeechSynthesis_L();
+            SpeechLibrary.ARPABETSpeechSynthesis_OW();
+            SpeechLibrary.ARPABETSpeechSynthesis_W();
+            SpeechLibrary.ARPABETSpeechSynthesis_ER();
+            SpeechLibrary.ARPABETSpeechSynthesis_L();
+            SpeechLibrary.ARPABETSpeechSynthesis_D();
+
+            // Compile ...
+
+            ARPABETAudio Voice = SpeechLibrary.Voice();
+
+            // Play back the synthesized speech
+
+            Voice.PlayBack();
+
+            Voice.toWAVFile("Sara.wav");   // lossless (Windows)
+            Voice.toFLACFile("Sara.flac");  // lossless (Linux, MAC)
+            Voice.toMP3File("Sara.mp3");   // lossy 
+            Voice.toAACFile("Sara.aac");   // lossy
+
+        } else {
+            // Handle initialization error
+            // ...
+        }
+
+        return 0;
+    }
+
+    ~main() {
+        // ...
+    };
+};
+
+#endif
+```
+
+## New Audio File Format
+The library also institutes a custom open audio file format called **.voice** that resembles JSON which allows the file to be created, viewed and edited in any text editor, 
+along with the ability for it to be searched, indexed, scripted and compressed. Encoding is utf-8, little-endian.
+
+```json
+{
+    "nChannels": N,
+    "sampleWidth": 2,
+    "sampleRate": 192000,
+    "bitsPerSample": 32,
+    "data": [
+        [channel 1, channel 2, ..., N], // sub chunk 1
+        [channel 1, channel 2, ..., N], // sub chunk 2
+        .
+        .
+        .
+    ]
+}
+```
