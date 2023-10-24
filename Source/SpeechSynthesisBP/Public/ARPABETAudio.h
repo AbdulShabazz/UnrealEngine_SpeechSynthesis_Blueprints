@@ -6,10 +6,7 @@
 #include "Components/AudioComponent.h"
 #include "ARPABETAudio.generated.h"
 
-/**
- * 
- */
-UCLASS()
+UCLASS(Blueprintable)
 class SPEECHSYNTHESISBP_API UARPABETAudio : public UAudioComponent
 {
 	GENERATED_BODY()
@@ -170,5 +167,5 @@ public:
 	{
 
 	};
-	
+
 };
