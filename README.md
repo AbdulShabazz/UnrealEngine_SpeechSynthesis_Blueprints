@@ -1,7 +1,7 @@
 # Improved Speech Synthesis for Unreal Engine 5
 (MARYTTS-based) Text-to-Speech library and re-speecheer voice-mapping tool for Unreal Engine 5.
 
-## Based upon MaryTTS 2.5
+### Based upon MaryTTS 2.5
 
 This is a multilingual open-source text-to-speech and speech-to-speech platform (re-speecher) suitable for use in theatrical production, based on the MaryTTS text-to-speech library,
  compatible with any platform that has a Java runtime installed, it is developed for the Unreal Engine 3D graphics game engine.
@@ -20,7 +20,7 @@ This is a multilingual open-source text-to-speech and speech-to-speech platform 
 
 The library is made available under the Lesser General Public License LGPL version 3.0 -- see LICENSE.md for details.
 
-## Available APIs
+### Available APIs
 
 The Speech Synthesis Library uses the ARPABET phoneme alphabet set, which is a subset of the International Phonetic Alphabet (IPA), over its less ASCII-friendly standardized IPA phonetic superset. 
 (Context-sensitive search may need to be disabled in your blueprint event graph editor to view the phoneme glyphs correctly.)
@@ -126,18 +126,18 @@ public:
 
     main() {
         UTTSVoice Sara = UTTSVoice::Sara();
-        Sara.SetAmplitude(6.00f); // ~60db (0.00f to 12.00f); 6.00f is considered a normal speaking voice; 3.00f is considered a whisper.
+        Sara.SetAmplitude(6.00f); // ~60db SPL (0.00f to 12.00f); 6.00f is considered a normal speaking voice; 3.00f is considered a whisper.
 
         // Initialize SpeechLibrary with typed and named variables
 
-        const VoiceArray voices_FTTVoiceArray = { Sara };  // Only one voice chorus for simplicity
+        const VoiceArray voices_UTTSVoiceArray = { Sara };  // Only one voice chorus for simplicity
         const ChannelCount channel_count_uint32 = 2;
         const SampleWidth sample_width_uint32 = 2;
         const FrameRate frame_rate_hz_uint32 = 44100;  // Standard audio frame rate
 
         USpeechSynthesisBPLibrary SpeechLibrary;
 
-        SpeechLibrary.SetVoices(voices_FTTVoiceArray);
+        SpeechLibrary.SetVoices(voices_UTTSVoiceArray);
         SpeechLibrary.SetChannelCount(channel_count_uint32);
         SpeechLibrary.SetSampleWidth(sample_width_uint32);
         SpeechLibrary.SetFrameRate(frame_rate_hz_uint32);
@@ -173,6 +173,7 @@ public:
 
             Voice.toWAVFile("Sara.wav");   // lossless (Windows)
             Voice.toFLACFile("Sara.flac");  // lossless (Linux, MAC)
+            Voice.toVOICEFile("Sara.voice");  // lossless 
             Voice.toMP3File("Sara.mp3");   // lossy 
             Voice.toAACFile("Sara.aac");   // lossy
 
@@ -191,8 +192,8 @@ public:
 
 #endif
 ```
+### New Audio File Format
 
-## New Audio File Format
 The library also institutes a custom open audio file format called **.voice** that resembles JSON which allows the file to be created, viewed and edited in any text editor, 
 along with the ability for it to be searched, indexed, scripted and compressed. Encoding is utf-8, little-endian.
 
