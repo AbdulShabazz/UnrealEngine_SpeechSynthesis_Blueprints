@@ -11,6 +11,14 @@
 #include "Public/ARPABETAudio.h"
 #include "SpeechSynthesisAudioComponent.generated.h"
 
+
+// Strong Typing for Configuration Parameters
+
+using VoiceArray = TArray<UTTSVoice>;  // Only one voice for simplicity
+using ChannelCount = unsigned int;
+using SampleWidth = unsigned int;
+using FrameRate = unsigned int;
+
 UCLASS(Blueprintable)
 class SPEECHSYNTHESISBP_API USpeechSynthesisAudioComponent : public UAudioComponent
 {
@@ -38,7 +46,8 @@ class SPEECHSYNTHESISBP_API USpeechSynthesisAudioComponent : public UAudioCompon
 		return 0;
 	}
 
-	// Other member functions
+	// Other member functions:
+	
 	// vowels > front > ARPABET UV >
 
 	/** Activates speech synthesis channel phoneme functionality 'IY' ( B_ea_t ) */
@@ -461,10 +470,10 @@ class SPEECHSYNTHESISBP_API USpeechSynthesisAudioComponent : public UAudioCompon
 
 private:
 
-	/*VoiceArray voices_FTTSVoiceArray{};
+	VoiceArray voices_FTTSVoiceArray{};
 	ChannelCount ChannelCount_UInt32{};
 	SampleWidth SampleWidth_UInt32{};
 	FrameRate FrameRateHz_UInt32{};
-	TArray<uint8> datastream_TArrayUInt8{};*/
+	TArray<uint8> datastream_TArrayUInt8{};
 	
 };
