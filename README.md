@@ -15,7 +15,7 @@ This is a multilingual open-source text-to-speech and speech-to-speech platform 
 <img title='Schwa.Phoneme.(Formants).Synthesis.Curves' style='margin-top:24px;' alt='Schwa.Phoneme.(Formants).Synthesis.Curves' src='IMG/Phoneme.(Formants).Synthesis.Curves.Screen.PNG'/><br>
 <span>Schwa.Phoneme.(Formants).Synthesis.Curves</span>
 
-<img title='Hello World!' style='margin-top:24px;' alt='Hello World! (Blueprint)' src='IMG/Hello.World.2.BP.2023.png'/><br>
+<img title='Hello World!' style='margin-top:24px;' alt='Hello World! (Blueprint)' src='IMG/Hello.World.3.BP.2023.png'/><br>
 <span>Hello World! UE Blueprint</span><br><br>
 
 The library is made available under the Lesser General Public License LGPL version 3.0 -- see LICENSE.md for details.
