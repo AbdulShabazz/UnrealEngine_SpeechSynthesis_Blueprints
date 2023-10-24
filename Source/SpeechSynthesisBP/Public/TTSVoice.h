@@ -6,12 +6,8 @@
 #include "Components/AudioComponent.h"
 #include "TTSVoice.generated.h"
 
-/**
- * 
- */
-UCLASS()
+UCLASS(Blueprintable)
 class SPEECHSYNTHESISBP_API UTTSVoice : public UAudioComponent
 {
 	GENERATED_BODY()
-	
 };
