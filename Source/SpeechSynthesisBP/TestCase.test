@@ -25,9 +25,9 @@ public:
         SpeechLibrary.SetSampleWidth(sample_width_uint32);
         SpeechLibrary.SetFrameRate(frame_rate_hz_uint32);
 
-        FProsodyCurve ProsodyCurveObjArray{};
-        FDurationCurve DurationCurveObjArray{};
-        FEmotiveCurve EmotiveCurveObjArray{};
+        UProsodyCurve ProsodyCurveObjArray{};
+        UDurationCurve DurationCurveObjArray{};
+        UEmotiveCurve EmotiveCurveObjArray{};
 
         // Initialize VoiceObj and proceed with speech synthesis
         // Assuming the Init method and phoneme methods are refactored to return error codes for robustness
