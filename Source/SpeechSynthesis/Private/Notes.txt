@@ -1,3 +1,0 @@
-TODO: Use Unreal Engine's reflection system to build the voice signal's fundamental- and formant-frequencies.
-TODO: Provide the library sine wave generator with a 10s decay envelope to simulate (human) lung capacity.
-TODO: Use a breath blueprint which can be used after 5s of speech to simulate a window for the speaker to take a breath.

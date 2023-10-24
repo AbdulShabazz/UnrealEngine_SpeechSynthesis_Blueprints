@@ -1,1 +1,0 @@
-TODO: Derive a custom blueprint class in Unreal Engine to expose C++ functionality to the editor.
