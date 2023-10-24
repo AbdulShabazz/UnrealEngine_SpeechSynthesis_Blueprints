@@ -6,12 +6,8 @@
 #include "Components/AudioComponent.h"
 #include "EmotiveCurve.generated.h"
 
-/**
- * 
- */
-UCLASS()
+UCLASS(Blueprintable)
 class SPEECHSYNTHESISBP_API UEmotiveCurve : public UAudioComponent
 {
-	GENERATED_BODY()
-	
+	GENERATED_BODY()	
 };
