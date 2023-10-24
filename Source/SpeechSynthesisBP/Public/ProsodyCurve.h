@@ -6,12 +6,8 @@
 #include "Components/AudioComponent.h"
 #include "ProsodyCurve.generated.h"
 
-/**
- * 
- */
-UCLASS()
+UCLASS(Blueprintable)
 class SPEECHSYNTHESISBP_API UProsodyCurve : public UAudioComponent
 {
 	GENERATED_BODY()
-	
 };
