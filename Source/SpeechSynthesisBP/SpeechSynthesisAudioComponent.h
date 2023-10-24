@@ -5,11 +5,13 @@
 #include "CoreMinimal.h"
 #include "Components/AudioComponent.h"
 #include "SpeechSynthesisAudioComponent.generated.h"
+#include "Public/TTSVoice.h"
+#include "Public/ProsodyCurve.h"
+#include "Public/EmotiveCurve.h"
+#include "Public/DurationCurve.h"
+#include "Public/ARPABETAudio.h"
 
-/**
- * 
- */
-UCLASS()
+UCLASS(Blueprintable)
 class SPEECHSYNTHESISBP_API USpeechSynthesisAudioComponent : public UAudioComponent
 {
 	GENERATED_BODY()
