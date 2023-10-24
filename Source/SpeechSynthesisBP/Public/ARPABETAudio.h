@@ -11,6 +11,7 @@ class SPEECHSYNTHESISBP_API UARPABETAudio : public UAudioComponent
 {
 	GENERATED_BODY()
 
+	UPROPERTY(VisibleAnywhere, Category = "TextToSpeech")
 	TArray<uint8> datastream_TArrayUInt8{};
 
 public:
