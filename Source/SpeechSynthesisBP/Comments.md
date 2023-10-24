@@ -1,6 +1,6 @@
-Concatenative speech synthesis text-to-speech (TTS) library implemented in Blueprints.
+### Concatenative speech synthesis text-to-speech (TTS) library implemented in Blueprints.
 
-Concatenative speech synthesis library suitable for use in theatrical production, implemented in Blueprints and C++23 based on the MaryTTS repo for Unreal Engine 5.
+Concatenative speech synthesis library and re-speecher voice-mapping library suitable for use in theatrical production, implemented in Blueprints and C++23 based on the MaryTTS repo for Unreal Engine 5.
 
 This library expands the current state-of-the-art text-to-speech synthesis library in Unreal Engine 5, which is based on the Tacotron 2 voice model. 
 
@@ -14,7 +14,7 @@ and can support many other character performance aspects such as a whisper, non-
 the concatenative speech synthesis then generates the requisite (sine) signals for the entire duration of speech for all formants in parallel, including the fundamental, and then combines them with the aid of an Artificial Neural Network (ANN) which as a sort of DSP signal processor also incorporates other natural aspects and voice cues such as jitter and shimmer before combining the waveforms into a single output signal. 
 The concatenative speech synthesis library is implemented in Blueprints and C++23, and is intended for use in theatrical production.
 
-Example:
+### Example:
 
 ```cpp
 
@@ -29,18 +29,18 @@ public:
 
     main() {
         UTTSVoice Sara = UTTSVoice::Sara();
-        Sara.SetAmplitude(6.00f); // ~60db (0.00f to 12.00f); 6.00f is considered a normal speaking voice; 3.00f is considered a whisper.
+        Sara.SetAmplitude(6.00f); // ~60db SPL (0.00f to 12.00f); 6.00f is considered a normal speaking voice; 3.00f is considered a whisper.
 
         // Initialize SpeechLibrary with typed and named variables
 
-        const VoiceArray voices_FTTVoiceArray = { Sara };  // Only one voice chorus for simplicity
+        const VoiceArray voices_UTTSVoiceArray = { Sara };  // Only one voice chorus for simplicity
         const ChannelCount channel_count_uint32 = 2;
         const SampleWidth sample_width_uint32 = 2;
         const FrameRate frame_rate_hz_uint32 = 44100;  // Standard audio frame rate
 
         USpeechSynthesisBPLibrary SpeechLibrary;
 
-        SpeechLibrary.SetVoices(voices_FTTVoiceArray);
+        SpeechLibrary.SetVoices(voices_UTTSVoiceArray);
         SpeechLibrary.SetChannelCount(channel_count_uint32);
         SpeechLibrary.SetSampleWidth(sample_width_uint32);
         SpeechLibrary.SetFrameRate(frame_rate_hz_uint32);
@@ -76,6 +76,7 @@ public:
 
             Voice.toWAVFile("Sara.wav");   // lossless (Windows)
             Voice.toFLACFile("Sara.flac");  // lossless (Linux, MAC)
+            Voice.toVOICEFile("Sara.voice");  // lossless 
             Voice.toMP3File("Sara.mp3");   // lossy 
             Voice.toAACFile("Sara.aac");   // lossy
 
@@ -94,11 +95,12 @@ public:
 
 #endif
 ```
+### New Audio Format  
 
-The library also institutes a custom .voice open audio file format that resembles JSON which allows the file to be created, viewed and edited in any text editor, 
+The library also institutes a custom open audio file format called **.voice** that resembles JSON which allows the file to be created, viewed and edited in any text editor, 
 along with the ability for it to be searched, indexed, scripted and compressed. Encoding is utf-8, little-endian.
 
-```json
+```javascript
 {
     "nChannels": N,
     "sampleWidth": 2,
