@@ -18,32 +18,24 @@ Example:
 
 ```cpp
 
-#include "SpeechSynthesisBlueprintLibrary.h"
+#include "SpeechSynthesisAudioComponent.h"
 
 #if WITH_DEV_AUTOMATION_TESTS
 
 using namespace TTSSpeechSynthesis;
 
-// Strong Typing for Configuration Parameters
-
-using VoiceArray = TArray<FTTSVoice>;
-using ChannelCount = unsigned int;
-using SampleWidth = unsigned int;
-using FrameRate = unsigned int;
-
 class main {
 public:
 
     main() {
-
-        FTTSVoice Sara = FTTSVoice::Sara();
+        UTTSVoice Sara = UTTSVoice::Sara();
         Sara.SetAmplitude(6.00f); // ~60db (0.00f to 12.00f); 6.00f is considered a normal speaking voice; 3.00f is considered a whisper.
 
         // Initialize SpeechLibrary with typed and named variables
 
         const VoiceArray voices_FTTVoiceArray = { Sara };  // Only one voice chorus for simplicity
         const ChannelCount channel_count_uint32 = 2;
-        const SampleWidth sample_width_uint32 = 2; // 16-bit
+        const SampleWidth sample_width_uint32 = 2;
         const FrameRate frame_rate_hz_uint32 = 44100;  // Standard audio frame rate
 
         USpeechSynthesisBPLibrary SpeechLibrary;
@@ -53,16 +45,17 @@ public:
         SpeechLibrary.SetSampleWidth(sample_width_uint32);
         SpeechLibrary.SetFrameRate(frame_rate_hz_uint32);
 
-        FProsodyCurve ProsodyCurveObjArray{};
-        FDurationCurve DurationCurveObjArray{};
-        FEmotiveCurve EmotiveCurveObjArray{};
+        UProsodyCurve ProsodyCurveObjArray{};
+        UDurationCurve DurationCurveObjArray{};
+        UEmotiveCurve EmotiveCurveObjArray{};
 
-        // Initialize VoiceObj and proceed with speech synthesis:
-        // Proceed with artificial speech synthesis: 'Hello World!'
+        // Initialize VoiceObj and proceed with speech synthesis
+        // Assuming the Init method and phoneme methods are refactored to return error codes for robustness
+        // For example, if SynthesisInit returns a boolean indicating success, the code could be:
 
         if (SpeechLibrary.Init(ProsodyCurveObjArray, DurationCurveObjArray, EmotiveCurveObjArray))
         {
-            // Spell 'Hello World' in ARPAbet phonetic alphabet: H EH1 L OW1 W ER1 L D
+            // Proceed with artificial speech synthesis: 'Hello World!'
            
             SpeechLibrary.ARPABETSpeechSynthesis_H();
             SpeechLibrary.ARPABETSpeechSynthesis_EH();
@@ -81,14 +74,13 @@ public:
 
             Voice.PlayBack();
 
-            Voice.Save.AsWAVFile("Sara.wav");   // lossless (Windows)
-            Voice.Save.AsFLACFile("Sara.flac"); // lossless (Linux, MAC)
-            Voice.Save.AsMP3File("Sara.mp3");   // lossy
-            Voice.Save.AsAACFile("Sara.aac");   // lossy
-            Voice.Save.AsVOICEFile("Sara.voice");   // open lossless audio file format
+            Voice.toWAVFile("Sara.wav");   // lossless (Windows)
+            Voice.toFLACFile("Sara.flac");  // lossless (Linux, MAC)
+            Voice.toMP3File("Sara.mp3");   // lossy 
+            Voice.toAACFile("Sara.aac");   // lossy
 
         } else {
-            // Handle initialization errors
+            // Handle initialization error
             // ...
         }
 
