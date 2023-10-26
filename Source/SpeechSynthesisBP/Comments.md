@@ -1,4 +1,4 @@
-### Concatenative speech synthesis text-to-speech (TTS) library implemented in Blueprints.
+### Concatenative speech synthesis library implemented in Blueprints.
 
 Concatenative speech synthesis library and re-speecher voice-mapping library suitable for use in theatrical production, implemented in Blueprints and C++23 based on the MaryTTS repo for Unreal Engine 5.
 
