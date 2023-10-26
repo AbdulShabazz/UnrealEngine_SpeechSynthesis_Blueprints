@@ -1,6 +1,6 @@
 ### Concatenative speech synthesis library implemented in Blueprints.
 
-Concatenative speech synthesis library and re-speecher voice-mapping library suitable for use in theatrical production, implemented in Blueprints and C++23 based on the MaryTTS repo for Unreal Engine 5.
+Concatenative speech synthesis library, text-to-speech engine, and re-speecher voice-mapping library suitable for use in theatrical production, implemented in Blueprints and C++23 based on the MaryTTS repo for Unreal Engine 5.
 
 This library expands the current state-of-the-art text-to-speech synthesis library in Unreal Engine 5, which is based on the Tacotron 2 voice model. 
 
