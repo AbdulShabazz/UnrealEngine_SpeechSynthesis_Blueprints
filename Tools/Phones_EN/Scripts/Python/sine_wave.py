@@ -3,10 +3,11 @@ import wave
 import struct
 
 # Define Parameters
-sample_rate = 44100
-frequency = 1440.0
-duration = 1.0
-amplitude = 16000
+bps = np.int32 # bit-depth per sample
+sample_rate = 44100 # Hz
+frequency = 1440.0 # Hz
+duration = 1.0 # seconds
+amplitude = 16000 # dynamic range per sample : 2^bps (-4,294,967,295, 4,294,967,295) with 0 as the midpoint (silence)
 
 # Generate Time Array
 t = np.linspace(0, duration, int(sample_rate * duration), endpoint=False)
@@ -14,7 +15,7 @@ t = np.linspace(0, duration, int(sample_rate * duration), endpoint=False)
 # Generate Sinusoidal Wave
 y = amplitude * np.sin(2 * np.pi * frequency * t)
 
-# Convert to 16-bit PCM Format
+# Convert to 16- or 32-bit PCM Format
 y = np.int32(y)
 
 # Create WAV File
