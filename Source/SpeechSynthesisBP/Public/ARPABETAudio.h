@@ -99,9 +99,31 @@ public:
 
 	/** Save .voice data from USpeechSynthesisBPLibrary to persistent disk */
 	UFUNCTION(BlueprintCallable, Category = TextToSpeech, meta = ( keywords = "TTS, SpeechSynthesis, TextToSpeech", DisplayName = "ARPABETAudio: toVoiceFile" ))
-	bool toVoiceFile(UPARAM(DisplayName = "filename") const FText& filename_ConstFTextRef)
+	bool toVoiceFile(UPARAM(DisplayName = "filename") const FString& filename_ConstFStringRef)
 	{
 		bool retval{};
+
+		/*
+
+			VoiceFile.WavParams.SampleRateInHz_UInt64 = 44100;
+			VoiceFile.WavParams.FrequencyInHz_UInt64T = 440;
+			VoiceFile.WavParams.DurationInSeconds_UInt64T = 5;
+			VoiceFile.WavParams.Amplitude_UIn64T = 16000;
+			VoiceFile.WavParams.BitsPerSample_UInt64T = 32;
+
+			// Populate VoiceFile.AudioData from the en vivo (WAV) file buffer or generated audio data
+			
+			TSharedRef<TJsonWriter<>> Writer = TJsonWriterFactory<>::Create(&filename_ConstFStringRef);
+
+			FJsonSerializer::Serialize(Writer, FJsonObjectConverter::UStructToJsonObject(FVoiceFile::StaticStruct(), &VoiceFile));
+
+			FString SaveDirectory = FPaths::ProjectSavedDir();
+			FString FileName = filename_ConstFStringRef; // "MyVoiceFile.voice";
+			FString FilePath = SaveDirectory + "/" + FileName;
+
+			FFileHelper::SaveStringToFile(OutputString, *FilePath);
+
+		*/
 
 		return retval;
 	};
