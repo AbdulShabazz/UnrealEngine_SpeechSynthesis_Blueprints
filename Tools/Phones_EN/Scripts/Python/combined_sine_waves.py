@@ -3,6 +3,7 @@ import wave
 import numpy as np
 
 
+amplitude_default = 16000
 pcm_encoding_hz = 96000
 bits_per_sample = np.int32
 
@@ -26,8 +27,8 @@ def generate_sine_wave(frequency, amplitude, duration):
 
 
 # Generate 2 sine waves
-sine_wave_0 = generate_sine_wave(25, 0.5, 1)
-sine_wave_1 = generate_sine_wave(250, 0.25, 1)
+sine_wave_0 = generate_sine_wave(25, amplitude_default, 1)
+sine_wave_1 = generate_sine_wave(250, amplitude_default, 1)
 
 # Add the two sine waves together
 combined_sine_wave = (sine_wave_0 + sine_wave_1)
