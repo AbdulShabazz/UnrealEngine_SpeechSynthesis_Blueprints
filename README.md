@@ -15,7 +15,7 @@ This is a multilingual open-source text-to-speech and speech-to-speech platform 
 <img title='Schwa.Phoneme.(Formants).Synthesis.Curves' style='margin-top:24px;' alt='Schwa.Phoneme.(Formants).Synthesis.Curves' src='IMG/Phoneme.(Formants).Synthesis.Curves.Screen.PNG'/><br>
 <span>Schwa.Phoneme.(Formants).Synthesis.Curves</span>
 
-<img title='Hello World!' style='margin-top:24px;' alt='Hello World! (Blueprint)' src='IMG/Hello.World.5.BP.2023.png'/><br>
+<img title='Hello World!' style='margin-top:24px;' alt='Hello World! (Blueprints)' src='IMG/Hello.World.5.BP.2023.PNG'/><br>
 <span>Hello World! UE Blueprint</span><br><br>
 
 The library is made available under the Lesser General Public License LGPL version 3.0 -- see LICENSE.md for details.
@@ -197,7 +197,7 @@ public:
 The library also institutes a custom open audio file format called **.voice** that resembles JSON which allows the file to be created, viewed and edited in any text editor, 
 along with the ability for it to be searched, indexed, scripted and compressed. Encoding is utf-8, little-endian.
 
-```json
+```javascript
 {
     "nChannels": N,
     "sampleWidth": 2,
