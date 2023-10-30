@@ -6,8 +6,9 @@ from typing import Optional, Union
 import numpy as np
 import torch
 import torch.nn.functional as F
+import wave
 
-from utils import exact_div 
+from utils import exact_div
 
 # hard-coded audio hyperparameters
 SAMPLE_RATE = 16000
@@ -22,6 +23,41 @@ N_SAMPLES_PER_TOKEN = HOP_LENGTH * 2  # the initial convolutions has stride 2
 FRAMES_PER_SECOND = exact_div(SAMPLE_RATE, HOP_LENGTH)  # 10ms per audio frame
 TOKENS_PER_SECOND = exact_div(SAMPLE_RATE, N_SAMPLES_PER_TOKEN)  # 20ms per audio token
 
+def load_audio_basic(file_path):
+    """
+    Function to read a WAV file and return the audio data as a NumPy array of type float32.
+    
+    Parameters:
+        - file_path: str
+            - Path to the .WAV file.
+    
+    Returns:
+        - audio_data_np_array_float32: numpy.ndarray
+            - Audio data in NumPy array format with dtype=float32.
+        - nchannels: int
+            - Number of audio channels.
+        - sampling_rate: int
+            - Sampling rate of the audio file in Hz.
+
+    """
+    # Initialize Variables
+    audio_data_np_array_float32 = None
+    nchannels = 0
+    sampling_rate = 0
+
+    # Open and Read WAV File
+    with wave.open(file_path, 'r') as audio_file:
+        # Extract Audio Parameters
+        nchannels = audio_file.getnchannels()
+        sampling_rate = audio_file.getframerate()
+        
+        # Read Audio Data
+        audio_data = audio_file.readframes(-1)
+        
+        # Convert to NumPy Array and change dtype to float32
+        audio_data_np_array_float32 = np.frombuffer(audio_data, dtype=np.int16).astype(np.float32)
+
+    return audio_data_np_array_float32
 
 def load_audio(file: str, sr: int = SAMPLE_RATE):
     """
