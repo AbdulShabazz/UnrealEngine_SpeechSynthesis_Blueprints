@@ -212,3 +212,62 @@ along with the ability for it to be searched, indexed, scripted and compressed. 
     ]
 }
 ```
+### Prerequisites
+
+The Speech library requires the latest `python`, and `pip` frameworks, as well as the `ffmpeg` (audio), `torch` (math), `numpy` (math), `matplotlib`(charts), and `wave` (audio) python packages:
+
+```bash
+# Installing python: Option 1 (Windows)
+Download https://www.python.org/downloads/windows/
+
+# Installing python: Option 2 (Windows)
+Download https://chocolatey.org/install
+$ choco install python
+
+# Installing python: Option 3 (Windows)
+Download https://scoop.sh/
+$ scoop install python
+
+# Installing python: Option 4 (Windows)
+Download https://curl.se/windows/
+$ curl https://bootstrap.pypa.io/get-pip.py -o get-pip.py
+
+# Installing python (Linux):
+$ sudo apt-get update && sudo apt-get install python11.3
+```
+
+```bash
+# Installing pip: Option 1 (Windows)
+$ python -m pip install --upgrade pip
+
+# Installing pip: Option 2 (Windows)
+$ python get-pip.py
+
+# Installing pip: Option 3 (Windows)
+$ python -m ensurepip --upgrade
+
+# Installing pip: Option 4 (Windows)
+$ python -m pip install --upgrade pip setuptools wheel
+
+# Installing pip (Linux):
+$ sudo apt-get update && sudo apt-get install python-pip
+```
+
+```bash
+# Installing ffmpeg: Option 1 (Windows)
+$ pip install ffmpeg-python
+
+# Installing ffmpeg: Option 2 (Windows)
+$ choco install ffmpeg
+
+# Installing ffmpeg (Linux)
+$ sudo apt update && sudo apt install ffmpeg
+```
+
+```bash
+$ pip install torch
+$ pip install numpy
+$ pip install matplotlib
+$ pip install wave
+```
+
