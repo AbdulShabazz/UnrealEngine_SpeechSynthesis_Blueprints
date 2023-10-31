@@ -214,7 +214,7 @@ along with the ability for it to be searched, indexed, scripted and compressed. 
 ```
 ### Prerequisites
 
-The Speech library requires the latest `python`, and `pip` frameworks, as well as the `ffmpeg` (audio), `torch` (math), `numpy` (math), `matplotlib`(charts), and `wave` (audio) python packages:
+The Speech library requires the latest `python`, and the latest `pip` frameworks
 
 ```bash
 # Installing python: Option 1 (Windows)
@@ -252,22 +252,10 @@ $ python -m pip install --upgrade pip setuptools wheel
 # Installing pip (Linux):
 $ sudo apt-get update && sudo apt-get install python-pip
 ```
-
+As well as the latest `ffmpeg` (audio), `torch` (math), `numpy` (math), `matplotlib`(chart), and `wave` (audio) packages
 ```bash
-# Installing ffmpeg: Option 1 (Windows)
-$ pip install ffmpeg-python
+# Install ffmpeg numpy scipy matplotlib wave pydub torch torchaudio torchvision packages
+$ python.exe -m manage_3rd_party_python_packages.py
 
-# Installing ffmpeg: Option 2 (Windows)
-$ choco install ffmpeg
-
-# Installing ffmpeg (Linux)
-$ sudo apt update && sudo apt install ffmpeg
-```
-
-```bash
-$ pip install torch
-$ pip install numpy
-$ pip install matplotlib
-$ pip install wave
 ```
 
