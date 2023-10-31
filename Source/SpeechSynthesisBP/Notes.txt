@@ -4,5 +4,6 @@ TODO: Use a breath blueprint which can be used after 5s of speech to simulate a 
 
 Notes
 
-Manually adding blueprint macros toa project seems to break subsequent builds or else are ignored by the UE INI pkg compiler.
+Manually adding blueprint macros to a project seems to break subsequent C++ builds or are just ignored by the UE INI pkg compiler!
 Adding custom blueprints as C++ compenents in the UE event graph seems to work fine. Each blueprint class is then compiled as a separate implementation file.
+It appears verbals consonats and vowels carry the most information in speech. The library should be able to generate these sounds with a high degree of delineation.
