@@ -27,7 +27,7 @@ def manage_packages(action, packages):
             print(f"Failed to {action} {package}")
 
 if __name__ == "__main__":
-    packages = ["wave", "ffmpeg-python", "numpy", "scipy", "matplotlib", "pydub", "torch"]
+    packages = ["wave", "ffmpeg-python", "numpy", "scipy", "matplotlib", "pydub", "torch","torchaudio", "torchvision"]
     # manage_packages("install", packages)
     # manage_packages("uninstall", packages)
     # manage_packages("upgrade", packages)
