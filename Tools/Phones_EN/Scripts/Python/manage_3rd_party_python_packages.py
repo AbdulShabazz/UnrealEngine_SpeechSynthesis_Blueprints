@@ -28,6 +28,6 @@ def manage_packages(action, packages):
 
 if __name__ == "__main__":
     packages = ["wave", "ffmpeg-python", "numpy", "scipy", "matplotlib", "pydub", "torch"]
-   # manage_packages("install", packages)
+    # manage_packages("install", packages)
     # manage_packages("uninstall", packages)
     # manage_packages("upgrade", packages)
