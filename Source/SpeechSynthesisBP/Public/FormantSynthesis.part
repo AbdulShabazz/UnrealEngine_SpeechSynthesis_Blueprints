@@ -1,0 +1,114 @@
+/*
+ChatGPT Prompt:
+
+Provide a a C++20 for-loop having a range from t=0 to T, which generate 6 sinusoidals, F0 through F5, 
+having respective frequencies F0_Fundamental through F5_Formant and whose amplitude is determined by the following function:
+
+// Extract the current phone for timestep t
+const ARPABET ARPABET_F0_CURR = ARPABET_(timestep_uint32t t, ARPABET ARPABET_F0_CURR)
+.
+.
+.
+const ARPABET ARPABET_F5_CURR = ARPABET_(timestep_uint32t t, ARPABET ARPABET_F5_CURR)
+
+
+// Extract the current phone's amplitude for timestep t
+const uint32t F0_Amp_uint32 = F0_Amplitude(timestep_uint32t t, ARPABET_F0_CURR)
+.
+.
+.
+const uint32t F5_Amp_uint32 = F5_Amplitude(timestep_uint32t t, ARPABET_F5_CURR)
+*/
+
+#include <iostream>
+#include <cmath>
+#include <vector>
+#include <cstdint>
+
+// Enumeration for ARPABET phonemes (Sample, replace with actual ARPABET enum)
+enum class ARPABET {
+    AA,
+    AE,
+    AH,
+    // ... other phonemes
+};
+
+// Function to retrieve current ARPABET phoneme for each frequency component
+ARPABET ARPABET_(std::uint32_t t, ARPABET currentARPABET) {
+    // Your implementation here
+    return ARPABET::AA;  // Sample return, replace with actual implementation
+}
+
+// Function to retrieve amplitude for each frequency component
+std::uint32_t F0_Amplitude(std::uint32_t t, ARPABET ARPABET_F0_CURR) {
+    // Your implementation here
+    return 100;  // Sample return, replace with actual implementation
+}
+
+int main() {
+
+	// Similarly define F1_Amplitude through F5_Amplitude
+
+	// Constants for fundamental and formant frequencies (in Hz)
+	
+	const double F0_Fundamental = 100.0;
+	const double F1_Formant = 125.0;
+	const double F2_Formant = 150.0;
+	const double F3_Formant = 275.0;
+	const double F4_Formant = 300.0;
+	const double F5_Formant = 325.0;
+
+	// Time specifications
+
+	const double T = 1.0;  // Total time duration in seconds
+	const double dt = 0.001;  // Time step in seconds
+	
+	// Establish formant starting phonemes
+
+	ARPABET ARPABET_F0_CURR = ARPABET_(0, ARPABET::PHONEME[0](0));
+	ARPABET ARPABET_F1_CURR = ARPABET_(0, ARPABET::AA(0));
+	ARPABET ARPABET_F2_CURR = ARPABET_(0, ARPABET::AA(0));
+	ARPABET ARPABET_F3_CURR = ARPABET_(0, ARPABET::AA(0));
+	ARPABET ARPABET_F4_CURR = ARPABET_(0, ARPABET::AA(0));
+	ARPABET ARPABET_F5_CURR = ARPABET_(0, ARPABET::AA(0));
+	
+	// Establish formant starting amplitudes
+
+	std::uint32_t F0_Amp_uint32 = F0_Amplitude(0, ARPABET_F0_CURR);
+	std::uint32_t F1_Amp_uint32 = F1_Amplitude(0, ARPABET_F1_CURR);
+	std::uint32_t F2_Amp_uint32 = F2_Amplitude(0, ARPABET_F2_CURR);
+	std::uint32_t F3_Amp_uint32 = F3_Amplitude(0, ARPABET_F3_CURR);
+	std::uint32_t F4_Amp_uint32 = F4_Amplitude(0, ARPABET_F4_CURR);
+	std::uint32_t F5_Amp_uint32 = F5_Amplitude(0, ARPABET_F5_CURR);
+
+    // Iterating through time from t=0 to T
+    for (double t = 0; t <= T; t += dt) {
+
+        // Retrieve current ARPABET phoneme for each frequency component
+
+        ARPABET_F0_CURR = ARPABET_(static_cast<std::uint32_t>(t * 1000), ARPABET::AA);
+        ARPABET_F0_CURR = ARPABET_(static_cast<std::uint32_t>(t * 1000), ARPABET::AA);
+        ARPABET_F0_CURR = ARPABET_(static_cast<std::uint32_t>(t * 1000), ARPABET::AA);
+        ARPABET_F0_CURR = ARPABET_(static_cast<std::uint32_t>(t * 1000), ARPABET::AA);
+        ARPABET_F0_CURR = ARPABET_(static_cast<std::uint32_t>(t * 1000), ARPABET::AA);
+        ARPABET_F0_CURR = ARPABET_(static_cast<std::uint32_t>(t * 1000), ARPABET::AA);
+        
+        // Retrieve current amplitude for each frequency component
+
+        std::uint32_t F0_Amp_uint32 = F0_Amplitude(static_cast<std::uint32_t>(t * 1000), ARPABET_F0_CURR);
+
+        // Similarly retrieve F1_Amp_uint32 through F5_Amp_uint32
+        
+        // Generate sinusoidal signals for each frequency component
+        double F0 = F0_Amp_uint32 * std::sin(2 * M_PI * F0_Fundamental * t);
+        double F1 = F0_Amp_uint32 * std::sin(2 * M_PI * F1_Formant * t);
+        double F2 = F0_Amp_uint32 * std::sin(2 * M_PI * F2_Formant * t);
+        double F3 = F0_Amp_uint32 * std::sin(2 * M_PI * F3_Formant * t);
+        double F4 = F0_Amp_uint32 * std::sin(2 * M_PI * F4_Formant * t);
+        double F5 = F0_Amp_uint32 * std::sin(2 * M_PI * F5_Formant * t);
+        
+        // Optionally, you can store these sinusoidals in data structures or output them
+        // std::cout << "F0: " << F0 << ", F1: " << F1 << ", F2: " << F2 << ", F3: " << F3 << ", F4: " << F4 << ", F5: " << F5 << std::endl;
+    }
+    return 0;
+}
