@@ -1,0 +1,7 @@
+
+### Biometric Data Card
+
+Name:
+Age:
+Gender:
+Origins:
