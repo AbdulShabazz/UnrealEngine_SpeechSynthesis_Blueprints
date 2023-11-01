@@ -1,1 +1,2 @@
 TODO: Derive a custom blueprint class in Unreal Engine to expose C++ functionality to the editor.
+TODO: signal quarter-period synthesis may offer phone transition versatility and sound fidelity for overall better results than half-period synthesis.
