@@ -1,7 +1,4 @@
-
-### Biometric Data Card
-
-Name:
-Age:
-Gender:
-Origins:
+Name: Noah/Sofia
+Age: 
+Gender: 
+Country or Region of Origin: Denmark

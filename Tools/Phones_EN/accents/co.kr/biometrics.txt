@@ -1,7 +1,4 @@
-
-### Biometric Data Card
-
-Name:
-Age:
-Gender:
-Origins:
+Name: Min-Jun/Ji-Eun
+Age: 
+Gender: 
+Country or Region of Origin: South Korea

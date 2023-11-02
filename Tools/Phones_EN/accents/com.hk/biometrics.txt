@@ -1,7 +1,4 @@
-
-### Biometric Data Card
-
-Name:
-Age:
-Gender:
-Origins:
+Name: Chi/Mei
+Age: 
+Gender: 
+Country or Region of Origin: Hong Kong

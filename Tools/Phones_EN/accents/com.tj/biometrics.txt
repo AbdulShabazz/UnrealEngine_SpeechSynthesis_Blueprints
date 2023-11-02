@@ -1,7 +1,4 @@
-
-### Biometric Data Card
-
-Name:
-Age:
-Gender:
-Origins:
+Name: Muhammad/Farzona
+Age: 
+Gender: 
+Country or Region of Origin: Tajikistan

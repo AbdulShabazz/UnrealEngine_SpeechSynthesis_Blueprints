@@ -1,7 +1,4 @@
-
-### Biometric Data Card
-
-Name:
-Age:
-Gender:
-Origins:
+Name: Koffi/Afi
+Age: 
+Gender: 
+Country or Region of Origin: Togo

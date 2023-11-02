@@ -1,7 +1,4 @@
-
-### Biometric Data Card
-
-Name:
-Age:
-Gender:
-Origins:
+Name: Tinashe/Rutendo
+Age: 
+Gender: 
+Country or Region of Origin: Zimbabwe

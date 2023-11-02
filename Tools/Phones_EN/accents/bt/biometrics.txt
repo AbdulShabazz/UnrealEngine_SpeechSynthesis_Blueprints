@@ -1,7 +1,4 @@
-
-### Biometric Data Card
-
-Name:
-Age:
-Gender:
-Origins:
+Name: Tshering/Dema
+Age: 
+Gender: 
+Country or Region of Origin: Bhutan

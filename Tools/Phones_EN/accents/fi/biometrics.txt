@@ -1,7 +1,4 @@
-
-### Biometric Data Card
-
-Name:
-Age:
-Gender:
-Origins:
+Name: Juhani/Maria
+Age: 
+Gender: 
+Country or Region of Origin: Finland

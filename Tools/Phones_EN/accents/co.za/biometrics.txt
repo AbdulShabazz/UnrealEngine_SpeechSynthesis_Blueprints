@@ -1,7 +1,4 @@
-
-### Biometric Data Card
-
-Name:
-Age:
-Gender:
-Origins:
+Name: James/Jessica
+Age: 
+Gender: 
+Country or Region of Origin: South Africa

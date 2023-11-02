@@ -1,7 +1,4 @@
-
-### Biometric Data Card
-
-Name:
-Age:
-Gender:
-Origins:
+Name: Andreas/Maria
+Age: 
+Gender: 
+Country or Region of Origin: Cyprus

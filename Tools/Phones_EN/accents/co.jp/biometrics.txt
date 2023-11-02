@@ -1,7 +1,4 @@
-
-### Biometric Data Card
-
-Name:
-Age:
-Gender:
-Origins:
+Name: Hiroshi/Yuko
+Age: 
+Gender: 
+Country or Region of Origin: Japan

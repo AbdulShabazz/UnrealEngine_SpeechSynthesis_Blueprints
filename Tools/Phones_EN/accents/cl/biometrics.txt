@@ -1,7 +1,4 @@
-
-### Biometric Data Card
-
-Name:
-Age:
-Gender:
-Origins:
+Name: Benjamín/Martina
+Age: 
+Gender: 
+Country or Region of Origin: Chile

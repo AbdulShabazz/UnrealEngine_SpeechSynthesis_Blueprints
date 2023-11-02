@@ -1,7 +1,4 @@
-
-### Biometric Data Card
-
-Name:
-Age:
-Gender:
-Origins:
+Name: Ronald/Nicole
+Age: 
+Gender: 
+Country or Region of Origin: Saint Vincent and the Grenadines

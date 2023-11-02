@@ -1,7 +1,4 @@
-
-### Biometric Data Card
-
-Name:
-Age:
-Gender:
-Origins:
+Name: Guy/Marie
+Age: 
+Gender: 
+Country or Region of Origin: Congo

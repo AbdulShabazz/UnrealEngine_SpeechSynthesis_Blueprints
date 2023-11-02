@@ -1,7 +1,4 @@
-
-### Biometric Data Card
-
-Name:
-Age:
-Gender:
-Origins:
+Name: Daniel/Meron
+Age: 
+Gender: 
+Country or Region of Origin: Ethiopia

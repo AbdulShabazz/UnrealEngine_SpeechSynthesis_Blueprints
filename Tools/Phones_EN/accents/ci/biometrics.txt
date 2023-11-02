@@ -1,7 +1,4 @@
-
-### Biometric Data Card
-
-Name:
-Age:
-Gender:
-Origins:
+Name: Koffi/Aminata
+Age: 
+Gender: 
+Country or Region of Origin: Côte d'Ivoire

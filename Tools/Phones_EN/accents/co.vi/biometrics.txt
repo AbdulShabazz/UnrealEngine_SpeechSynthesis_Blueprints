@@ -1,7 +1,4 @@
-
-### Biometric Data Card
-
-Name:
-Age:
-Gender:
-Origins:
+Name: John/Lisa
+Age: 
+Gender: 
+Country or Region of Origin: Virgin Islands

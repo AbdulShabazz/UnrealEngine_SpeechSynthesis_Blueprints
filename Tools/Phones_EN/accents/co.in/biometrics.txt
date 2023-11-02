@@ -1,7 +1,4 @@
-
-### Biometric Data Card
-
-Name:
-Age:
-Gender:
-Origins:
+Name: Raj/Priya
+Age: 
+Gender: 
+Country or Region of Origin: India

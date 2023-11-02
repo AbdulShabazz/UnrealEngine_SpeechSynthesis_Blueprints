@@ -1,7 +1,4 @@
-
-### Biometric Data Card
-
-Name:
-Age:
-Gender:
-Origins:
+Name: Moussa/Aminata
+Age: 
+Gender: 
+Country or Region of Origin: Senegal

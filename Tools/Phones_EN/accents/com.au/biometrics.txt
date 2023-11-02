@@ -1,7 +1,4 @@
-
-### Biometric Data Card
-
-Name:
-Age:
-Gender:
-Origins:
+Name: Jack/Charlotte
+Age: 
+Gender: 
+Country or Region of Origin: Australia

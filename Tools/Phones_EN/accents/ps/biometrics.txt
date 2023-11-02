@@ -1,7 +1,4 @@
-
-### Biometric Data Card
-
-Name:
-Age:
-Gender:
-Origins:
+Name: Mohammed/Samah
+Age: 
+Gender: 
+Country or Region of Origin: State of Palestine
