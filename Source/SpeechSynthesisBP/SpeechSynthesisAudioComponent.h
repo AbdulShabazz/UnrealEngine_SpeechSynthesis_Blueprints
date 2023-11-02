@@ -425,9 +425,9 @@ class SPEECHSYNTHESISBP_API USpeechSynthesisAudioComponent : public UAudioCompon
 
 	// other > whisper > ARPABET UV >
 
-	/** Activates speech synthesis channel phoneme functionality 'H' ( _H_ow ) */
-	UFUNCTION(BlueprintCallable, Category = TextToSpeech, meta = ( keywords = "TTS, SpeechSynthesis, TextToSpeech", DisplayName = "ARPABETSpeechSynthesis: other > whisper > H ( _H_ow )" ))
-	void ARPABETSpeechSynthesis_H(
+	/** Activates speech synthesis channel phoneme functionality 'HH' ( _H_ow ) */
+	UFUNCTION(BlueprintCallable, Category = TextToSpeech, meta = ( keywords = "TTS, SpeechSynthesis, TextToSpeech", DisplayName = "ARPABETSpeechSynthesis: other > whisper > HH ( _H_ow )" ))
+	void ARPABETSpeechSynthesis_HH(
 		UPARAM(DisplayName = "Voices") const int Voices)
 	{
 
