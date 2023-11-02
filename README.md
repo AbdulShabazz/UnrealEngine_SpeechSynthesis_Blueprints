@@ -16,7 +16,9 @@ This is a multilingual open-source text-to-speech and speech-to-speech platform 
 <span>Schwa.Phoneme.(Formants).Synthesis.Curves</span>
 
 <img title='Hello World!' style='margin-top:24px;' alt='Hello World! (Blueprints)' src='IMG/Hello.World.5.BP.2023.PNG'/><br>
-<span>Hello World! UE Blueprint</span><br><br>
+<span>Hello World! UE Blueprint</span>
+
+<br><br>
 
 The library is made available under the Lesser General Public License LGPL version 3.0 -- see LICENSE.md for details.
 
@@ -154,7 +156,7 @@ public:
         {
             // Proceed with artificial speech synthesis: 'Hello World!'
            
-            SpeechLibrary.ARPABETSpeechSynthesis_H();
+            SpeechLibrary.ARPABETSpeechSynthesis_HH();
             SpeechLibrary.ARPABETSpeechSynthesis_EH();
             SpeechLibrary.ARPABETSpeechSynthesis_L();
             SpeechLibrary.ARPABETSpeechSynthesis_OW();
@@ -203,59 +205,11 @@ along with the ability for it to be searched, indexed, scripted and compressed. 
     "sampleWidth": 2,
     "sampleRate": 192000,
     "bitsPerSample": 32,
+    "byteCount": 16,
+    "checksum": 0x20,
     "data": [
-        [channel 1, channel 2, ..., N], // sub chunk 1
-        [channel 1, channel 2, ..., N], // sub chunk 2
-        .
-        .
-        .
+        [21/*HH*/, 13/*EH*/, 27/*l*/, 31/*OW*/, 42/*W*/, 17/*ER*/, 27/*L*/, 10/*D*/], // channel 1
+        [21/*HH*/, 13/*EH*/, 27/*l*/, 31/*OW*/, 42/*W*/, 17/*ER*/, 27/*L*/, 10/*D*/], // channel 2
     ]
 }
 ```
-### Prerequisites
-
-The Speech library requires the latest `python`, and the latest `pip` frameworks
-
-```bash
-# Installing python: Option 1 (Windows)
-Download https://www.python.org/downloads/windows/
-
-# Installing python: Option 2 (Windows)
-Download https://chocolatey.org/install
-$ choco install python
-
-# Installing python: Option 3 (Windows)
-Download https://scoop.sh/
-$ scoop install python
-
-# Installing python: Option 4 (Windows)
-Download https://curl.se/windows/
-$ curl https://bootstrap.pypa.io/get-pip.py -o get-pip.py
-
-# Installing python (Linux):
-$ sudo apt-get update && sudo apt-get install python11.3
-```
-
-```bash
-# Installing pip: Option 1 (Windows)
-$ python -m pip install --upgrade pip
-
-# Installing pip: Option 2 (Windows)
-$ python get-pip.py
-
-# Installing pip: Option 3 (Windows)
-$ python -m ensurepip --upgrade
-
-# Installing pip: Option 4 (Windows)
-$ python -m pip install --upgrade pip setuptools wheel
-
-# Installing pip (Linux):
-$ sudo apt-get update && sudo apt-get install python-pip
-```
-As well as the latest `ffmpeg` (audio), `torch` (math), `numpy` (math), `matplotlib`(chart), and `wave` (audio) packages
-```bash
-# Install ffmpeg numpy scipy matplotlib wave pydub torch torchaudio torchvision packages
-$ python.exe -m manage_3rd_party_python_packages.py
-
-```
-
