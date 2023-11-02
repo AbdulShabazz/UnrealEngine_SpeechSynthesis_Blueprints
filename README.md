@@ -104,7 +104,7 @@ CH (_Ch_urch)
 JH (_J_ump)  
   
 other > whisper > ARPABET UV >  
-H (_H_ow)  
+HH (_H_ow)  
   
 other > vocalic > ARPABET UV >  
 DX (Ri_dd_le)  
@@ -200,16 +200,31 @@ The library also institutes a custom open audio file format called **.voice** th
 along with the ability for it to be searched, indexed, scripted and compressed. Encoding is utf-8, little-endian.
 
 ```javascript
-{
-    "nChannels": N,
-    "sampleWidth": 2,
+{ // .Voice
+    "nChannels": 2,
+    "sampleWidth": 2, /* Stereo */
     "sampleRate": 192000,
     "bitsPerSample": 32,
     "byteCount": 16,
     "checksum": 0x20,
     "data": [
         [21/*HH*/, 13/*EH*/, 27/*l*/, 31/*OW*/, 42/*W*/, 17/*ER*/, 27/*L*/, 10/*D*/], // channel 1
-        [21/*HH*/, 13/*EH*/, 27/*l*/, 31/*OW*/, 42/*W*/, 17/*ER*/, 27/*L*/, 10/*D*/], // channel 2
+        [21/*HH*/, 13/*EH*/, 27/*l*/, 31/*OW*/, 42/*W*/, 17/*ER*/, 27/*L*/, 10/*D*/]  // channel 2
+    ]
+}
+
+{ // .VOICE
+    "nChannels": N,
+    "sampleWidth": 2, /* Stereo */
+    "sampleRate": 192000,
+    "bitsPerSample": 32,
+    "byteCount": 16,
+    "checksum": 0x20,
+    "data": [
+        [byte 0 (channel 1), byte 0 (channel 2), ... , (channel N], // subchunk 1
+        [byte 1 (channel 1), byte 1 (channel 2), ... , (channel N], // subchunk 2
+        .
+        .
     ]
 }
 ```
