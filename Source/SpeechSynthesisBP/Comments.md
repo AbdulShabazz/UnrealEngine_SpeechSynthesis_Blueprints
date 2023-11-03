@@ -1,6 +1,6 @@
-### Concatenative speech synthesis library implemented in Blueprints.
+### Concatenative speech synthesis text-to-speech (TTS) library implemented in Blueprints.
 
-Concatenative speech synthesis library, text-to-speech engine, and re-speecher voice-mapping library suitable for use in theatrical production, implemented in Blueprints and C++23 based on the MaryTTS repo for Unreal Engine 5.
+Concatenative speech synthesis library and re-speecher voice-mapping library suitable for use in theatrical production, implemented in Blueprints and C++23 based on the MaryTTS repo for Unreal Engine 5.
 
 This library expands the current state-of-the-art text-to-speech synthesis library in Unreal Engine 5, which is based on the Tacotron 2 voice model. 
 
@@ -14,7 +14,7 @@ and can support many other character performance aspects such as a whisper, non-
 the concatenative speech synthesis then generates the requisite (sine) signals for the entire duration of speech for all formants in parallel, including the fundamental, and then combines them with the aid of an Artificial Neural Network (ANN) which as a sort of DSP signal processor also incorporates other natural aspects and voice cues such as jitter and shimmer before combining the waveforms into a single output signal. 
 The concatenative speech synthesis library is implemented in Blueprints and C++23, and is intended for use in theatrical production.
 
-### Example:
+### Example: 
 
 ```cpp
 
@@ -57,7 +57,7 @@ public:
         {
             // Proceed with artificial speech synthesis: 'Hello World!'
            
-            SpeechLibrary.ARPABETSpeechSynthesis_H();
+            SpeechLibrary.ARPABETSpeechSynthesis_HH();
             SpeechLibrary.ARPABETSpeechSynthesis_EH();
             SpeechLibrary.ARPABETSpeechSynthesis_L();
             SpeechLibrary.ARPABETSpeechSynthesis_OW();
@@ -95,21 +95,35 @@ public:
 
 #endif
 ```
-### New Audio Format  
+### New Audio File Format
 
 The library also institutes a custom open audio file format called **.voice** that resembles JSON which allows the file to be created, viewed and edited in any text editor, 
 along with the ability for it to be searched, indexed, scripted and compressed. Encoding is utf-8, little-endian.
 
 ```javascript
-{
-    "nChannels": N,
-    "sampleWidth": 2,
+{ // .Voice
+    "nChannels": 2,
+    "sampleWidth": 2, /* Stereo */
     "sampleRate": 192000,
     "bitsPerSample": 32,
+    "byteCount": 16,
+    "checksum": 0x20,
     "data": [
-        [channel 1, channel 2, ..., N], // sub chunk 1
-        [channel 1, channel 2, ..., N], // sub chunk 2
-        .
+        [21/*HH*/, 13/*EH*/, 27/*l*/, 31/*OW*/, 42/*W*/, 17/*ER*/, 27/*L*/, 10/*D*/], // channel 1
+        [21/*HH*/, 13/*EH*/, 27/*l*/, 31/*OW*/, 42/*W*/, 17/*ER*/, 27/*L*/, 10/*D*/]  // channel 2
+    ]
+}
+
+{ // .VOICE
+    "nChannels": N,
+    "sampleWidth": 2, /* Stereo */
+    "sampleRate": 192000,
+    "bitsPerSample": 32,
+    "byteCount": 16,
+    "checksum": 0x20,
+    "data": [
+        [byte 0 (channel 1), byte 0 (channel 2), ... , (channel N], // subchunk 1
+        [byte 1 (channel 1), byte 1 (channel 2), ... , (channel N], // subchunk 2
         .
         .
     ]
