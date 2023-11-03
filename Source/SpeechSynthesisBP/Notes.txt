@@ -9,5 +9,5 @@ Adding custom blueprints as C++ compenents in the UE event graph seems to work f
 It appears verbals consonats and vowels carry the most information in speech. The library should be able to generate these sounds with a high degree of delineation.
 
 Circular convolution on a pair of finite length signals can be accomplished by performing a fast fourier transform on the signals, 
-multiplying them (in the Frequency domain), scaling them by the bit depth per sample (ie. the N bit dynamic range), 
+multiplying them (in the Frequency domain), scaling them by the bit-depth-per-sample (ie. the N bit dynamic range) to avoid clipping (lossy), 
 and then performing an inverse fourier transform on the signal.
