@@ -10,4 +10,7 @@ It appears verbals consonats and vowels carry the most information in speech. Th
 
 Circular convolution on a pair of finite length signals can be accomplished by performing a fast fourier transform on the signals, 
 multiplying them (in the Frequency domain), performing an inverse fourier transform on the signal, and then scaling them by the bit-depth-per-sample 
-(ie. the N bit dynamic range) to avoid clipping (lossy) .
+(ie. the N bit dynamic range) to avoid clipping (lossy).
+
+BitDepthPerSample = 16; Encodes 2^16 = 65536 possible amplitude values per sample.
+SampleRate = 44100; Encodes 44100 frequency values per sample per second. Nyquist frequency is 22050 Hz. (Human hearing range is 20 Hz to 20 kHz.)
