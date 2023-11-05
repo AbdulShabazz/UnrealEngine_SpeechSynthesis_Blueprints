@@ -2,6 +2,38 @@ TODO: Use Unreal Engine's reflection system to build the voice signal's fundamen
 TODO: Provide the library sine wave generator with a 10s decay envelope to simulate (human) lung capacity.
 TODO: Use a breath blueprint which can be used after 5s of speech to simulate a window for the speaker to take a breath.
 TODO: Use a noise generator to simulate the speaker's breath.
+TODO via ChatGPT-4:
+
+    To train a GAN to generate novel spectrograms for male voices, you would first need to collect a dataset of spectrograms of male voices speaking the word "Bob" with varying prosody, style, and emphasis. 
+    Once you have collected your dataset, you would then split it into two sets: a training set and a test set. 
+    The training set will be used to train the GAN model, and the test set will be used to evaluate the performance of the trained model.
+
+    Next, you would need to design the architecture of the GAN model. The generator model will typically consist of a neural network that is trained to take a random noise vector as input and produce a spectrogram as output. The discriminator model will also typically consist of a neural network, but it will be trained to take a spectrogram as input and produce a binary output indicating whether the spectrogram is real or generated.
+
+    Once you have designed the architecture of the GAN model, you would then need to train the model. This can be done using a variety of different training algorithms. 
+    One common training algorithm is the Adam algorithm.
+
+    Once the GAN model is trained, you can then use it to generate novel spectrograms for male voices. 
+    To do this, you would simply feed the generator model a random noise vector and the generator model will produce a spectrogram.
+
+    Here is a diagram that illustrates the training process of a GAN model:
+
+    [Diagram of GAN training]
+
+    The following are some of the advantages of using GANs to generate novel spectrograms for male voices:
+
+    * GANs can be used to generate spectrograms that are indistinguishable from real spectrograms. This means that GANs can be used to create synthetic voice datasets that are very realistic.
+    * GANs can be used to generate spectrograms with a wide variety of prosody, style, and emphasis. This means that GANs can be used to create synthetic voice datasets that are very diverse.
+    * GANs are relatively easy to train and can be trained on a variety of different hardware platforms.
+
+    Here are some of the disadvantages of using GANs to generate novel spectrograms for male voices:
+
+    * GANs can be computationally expensive to train.
+    * GANs can be difficult to train and may not always converge to a good solution.
+    * GANs can be sensitive to the training data and may generate spectrograms that are not realistic if the training data is not of high quality.
+
+    Overall, GANs are a powerful tool that can be used to generate novel spectrograms for male voices. 
+    However, it is important to be aware of the advantages and disadvantages of GANs before using them for this purpose.
 
 Notes
 
@@ -19,37 +51,6 @@ SampleRate = 44100; Encodes 44100 frequency values per sample per second. Nyquis
 If I intend to rely on Spectrograms for their realism versus signal formants because of their computational simplicity and ease of use, 
 I should consider using Generative Adversarial Networks (GANs) to generate the spectrograms from a set of training data.
 
-TODO via ChatGPT-4:
-
-To train a GAN to generate novel spectrograms for male voices, you would first need to collect a dataset of spectrograms of male voices speaking the word "Bob" with varying prosody, style, and emphasis. 
-Once you have collected your dataset, you would then split it into two sets: a training set and a test set. 
-The training set will be used to train the GAN model, and the test set will be used to evaluate the performance of the trained model.
-
-Next, you would need to design the architecture of the GAN model. The generator model will typically consist of a neural network that is trained to take a random noise vector as input and produce a spectrogram as output. The discriminator model will also typically consist of a neural network, but it will be trained to take a spectrogram as input and produce a binary output indicating whether the spectrogram is real or generated.
-
-Once you have designed the architecture of the GAN model, you would then need to train the model. This can be done using a variety of different training algorithms. 
-One common training algorithm is the Adam algorithm.
-
-Once the GAN model is trained, you can then use it to generate novel spectrograms for male voices. 
-To do this, you would simply feed the generator model a random noise vector and the generator model will produce a spectrogram.
-
-Here is a diagram that illustrates the training process of a GAN model:
-
-[Diagram of GAN training]
-
-The following are some of the advantages of using GANs to generate novel spectrograms for male voices:
-
-* GANs can be used to generate spectrograms that are indistinguishable from real spectrograms. This means that GANs can be used to create synthetic voice datasets that are very realistic.
-* GANs can be used to generate spectrograms with a wide variety of prosody, style, and emphasis. This means that GANs can be used to create synthetic voice datasets that are very diverse.
-* GANs are relatively easy to train and can be trained on a variety of different hardware platforms.
-
-Here are some of the disadvantages of using GANs to generate novel spectrograms for male voices:
-
-* GANs can be computationally expensive to train.
-* GANs can be difficult to train and may not always converge to a good solution.
-* GANs can be sensitive to the training data and may generate spectrograms that are not realistic if the training data is not of high quality.
-
-Overall, GANs are a powerful tool that can be used to generate novel spectrograms for male voices. 
-However, it is important to be aware of the advantages and disadvantages of GANs before using them for this purpose.
+Source Signal matching involves several components: amplitude, phase, frequency, wave-shape, duration, noise-type
 
 
