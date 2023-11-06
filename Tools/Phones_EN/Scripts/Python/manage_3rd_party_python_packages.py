@@ -27,9 +27,9 @@ def manage_packages(action, packages):
             print(f"Failed to {action} {package}")
 
 if __name__ == "__main__":
-    comment = """
+    boilerplate_comment = """
     If an Error occurs during installation,
-    you can try installing packages individually
+    you may try installing packages individually
 
    ``` bash
     # Installing ffmpeg: Option 1 (Windows)
@@ -51,6 +51,11 @@ if __name__ == "__main__":
     $ pip install torch
     $ pip install torchaudio
     $ pip install torchvision
+    ```
+
+    ```bash
+    Optional: Install librosa in lieu of torchaudio for audio processing
+    $ pip install librosa
     ```
     """
     packages = ["wave", "ffmpeg-python", "numpy", "scipy", "matplotlib", "pydub", "torch","torchaudio", "torchvision"]
