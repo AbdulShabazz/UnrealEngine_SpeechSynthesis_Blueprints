@@ -2,6 +2,7 @@ TODO: Use Unreal Engine's reflection system to build the voice signal's fundamen
 TODO: Provide the library sine wave generator with a 10s decay envelope to simulate (human) lung capacity.
 TODO: Use a breath blueprint which can be used after 5s of speech to simulate a window for the speaker to take a breath.
 TODO: Use a noise generator to simulate the speaker's breath.
+
 TODO via ChatGPT-4:
 
     To train a GAN to generate novel spectrograms for male voices, you would first need to collect a dataset of spectrograms of male voices speaking the word "Bob" with varying prosody, style, and emphasis. 
@@ -74,6 +75,8 @@ TODO via ChatGPT-4:
     In summary, the spectrogram format selection is dependent on the specific application requirements. For accurate audio recovery and generation, 
     complex spectrograms or linear-frequency spectrograms with magnitude and phase information are recommended. For applications in machine learning and audio classification where human perception is more relevant, 
     Mel spectrograms or log-Mel spectrograms may be preferred, with the trade-off of reconstruction fidelity.
+
+TODO: Attack Decay Sustain Release (ADSR) envelope for each phone.
 
 Notes
 
