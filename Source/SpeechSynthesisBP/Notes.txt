@@ -96,4 +96,30 @@ I should consider using Generative Adversarial Networks (GANs) to generate the s
 
 Source Signal matching involves several components: amplitude, phase, frequency, wave-shape, duration, noise-type
 
+sin approximation (performance)
+
+```cpp
+    float approximate_sin_f(const float x)
+    {
+        // Calculate 2 PI inverse (once)
+        const float inverse_2pi_ConstFloat32 = 1 / 2 * PI;
+
+        // Calculate t_step_float32 
+        float t_step_float32 = x * inverse_2pi_ConstFloat32;
+
+        // Wrap t_step_float32 to fit [0, 1]
+        t_step_float32 = t_step_float32 - static_cast<int>(t_step_float32);
+
+        // Calculate sin(x) using a quadratic approximation cf. square wave (eg. pipe organ)
+        return (t_step_float32 < 0.5f) ? 
+        -16 * t_step_float32 * t_step_float32 + 8 * t_step_float32 :    // positive half
+            16 * t_step_float32 * t_step_float32 - 8 * t_step_float32 + 8; // negative half
+
+        // Calculate sin(x) using a cubic approximation cf. sawtooth (eg. flutish)
+        /*
+        return 20.785f * (t_step_float32  - 0.0f) * (t_step_float32  - 0.5f) * (t_step_float32  - 1.0f);
+        */
+    }
+```
+
 
