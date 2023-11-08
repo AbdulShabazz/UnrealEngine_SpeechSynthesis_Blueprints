@@ -1,2 +1,82 @@
 TODO: Derive a custom blueprint class in Unreal Engine to expose C++ functionality to the editor.
 TODO: signal quarter-period synthesis may offer phone transition versatility and sound fidelity for overall better results than half-period synthesis.
+TODO: Use std::vector<FTTSVoice::Sara::FFormants> in Unreal Engine to build the voice signal's fundamental- and formant-frequencies.
+TODO: Provide the library sine wave generator with a 10s decay envelope to simulate (human) lung capacity.
+TODO: Use a breath blueprint which can be used after 5s of speech to simulate a window for the speaker to take a breath.
+TODO: Include noise generator[s] to simulate (eg. the speaker's breath).
+TODO: Allow the user to customize the voice signal's fundamental- and formant-frequencies, as well as Picth, Speaking Speed, and Volume.
+
+TODO via ChatGPT-4:
+
+    To train a GAN to generate novel spectrograms for male voices, you would first need to collect a dataset of spectrograms of male voices speaking the word "Bob" with varying prosody, style, and emphasis. 
+    Once you have collected your dataset, you would then split it into two sets: a training set and a test set. 
+    The training set will be used to train the GAN model, and the test set will be used to evaluate the performance of the trained model.
+
+    Next, you would need to design the architecture of the GAN model. The generator model will typically consist of a neural network that is trained to take a random noise vector as input and produce a spectrogram as output. The discriminator model will also typically consist of a neural network, but it will be trained to take a spectrogram as input and produce a binary output indicating whether the spectrogram is real or generated.
+
+    Once you have designed the architecture of the GAN model, you would then need to train the model. This can be done using a variety of different training algorithms. 
+    One common training algorithm is the Adam algorithm.
+
+    Once the GAN model is trained, you can then use it to generate novel spectrograms for male voices. 
+    To do this, you would simply feed the generator model a random noise vector and the generator model will produce a spectrogram.
+
+    Here is a diagram that illustrates the training process of a GAN model:
+
+    [Diagram of GAN training]
+
+    The following are some of the advantages of using GANs to generate novel spectrograms for male voices:
+
+    * GANs can be used to generate spectrograms that are indistinguishable from real spectrograms. This means that GANs can be used to create synthetic voice datasets that are very realistic.
+    * GANs can be used to generate spectrograms with a wide variety of prosody, style, and emphasis. This means that GANs can be used to create synthetic voice datasets that are very diverse.
+    * GANs are relatively easy to train and can be trained on a variety of different hardware platforms.
+
+    Here are some of the disadvantages of using GANs to generate novel spectrograms for male voices:
+
+    * GANs can be computationally expensive to train.
+    * GANs can be difficult to train and may not always converge to a good solution.
+    * GANs can be sensitive to the training data and may generate spectrograms that are not realistic if the training data is not of high quality.
+
+    Overall, GANs are a powerful tool that can be used to generate novel spectrograms for male voices. 
+    However, it is important to be aware of the advantages and disadvantages of GANs before using them for this purpose.
+
+TODO via ChatGPT-4:
+
+    For audio file recovery and generation, the most suitable spectrogram format would ideally preserve as much information as possible from the original signal, 
+    particularly the phase information which is crucial for an accurate reconstruction. The following spectrogram formats can be considered, each with their advantages and limitations:
+
+    1. **Linear-Frequency Spectrogram (Magnitude and Phase)**:
+    - This format uses the Short-Time Fourier Transform (STFT) to create a two-dimensional representation of the signal where the frequency bins are linearly spaced.
+    - It preserves both magnitude and phase information, enabling more accurate reconstruction of the original signal.
+    - However, it is less compact than Mel spectrograms and less aligned with human auditory perception.
+
+    2. **Complex Spectrogram**:
+    - The complex spectrogram is the output of the STFT before any magnitude or phase extraction and includes both information intrinsically.
+    - It provides the most complete representation of the signal and allows for the best audio recovery since it retains all the original information that can be captured by the STFT.
+    - This format is ideal for perfect reconstruction if the exact inverse process is applied.
+
+    3. **Mel Spectrogram**:
+    - A Mel spectrogram represents the power spectrum of a sound mapped onto the Mel scale, which is a perceptual scale of pitches judged by listeners to be equal in distance from one another.
+    - It is not suitable for perfect reconstruction due to the lossy conversion process, which includes warping the frequency scale and often discarding phase information.
+    - Mel spectrograms are more commonly used for machine learning applications where human-like perception is more important than reconstruction fidelity.
+
+    4. **Log-Mel Spectrogram**:
+    - This format takes the Mel spectrogram and applies a logarithmic scaling to the amplitude.
+    - Like the Mel spectrogram, it is even less suited to reconstruction due to the additional logarithmic transformation, but it is highly useful in audio classification tasks.
+
+    5. **Constant-Q Transform (CQT) Spectrogram**:
+    - The CQT is a time-frequency representation where the frequency bins are geometrically spaced based on a logarithmic division of the octave.
+    - This gives a more musically-informed representation, particularly useful for tasks like music analysis.
+    - While not as lossy as the Mel spectrogram, it still presents challenges for reconstruction due to its logarithmic nature.
+
+    6. **Gammatone Spectrogram**:
+    - It mimics the human auditory system even more closely than the Mel scale by using a bank of Gammatone filters, which are modeled after the human cochlea.
+    - It is primarily used in psychoacoustic research and speech processing but is not typically used for reconstruction due to its complex and lossy representation.
+
+    For the most accurate audio file recovery and generation, the best choice is the complex spectrogram since it retains the complete information from the original audio signal, including both magnitude and phase. 
+    The complex spectrogram can be directly inverted using the inverse STFT (ISTFT) to perfectly reconstruct the original signal, given that no information is discarded during processing.
+
+    In summary, the spectrogram format selection is dependent on the specific application requirements. For accurate audio recovery and generation, 
+    complex spectrograms or linear-frequency spectrograms with magnitude and phase information are recommended. For applications in machine learning and audio classification where human perception is more relevant, 
+    Mel spectrograms or log-Mel spectrograms may be preferred, with the trade-off of reconstruction fidelity.
+
+TODO: Attack Decay Sustain Release (ADSR) envelope for each phone.
