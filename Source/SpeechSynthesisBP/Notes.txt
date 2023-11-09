@@ -31,7 +31,7 @@ sin approximation (performance)
         // Calculate sin(x) using a quadratic approximation cf. square wave (eg. pipe organ)
         return (t_step_float32 < 0.5f) ? 
         -16 * t_step_float32 * t_step_float32 + 8 * t_step_float32 :    // positive half
-            16 * t_step_float32 * t_step_float32 - 8 * t_step_float32 + 8; // negative half
+         16 * t_step_float32 * t_step_float32 - 8 * t_step_float32 + 8; // negative half
 
         // Calculate sin(x) using a cubic approximation cf. sawtooth (eg. flutish)
         /*
@@ -42,3 +42,16 @@ sin approximation (performance)
 
 Consider convolutin a weighted moving average or smoothing filter (cf. statistics).
 
+The allotment of energy for a given amplitude during speech does not change, the apportionments are reaportioned for each proceeding phone
+
+Sonic Visualizer preferred settings:
+    COLOR: Sunset
+    SCALE: dB
+    NORMALIZATION: Col
+    WINDOW: 1024
+    WINDOW OVERLAP: None
+    OVERSAMPLE: 1x
+    BINS: Frequencies
+    FREQUENCY SCALE: Log
+
+Wave-Shaper: Desmos Graphing Calculator (https://www.desmos.com/calculator)
