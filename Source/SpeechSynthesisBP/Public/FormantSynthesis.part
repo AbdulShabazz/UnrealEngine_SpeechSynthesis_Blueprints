@@ -1,4 +1,100 @@
 /*
+ChatGPT-4 Prompt: Provide a C++23 class and or framework to support the following code, 
+
+```cpp
+
+    // Iterate t through time by dt from [0,T]
+    for (uint64_t timestep_uint32t = 0; timestep_uint32t <= T; timestep_uint32t += dt) {
+
+        int64_t r_at_current_timestep_int64 {};
+
+        // Iterate r_formant_obj through formants from [F0,R]
+        for (int64_t& r_formant_obj : R) {
+            r_at_current_timestep_int64 += r_formant_obj.build_sample_int64t(); // r_formant_obj.get_amplitude_int64t() * r_formant_obj.get_sample_int64t();
+        } 
+        
+        current_phone_sample_at_timestep_dt_int64t.emplace_back(r_at_current_timestep_int64 ); }
+```
+*/
+
+#include <cstdint>
+#include <vector>
+#include <algorithm>
+
+class Formant {
+public:
+    // Assuming both amplitude and sample can be represented by an int64_t type
+    int64_t amplitude;
+    int64_t sample;
+
+    Formant(int64_t amplitude, int64_t sample) : amplitude(amplitude), sample(sample) {}
+
+    // The function build_sample_int64t() would combine amplitude and sample
+    // to build a formant sample for the current timestep. The actual implementation
+    // will depend on the specific application.
+    int64_t build_sample_int64t() const {
+        // Placeholder for actual sample building logic.
+        return amplitude * sample;
+    }
+
+    // Getter for amplitude (could potentially include further logic)
+    int64_t get_amplitude_int64t() const {
+        return amplitude;
+    }
+
+    // Getter for sample (could potentially include further logic)
+    int64_t get_sample_int64t() const {
+        return sample;
+    }
+};
+
+class TimeFormantProcessor {
+private:
+    std::vector<Formant> formants;
+    uint64_t T;  // Total time range
+    uint64_t dt; // Time step increment
+
+public:
+    // Constructor initializing the processor with the given formants and time range
+    TimeFormantProcessor(const std::vector<Formant>& formants, uint64_t T, uint64_t dt)
+        : formants(formants), T(T), dt(dt) {}
+
+    // Process all formants over the time range and return a vector of computed samples
+    std::vector<int64_t> process() {
+        std::vector<int64_t> samples;
+
+        for (uint64_t timestep_uint32t = 0; timestep_uint32t <= T; timestep_uint32t += dt) {
+            int64_t r_at_current_timestep_int64 = 0;
+
+            for (Formant& r_formant_obj : formants) {
+                r_at_current_timestep_int64 += r_formant_obj.build_sample_int64t();
+            }
+
+            samples.emplace_back(r_at_current_timestep_int64);
+        }
+
+        return samples;
+    }
+};
+
+// Example usage
+int main() {
+    // Initialization of formants and the TimeFormantProcessor would go here.
+    // Assuming formants are initialized with specific amplitude and sample values.
+    std::vector<Formant> R = {/* ... formants initialization ... */};
+    uint64_t T = 1000; // Total time
+    uint64_t dt = 10;  // Time step increment
+
+    TimeFormantProcessor processor(R, T, dt);
+    std::vector<int64_t> samples = processor.process();
+
+    // Further processing of 'samples' can be done here.
+    
+    return 0;
+}
+
+
+/*
 ChatGPT Prompt:
 
 Provide a a C++20 for-loop having a range from t=0 to T, which generate 6 sinusoidals, F0 through F5, 
@@ -45,19 +141,21 @@ std::uint32_t F0_Amplitude(std::uint32_t t, ARPABET ARPABET_F0_CURR) {
     return 100;  // Sample return, replace with actual implementation
 }
 
+//
+
 int main() {
 
 	// Similarly define F1_Amplitude through F5_Amplitude
 
 	// Constants for fundamental and formant frequencies (in Hz)
-	
+/*
 	const double F0_Fundamental = 100.0;
 	const double F1_Formant = 125.0;
 	const double F2_Formant = 150.0;
 	const double F3_Formant = 275.0;
 	const double F4_Formant = 300.0;
 	const double F5_Formant = 325.0;
-
+*/
 	// Time specifications
 
 	const double T = 1.0;  // Total time duration in seconds
@@ -65,7 +163,9 @@ int main() {
 	
 	// Establish formant starting phonemes
 
-	ARPABET ARPABET_F0_CURR = ARPABET_(0, ARPABET::PHONEME[0](0));
+	std::vector<UTTSVoice::Sara::PHONE_CHAIN_VEC()> phone_at_current_timepstep_APRPABETVec{};
+    
+    F0_CURR = ARPABET_(0, ARPABET::PHONEME[0](0));
 	ARPABET ARPABET_F1_CURR = ARPABET_(0, ARPABET::AA(0));
 	ARPABET ARPABET_F2_CURR = ARPABET_(0, ARPABET::AA(0));
 	ARPABET ARPABET_F3_CURR = ARPABET_(0, ARPABET::AA(0));
@@ -81,9 +181,17 @@ int main() {
 	std::uint32_t F4_Amp_uint32 = F4_Amplitude(0, ARPABET_F4_CURR);
 	std::uint32_t F5_Amp_uint32 = F5_Amplitude(0, ARPABET_F5_CURR);
 
-    // Iterating through time from t=0 to T
-    for (double t = 0; t <= T; t += dt) {
+    // Iterate t through time by dt from [0,T]
+    for (uint64_t timestep_uint32t = 0; timestep_uint32t <= T; timestep_uint32t += dt) {
 
+        int64_t r_at_current_timestep_int64 {};
+
+        // Iterate r_formant_obj through formants from [F0,R]
+        for (int64_t& r_formant_obj : R) {
+            r_at_current_timestep_int64 += r_formant_obj.build_sample_int64t(); // r_formant_obj.get_amplitude_int64t() * r_formant_obj.get_sample_int64t();
+        }
+
+        phone_at_current_timepstep_APRPABETVec.emplace_back(r_at_current_timestep_int64)
         // Retrieve current ARPABET phoneme for each frequency component
 
         ARPABET_F0_CURR = ARPABET_(static_cast<std::uint32_t>(t * 1000), ARPABET::AA);
