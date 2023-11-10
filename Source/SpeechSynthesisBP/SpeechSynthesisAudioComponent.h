@@ -29,25 +29,29 @@ class SPEECHSYNTHESISBP_API USpeechSynthesisAudioComponent : public UAudioCompon
 
 	/** Activates speech synthesis channel functionality: SetVoices */
 	UFUNCTION(BlueprintCallable, Category = TextToSpeech, meta = ( keywords = "TTS, SpeechSynthesis, TextToSpeech", DisplayName = "ARPABETSpeechSynthesis: SetVoices" ))
-	int SetVoices(UPARAM(DisplayName = "Voices") const int Voices) {
+	int SetVoices(UPARAM(DisplayName = "Voices") const int Voices) 
+	{
 		return 0;
 	}
 
 	/** Activates speech synthesis channel functionality: SetChannelCount */
 	UFUNCTION(BlueprintCallable, Category = TextToSpeech, meta = ( keywords = "TTS, SpeechSynthesis, TextToSpeech", DisplayName = "ARPABETSpeechSynthesis: SetChannelCount" ))
-	int SetChannelCount(UPARAM(DisplayName = "ChannelCount (eg. 2)") const int inVal) {
+	int SetChannelCount(UPARAM(DisplayName = "ChannelCount (eg. 2)") const int inVal) 
+	{
 		return 0;
 	}
 
 	/** Activates speech synthesis channel functionality: SetSampleWidth */
 	UFUNCTION(BlueprintCallable, Category = TextToSpeech, meta = ( keywords = "TTS, SpeechSynthesis, TextToSpeech", DisplayName = "ARPABETSpeechSynthesis: SetSampleWidth" ))
-	int SetSampleWidth(UPARAM(DisplayName = "SampleWidth (eg. 2)") const int inVal) {
+	int SetSampleWidth(UPARAM(DisplayName = "SampleWidth (eg. 2)") const int inVal) 
+	{
 		return 0;
 	}
 
 	/** Activates speech synthesis channel functionality: SetFrameRate */
 	UFUNCTION(BlueprintCallable, Category = TextToSpeech, meta = ( keywords = "TTS, SpeechSynthesis, TextToSpeech", DisplayName = "ARPABETSpeechSynthesis: SetFrameRate" ))
-	int SetFrameRate(UPARAM(DisplayName = "FrameRate (eg. 44100)") const int inVal) {
+	int SetFrameRate(UPARAM(DisplayName = "FrameRate (eg. 44100)") const int inVal) 
+	{
 		return 0;
 	}
 
@@ -450,16 +454,40 @@ class SPEECHSYNTHESISBP_API USpeechSynthesisAudioComponent : public UAudioCompon
 	void ARPABETSpeechSynthesis_Q(
 		UPARAM(DisplayName = "Voices") const int Voices)
 	{
-
+		speech_packets_TArrayUInt8.Push();
 	};
 
 	// Setup and Activation APIs
 
 	/** Activates speech synthesis channel functionality 'Voice' */
 	UFUNCTION(BlueprintCallable, Category = TextToSpeech, meta = ( keywords = "TTS, SpeechSynthesis, TextToSpeech, Voice", DisplayName = "ARPABETSpeechSynthesis: Voice [compile]" ))
-	int Voice()
+	int /*ARPABETAudio*/ Voice()
 	{
-		return 0;
+		if (speech_packets_TArrayUInt8.Num() < 1)
+			return 0;
+
+		bool transition_flag = false;
+
+		do
+		{
+			uint8_t current_phone_uint8_t = speech_packets_TArrayUInt8.Last();
+			speech_packets_TArrayUInt8.Pop();
+
+			// We are either generating a phone or a phone-transition packet
+			if (!transition_flag)
+			{
+				// generate a new phone packet
+
+				transition_flag = true;
+			}
+			else
+			{
+
+				transition_flag = false;
+			}
+		} while (speech_packets_TArrayUInt8.Num());
+
+		return 1;
 	};
 
 	/** Activates speech synthesis channel functionality 'Init' */
@@ -474,6 +502,8 @@ class SPEECHSYNTHESISBP_API USpeechSynthesisAudioComponent : public UAudioCompon
 	};
 
 private:
+
+	TArray<uint8_t> speech_packets_TArrayUInt8{};
 
 	//UPROPERTY()
 	VoiceArray voices_FTTSVoiceArray{};
