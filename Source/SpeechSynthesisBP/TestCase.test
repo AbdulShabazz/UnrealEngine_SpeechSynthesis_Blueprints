@@ -9,18 +9,18 @@ public:
 
     main() {
         UTTSVoice Sara = UTTSVoice::Sara();
-        Sara.SetAmplitude(6.00f); // ~60db (0.00f to 12.00f); 6.00f is considered a normal speaking voice; 3.00f is considered a whisper.
+        Sara.SetAmplitude(6.00f); // ~60db SPL (0.00f to 12.00f); 6.00f is considered a normal speaking voice; 3.00f is considered a whisper.
 
         // Initialize SpeechLibrary with typed and named variables
 
-        const VoiceArray voices_FTTVoiceArray = { Sara };  // Only one voice chorus for simplicity
+        const VoiceArray voices_UTTSVoiceArray = { Sara };  // Only one voice chorus for simplicity
         const ChannelCount channel_count_uint32 = 2;
         const SampleWidth sample_width_uint32 = 2;
         const FrameRate frame_rate_hz_uint32 = 44100;  // Standard audio frame rate
 
         USpeechSynthesisBPLibrary SpeechLibrary;
 
-        SpeechLibrary.SetVoices(voices_FTTVoiceArray);
+        SpeechLibrary.SetVoices(voices_UTTSVoiceArray);
         SpeechLibrary.SetChannelCount(channel_count_uint32);
         SpeechLibrary.SetSampleWidth(sample_width_uint32);
         SpeechLibrary.SetFrameRate(frame_rate_hz_uint32);
@@ -37,7 +37,7 @@ public:
         {
             // Proceed with artificial speech synthesis: 'Hello World!'
            
-            SpeechLibrary.ARPABETSpeechSynthesis_H();
+            SpeechLibrary.ARPABETSpeechSynthesis_HH();
             SpeechLibrary.ARPABETSpeechSynthesis_EH();
             SpeechLibrary.ARPABETSpeechSynthesis_L();
             SpeechLibrary.ARPABETSpeechSynthesis_OW();
@@ -56,6 +56,7 @@ public:
 
             Voice.toWAVFile("Sara.wav");   // lossless (Windows)
             Voice.toFLACFile("Sara.flac");  // lossless (Linux, MAC)
+            Voice.toVOICEFile("Sara.voice");  // lossless 
             Voice.toMP3File("Sara.mp3");   // lossy 
             Voice.toAACFile("Sara.aac");   // lossy
 
