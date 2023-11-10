@@ -4,7 +4,7 @@ ChatGPT-4 Prompt: Provide a C++23 class and or framework to support the followin
 ```cpp
 
     // Iterate t through time by dt from [0,T]
-    for (uint64_t timestep_uint32t = 0; timestep_uint32t <= T; timestep_uint32t += dt) {
+    for (int64_t timestep_uint64t = 0; timestep_uint64t <= T; timestep_uint64t += dt) {
 
         int64_t r_at_current_timestep_int64 {};
 
@@ -48,7 +48,7 @@ public:
     }
 };
 
-class TimeFormantProcessor {
+class Phone {
 private:
     std::vector<Formant> formants;
     uint64_t T;  // Total time range
@@ -56,15 +56,15 @@ private:
 
 public:
     // Constructor initializing the processor with the given formants and time range
-    TimeFormantProcessor(const std::vector<Formant>& formants, uint64_t T, uint64_t dt)
+    Phone(const std::vector<Formant>& formants, uint64_t T, uint64_t dt)
         : formants(formants), T(T), dt(dt) {}
 
     // Process all formants over the time range and return a vector of computed samples
-    std::vector<int64_t> process() {
+    std::vector<int64_t> process_samples() {
         std::vector<int64_t> samples;
 
-        for (uint64_t timestep_uint32t = 0; timestep_uint32t <= T; timestep_uint32t += dt) {
-            int64_t r_at_current_timestep_int64 = 0;
+        for (uint64_t timestep_uint64t = 0; timestep_uint64t <= T; timestep_uint64t += dt) {
+            int64_t r_at_current_timestep_int64 {};
 
             for (Formant& r_formant_obj : formants) {
                 r_at_current_timestep_int64 += r_formant_obj.build_sample_int64t();
@@ -79,16 +79,14 @@ public:
 
 // Example usage
 int main() {
-    // Initialization of formants and the TimeFormantProcessor would go here.
+    // Initialization of formants and the Phone would go here.
     // Assuming formants are initialized with specific amplitude and sample values.
     std::vector<Formant> R = {/* ... formants initialization ... */};
     uint64_t T = 1000; // Total time
     uint64_t dt = 10;  // Time step increment
 
-    TimeFormantProcessor processor(R, T, dt);
-    std::vector<int64_t> samples = processor.process();
-
-    // Further processing of 'samples' can be done here.
+    Phone phone_EN_HH(R, T, dt);
+    std::vector<int64_t> samples = phone_EN_HH.process_samples();
     
     return 0;
 }
@@ -101,19 +99,19 @@ Provide a a C++20 for-loop having a range from t=0 to T, which generate 6 sinuso
 having respective frequencies F0_Fundamental through F5_Formant and whose amplitude is determined by the following function:
 
 // Extract the current phone for timestep t
-const ARPABET ARPABET_F0_CURR = ARPABET_(timestep_uint32t t, ARPABET ARPABET_F0_CURR)
+const ARPABET ARPABET_F0_CURR = ARPABET_(timestep_uint64t t, ARPABET ARPABET_F0_CURR)
 .
 .
 .
-const ARPABET ARPABET_F5_CURR = ARPABET_(timestep_uint32t t, ARPABET ARPABET_F5_CURR)
+const ARPABET ARPABET_F5_CURR = ARPABET_(timestep_uint64t t, ARPABET ARPABET_F5_CURR)
 
 
 // Extract the current phone's amplitude for timestep t
-const uint32t F0_Amp_uint32 = F0_Amplitude(timestep_uint32t t, ARPABET_F0_CURR)
+const uint64t F0_Amp_uint32 = F0_Amplitude(timestep_uint64t t, ARPABET_F0_CURR)
 .
 .
 .
-const uint32t F5_Amp_uint32 = F5_Amplitude(timestep_uint32t t, ARPABET_F5_CURR)
+const uint64t F5_Amp_uint32 = F5_Amplitude(timestep_uint64t t, ARPABET_F5_CURR)
 */
 
 #include <iostream>
@@ -182,7 +180,7 @@ int main() {
 	std::uint32_t F5_Amp_uint32 = F5_Amplitude(0, ARPABET_F5_CURR);
 
     // Iterate t through time by dt from [0,T]
-    for (uint64_t timestep_uint32t = 0; timestep_uint32t <= T; timestep_uint32t += dt) {
+    for (uint64_t timestep_uint64t = 0; timestep_uint64t <= T; timestep_uint64t += dt) {
 
         int64_t r_at_current_timestep_int64 {};
 
