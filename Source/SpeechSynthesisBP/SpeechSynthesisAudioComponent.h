@@ -520,12 +520,12 @@ class SPEECHSYNTHESISBP_API USpeechSynthesisAudioComponent : public UAudioCompon
 		for (const auto& nextPhone : speechSample_VecFPhone) {
 			currentPhone.setState(nextPhone.cloneState()); 
 			currentPhone.handle();
-			speechSample_VecFloat32.push_back(currentPhone.getSampleFloat32());
+			speechSample_TensorFloat32.push_back(currentPhone.getSampleFloat32());
 		}
 
 		// Finalize the last phone
 		currentPhone.handle();
-		speechSample_VecFloat32.push_back(currentPhone.getSampleFloat32());
+		speechSample_TensorFloat32.push_back(currentPhone.getSampleFloat32());
 		*/
 		return 1;
 	};
@@ -544,7 +544,7 @@ class SPEECHSYNTHESISBP_API USpeechSynthesisAudioComponent : public UAudioCompon
 private:
 
 	TArray<FPhone> speechSample_VecFPhone{}; 
-	TArray<FPhone> speechSample_VecFloat32{};
+	TArray<float> speechSample_TensorFloat32{};
 
 	FPhone currentPhone{};
 
