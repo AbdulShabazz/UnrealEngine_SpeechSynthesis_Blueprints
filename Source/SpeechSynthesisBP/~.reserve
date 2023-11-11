@@ -1,5 +1,59 @@
 //
 
+	/** Activates speech synthesis channel phoneme functionality 'Q' ( _Q_uestion ) */
+	UFUNCTION(BlueprintCallable, Category = TextToSpeech, meta = ( keywords = "TTS, SpeechSynthesis, TextToSpeech", DisplayName = "ARPABETSpeechSynthesis: other > pause or glottal_stop > Q ( _Q_uestion )" ))
+	void ARPABETSpeechSynthesis_Q(
+		UPARAM(DisplayName = "Voices") const int Voices)
+	{
+		if (speech_packets_TArrayUInt8.Num() < 1)
+			speech_packets_TArrayUInt8.Push(ARPABETPhone::Q_Base());
+		else if (current_phone && ( current_phone != ARPABETPhone::Q_Base() ))
+		{
+			// include a transition packet
+			speech_packets_TArrayUInt8.Push(ARPABETPhone::Q_Base());
+			speech_packets_TArrayUInt8.Push(ARPABETPhone::Q_Base());
+		}
+		else
+		{
+			speech_packets_TArrayUInt8.Push(ARPABETPhone::Q_Base());
+		}
+	};
+
+	// Setup and Activation APIs
+
+	/** Activates speech synthesis channel functionality 'Voice' */
+	UFUNCTION(BlueprintCallable, Category = TextToSpeech, meta = ( keywords = "TTS, SpeechSynthesis, TextToSpeech, Voice", DisplayName = "ARPABETSpeechSynthesis: Voice [compile]" ))
+	int /*ARPABETAudio*/ Voice()
+	{
+		if (speech_packets_TArrayUInt8.Num() < 1)
+			return 0;
+
+		bool transition_flag = false;
+
+		do
+		{
+			uint8_t current_phone_uint8_t = speech_packets_TArrayUInt8.Last();
+			speech_packets_TArrayUInt8.Pop();
+
+			// We are either generating a phone or a phone-transition packet
+			if (!transition_flag)
+			{
+				// generate a new phone packet
+
+				transition_flag = true;
+			}
+			else
+			{
+
+				transition_flag = false;
+			}
+		} while (speech_packets_TArrayUInt8.Num());
+
+		return 1;
+	};
+
+//
+
 UCLASS(Blueprintable)
 class SPEECHSYNTHESISBP_API UProsodyCurve : public UObject
 {
