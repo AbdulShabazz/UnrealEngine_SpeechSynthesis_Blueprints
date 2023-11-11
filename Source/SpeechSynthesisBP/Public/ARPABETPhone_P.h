@@ -19,7 +19,7 @@ namespace ARPABETPhone
         {
         
         }
-    }
+    };
 
     class P_to_AX : public FPhone
     {
@@ -35,7 +35,7 @@ namespace ARPABETPhone
         
         }
         
-    }
+    };
 
     class P_to_EY : public FPhone
     {
@@ -51,7 +51,7 @@ namespace ARPABETPhone
         
         }
         
-    }
+    };
 
     class P_to_AE : public FPhone
     {
@@ -67,7 +67,7 @@ namespace ARPABETPhone
         
         }
         
-    }
+    };
 
     class P_to_DX : public FPhone
     {
@@ -83,7 +83,7 @@ namespace ARPABETPhone
         
         }
         
-    }
+    };
 
     class P_to_IY : public FPhone
     {
@@ -99,7 +99,7 @@ namespace ARPABETPhone
         
         }
         
-    }
+    };
 
     class P_to_EH : public FPhone
     {
@@ -115,7 +115,7 @@ namespace ARPABETPhone
         
         }
         
-    }
+    };
 
     class P_to_ER : public FPhone
     {
@@ -131,7 +131,7 @@ namespace ARPABETPhone
         
         }
         
-    }
+    };
 
     class P_to_IH : public FPhone
     {
@@ -147,7 +147,7 @@ namespace ARPABETPhone
         
         }
         
-    }
+    };
 
     class P_to_OW : public FPhone
     {
@@ -163,7 +163,7 @@ namespace ARPABETPhone
         
         }
         
-    }
+    };
 
     class P_to_AA : public FPhone
     {
@@ -179,7 +179,7 @@ namespace ARPABETPhone
         
         }
         
-    }
+    };
 
     class P_to_UH : public FPhone
     {
@@ -195,7 +195,7 @@ namespace ARPABETPhone
         
         }
         
-    }
+    };
 
     class P_to_UW : public FPhone
     {
@@ -211,7 +211,7 @@ namespace ARPABETPhone
         
         }
         
-    }
+    };
 
     class P_to_AO : public FPhone
     {
@@ -227,7 +227,7 @@ namespace ARPABETPhone
         
         }
         
-    }
+    };
 
     class P_to_OY : public FPhone
     {
@@ -243,7 +243,7 @@ namespace ARPABETPhone
         
         }
         
-    }
+    };
 
     class P_to_AH : public FPhone
     {
@@ -259,7 +259,7 @@ namespace ARPABETPhone
         
         }
         
-    }
+    };
 
     class P_to_AY : public FPhone
     {
@@ -275,7 +275,7 @@ namespace ARPABETPhone
         
         }
         
-    }
+    };
 
     class P_to_EL : public FPhone
     {
@@ -291,7 +291,7 @@ namespace ARPABETPhone
         
         }
         
-    }
+    };
 
     class P_to_CH : public FPhone
     {
@@ -307,7 +307,23 @@ namespace ARPABETPhone
         
         }
         
-    }
+    };
+
+    class P_to_B : public FPhone
+    {
+    public:
+
+        P_to_B()
+        {
+        
+        }
+
+        ~P_to_B()
+        {
+        
+        }
+        
+    };
 
     class P_to_D : public FPhone
     {
@@ -323,7 +339,7 @@ namespace ARPABETPhone
         
         }
         
-    }
+    };
 
     class P_to_AW : public FPhone
     {
@@ -339,7 +355,7 @@ namespace ARPABETPhone
         
         }
         
-    }
+    };
 
     class P_to_F : public FPhone
     {
@@ -355,7 +371,7 @@ namespace ARPABETPhone
         
         }
         
-    }
+    };
 
     class P_to_G : public FPhone
     {
@@ -371,7 +387,7 @@ namespace ARPABETPhone
         
         }
         
-    }
+    };
 
     class P_to_HH : public FPhone
     {
@@ -387,7 +403,7 @@ namespace ARPABETPhone
         
         }
         
-    }
+    };
 
     class P_to_JH : public FPhone
     {
@@ -403,7 +419,7 @@ namespace ARPABETPhone
         
         }
         
-    }
+    };
 
     class P_to_K : public FPhone
     {
@@ -419,7 +435,7 @@ namespace ARPABETPhone
         
         }
         
-    }
+    };
 
     class P_to_L : public FPhone
     {
@@ -435,7 +451,7 @@ namespace ARPABETPhone
         
         }
         
-    }
+    };
 
     class P_to_ZH : public FPhone
     {
@@ -451,7 +467,7 @@ namespace ARPABETPhone
         
         }
         
-    }
+    };
 
     class P_to_M : public FPhone
     {
@@ -467,7 +483,7 @@ namespace ARPABETPhone
         
         }
         
-    }
+    };
 
     class P_to_N : public FPhone
     {
@@ -483,7 +499,7 @@ namespace ARPABETPhone
         
         }
         
-    }
+    };
 
     class P_to_P : public FPhone
     {
@@ -499,7 +515,23 @@ namespace ARPABETPhone
         
         }
         
-    }
+    };
+
+    class P_to_Q : public FPhone
+    {
+    public:
+
+        P_to_Q()
+        {
+        
+        }
+
+        ~P_to_Q()
+        {
+        
+        }
+        
+    };
 
     class P_to_R : public FPhone
     {
@@ -515,7 +547,7 @@ namespace ARPABETPhone
         
         }
         
-    }
+    };
 
     class P_to_IX : public FPhone
     {
@@ -531,7 +563,7 @@ namespace ARPABETPhone
         
         }
         
-    }
+    };
 
     class P_to_SH : public FPhone
     {
@@ -547,7 +579,23 @@ namespace ARPABETPhone
         
         }
         
-    }
+    };
+
+    class P_to_NG : public FPhone
+    {
+    public:
+
+        P_to_NG()
+        {
+        
+        }
+
+        ~P_to_NG()
+        {
+        
+        }
+        
+    };
 
     class P_to_NX : public FPhone
     {
@@ -563,7 +611,7 @@ namespace ARPABETPhone
         
         }
         
-    }
+    };
 
     class P_to_S : public FPhone
     {
@@ -579,7 +627,7 @@ namespace ARPABETPhone
         
         }
         
-    }
+    };
 
     class P_to_EM : public FPhone
     {
@@ -595,7 +643,7 @@ namespace ARPABETPhone
         
         }
         
-    }
+    };
 
     class P_to_EN : public FPhone
     {
@@ -611,7 +659,7 @@ namespace ARPABETPhone
         
         }
         
-    }
+    };
 
     class P_to_T : public FPhone
     {
@@ -627,7 +675,7 @@ namespace ARPABETPhone
         
         }
         
-    }
+    };
 
     class P_to_DH : public FPhone
     {
@@ -643,7 +691,7 @@ namespace ARPABETPhone
         
         }
         
-    }
+    };
 
     class P_to_TH : public FPhone
     {
@@ -659,7 +707,7 @@ namespace ARPABETPhone
         
         }
         
-    }
+    };
 
     class P_to_V : public FPhone
     {
@@ -675,7 +723,7 @@ namespace ARPABETPhone
         
         }
         
-    }
+    };
 
     class P_to_W : public FPhone
     {
@@ -691,7 +739,7 @@ namespace ARPABETPhone
         
         }
         
-    }
+    };
 
     class P_to_WH : public FPhone
     {
@@ -707,7 +755,7 @@ namespace ARPABETPhone
         
         }
         
-    }
+    };
 
     class P_to_Y : public FPhone
     {
@@ -723,7 +771,7 @@ namespace ARPABETPhone
         
         }
         
-    }
+    };
 
     class P_to_Z : public FPhone
     {
@@ -739,5 +787,5 @@ namespace ARPABETPhone
         
         }
         
-    }
+    };
 }
