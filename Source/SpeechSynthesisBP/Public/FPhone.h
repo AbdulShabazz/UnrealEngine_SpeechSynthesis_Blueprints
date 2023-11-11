@@ -2,6 +2,7 @@
 
 class FPhone
 {
+public:
 	FPhone()
 	{
 
