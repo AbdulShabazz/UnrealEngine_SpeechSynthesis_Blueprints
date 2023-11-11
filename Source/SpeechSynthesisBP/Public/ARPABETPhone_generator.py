@@ -2,7 +2,7 @@ import arpabet_phoneme_library as apl
 import os
 
 
-updateFilesFlag = False
+updateFilesFlag = "False"
 
 def get_yes_or_no_confirmation(prompt : str):
 
@@ -66,12 +66,12 @@ namespace ARPABETPhone
 
     foundation_class += '\n}\n'
 
-    if updateFilesFlag == False and os.path.exists(f"ARPABETPhone_{ph}.h"):
-       if get_yes_or_no_confirmation(f"ARPABETPhone_{ph}.h and similar files already exists. Do you want to overwrite it? (yes/no)") == "y":
-           updateFilesFlag = True
-    elif updateFilesFlag == False:
-        updateFilesFlag = True
+    if updateFilesFlag == "False" and os.path.exists(f"ARPABETPhone_{ph}.h"):
+        if get_yes_or_no_confirmation(f"ARPABETPhone_{ph}.h and similar files already exists. Do you want to overwrite it? (yes/no)") == "y":
+            updateFilesFlag = "True"
+    else:
+        updateFilesFlag = "Skip"
 
-    if updateFilesFlag == True:
+    if updateFilesFlag == "True":
         with open(f"ARPABETPhone_{ph}.h", 'w', encoding='utf-8') as f:
             f.write(foundation_class)
