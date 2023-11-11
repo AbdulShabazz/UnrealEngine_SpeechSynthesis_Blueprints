@@ -1,6 +1,21 @@
 import arpabet_phoneme_library as apl
+import os
 
-#apl = ["HH"]
+
+updateFilesFlag = False
+
+def get_yes_or_no_confirmation(prompt : str):
+
+    response_str = { "yes": "y", "y": "y", "no": "n", "n": "n" }
+    valid_responses = {"yes": True, "y": True, "no": False, "n": False}
+
+    response = input(prompt).lower()
+
+    while True:
+        if response in valid_responses:
+            return response_str[response]
+        else:
+            print("Invalid response. Please enter 'yes' or 'no'.")
 
 for ph in apl.arpabet_phone_library:
 
@@ -25,7 +40,7 @@ namespace ARPABETPhone
         {{
         
         }}
-    }}'''
+    }};'''
 
     for ph2 in apl.arpabet_phone_library:
 
@@ -45,11 +60,18 @@ namespace ARPABETPhone
         
         }}
         
-    }}'''
+    }};'''
 
         foundation_class += transition_class
 
     foundation_class += '\n}\n'
 
-    with open(f"ARPABETPhone_{ph}.h", 'w', encoding='utf-8') as f:
-        f.write(foundation_class)
+    if updateFilesFlag == False and os.path.exists(f"ARPABETPhone_{ph}.h"):
+       if get_yes_or_no_confirmation(f"ARPABETPhone_{ph}.h and similar files already exists. Do you want to overwrite it? (yes/no)") == "y":
+           updateFilesFlag = True
+    elif updateFilesFlag == False:
+        updateFilesFlag = True
+
+    if updateFilesFlag == True:
+        with open(f"ARPABETPhone_{ph}.h", 'w', encoding='utf-8') as f:
+            f.write(foundation_class)
