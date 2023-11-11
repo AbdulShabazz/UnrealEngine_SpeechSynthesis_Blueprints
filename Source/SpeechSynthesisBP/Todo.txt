@@ -8,6 +8,7 @@ TODO: Allow the user to customize the voice signal's fundamental- and formant-fr
 TODO: Use a state-machine to switch modes within the ADSR envelope to prevent signal discontinuities and drop-outs.
 TODO: Use distinct sine audio chords to simulate the ADSR characteristics that each formant signal contributes to the phone used to model aspects of a speaker's voice.
 TODO: Use primes to represent unique phone- and or formant-characteristics, which are allowed to represent irreducible modular forms
+TODO: import voice libraries as separate .DLL modules to allow for dynamic loading and unloading of voice libraries without recompilation.
 
 TODO via ChatGPT-4:
 
