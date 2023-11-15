@@ -30,111 +30,25 @@ for ph in apl.arpabet_phone_library:
 namespace ARPABETPhone
 {{
 
-    class ARPABETPhone_{ph} : public PhoneState
+    class ARPABETPhone_{ph} : public FPhone
     {{
     public:
 
-        ARPABETPhone_{ph}()
-        {{
-            // initialze formant signal oscillators and internal members
-        }}
-
-        ~ARPABETPhone_{ph}()
-        {{
-            // cleanup
-        }}
-
-        void handle(std::shared_ptr<FPhone> ph) override {{
-            if (ph) {{
-                // enable transition to [phone]
-                phone = ph;
-            }}
-        }}
-
-        std::shared_ptr<PhoneState> cloneState() const override {{
-            return std::make_shared<ARPABETPhone_{ph}>();
-        }}
-
-        float getSampleFloat32() const override {{
-            float result = 0.0f;
-            if (phone) {{
-                // Specific logic for transition from {ph} to [phone]
-            }} else {{
-                // Return specific sample for {ph}
-            }}
-            return result;
-        }}
-
-        oscillatorConfig getOscillatorConfig() const override {{
-            return m_oscillatorConfig;
-        }}
-
-        void setOscillatorConfig(const oscillatorConfig& config) override {{
-            m_oscillatorConfig = config;
-        }};
-
-    protected:
-        oscillatorConfig m_oscillatorConfig {{}};
-        std::shared_ptr<FPhone> phone = nullptr;
-        std::shared_ptr<PhoneState> currentState = nullptr;
     }};'''
 
     for ph2 in apl.arpabet_phone_library:
 
         transition_class = f'''
 
-    class ARPABETPhone_{ph}_to_{ph2} : public PhoneState
+    class ARPABETPhone_{ph}_to_{ph2} : public FPhone
     {{
     public:
-
-        ARPABETPhone_{ph}_to_{ph2}()
-        {{
-            // initialze formant signal oscillators and internal members
-        }}
-
-        ~ARPABETPhone_{ph}_to_{ph2}()
-        {{
-            // cleanup
-        }}
-
-        void handle(std::shared_ptr<FPhone> ph) override {{
-            if (ph) {{
-                phone = ph;
-            }}
-        }}
-
-        std::shared_ptr<PhoneState> cloneState() const override {{
-            return std::make_shared<ARPABETPhone_{ph}_to_{ph2}>();
-        }}
-
-        float getSampleFloat32() const override {{
-            float result = 0.0f;
-            if (phone) {{
-                // Specific logic for transition from {ph} to [phone]
-            }} else {{
-                // Return specific sample for {ph}
-            }}
-            return result;
-        }}
-
-        oscillatorConfig getOscillatorConfig() const {{
-            return m_oscillatorConfig;
-        }}
-
-        void setOscillatorConfig(const oscillatorConfig& config) {{
-            m_oscillatorConfig = config;
-        }};
-
-    protected:
-        oscillatorConfig m_oscillatorConfig {{}};
-        std::shared_ptr<FPhone> phone = nullptr;
-        std::shared_ptr<PhoneState> currentState = nullptr;
 
     }};'''
 
         foundation_class += transition_class
 
-    foundation_class += '\n}\n'
+    foundation_class += '\n\n}\n'
 
     if updateFilesFlag == "False" and os.path.exists(f"ARPABETPhone_{ph}.h"):
         if get_yes_or_no_confirmation(f"ARPABETPhone_{ph}.h and similar \
