@@ -9,7 +9,7 @@ public:
 
     main() {
         UTTSVoice Sara = UTTSVoice::Sara();
-        Sara.SetAmplitude(6.00f); // ~60db SPL (0.00f to 12.00f); 6.00f is considered a normal speaking voice; 3.00f is considered a whisper.
+        Sara.SetAmplitude(6.0f); // ~60dB SPL (Range: 0.0f to 12.5f); 6.0f = normal speaking voice; 3.0f = a whisper.
 
         // Initialize SpeechLibrary with typed and named variables
 
@@ -48,7 +48,7 @@ public:
 
             // Compile ...
 
-            ARPABETAudio Voice = SpeechLibrary.Voice();
+            UARPABETAudio Voice = SpeechLibrary.Voice();
 
             // Play back the synthesized speech
 
