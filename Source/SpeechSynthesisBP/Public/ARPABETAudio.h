@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "Components/AudioComponent.h"
+#include <vector>
 #include "ARPABETAudio.generated.h"
 
 UCLASS(Blueprintable)
@@ -11,10 +12,13 @@ class SPEECHSYNTHESISBP_API UARPABETAudio : public UAudioComponent
 {
 	GENERATED_BODY()
 
-	UPROPERTY(VisibleAnywhere, Category = "TextToSpeech")
-	TArray<uint8> datastream_TArrayUInt8{};
-
 public:
+
+	//UPROPERTY(VisibleAnywhere, Category = "TextToSpeech")
+	//TArray<TArray<float>> speechSample_TensorFloat32{};
+
+	//UPROPERTY(VisibleAnywhere, Category = "TextToSpeech")
+	std::vector<std::vector<float>> speechSample_TensorFloat32{};
 
 	/** Save .voice data from USpeechSynthesisBPLibrary to persistent disk */
 	UFUNCTION(BlueprintCallable, Category = TextToSpeech, meta = ( keywords = "TTS, SpeechSynthesis, TextToSpeech", DisplayName = "ARPABETAudio: toWAVFile" ))
@@ -33,9 +37,9 @@ public:
 		FByteBulk ByteBulk_FByteBulkObj{};
 		ByteBulk_FByteBulkObj.WaveFormat = WaveFormat_FWaveFormatFile;
 
-		// Write the datastream_TArrayUInt8 to the FByteBulk object
+		// Write the speechSample_TensorFloat32 to the FByteBulk object
 
-		ByteBulk_FByteBulkObj.Write(datastream_TArrayUInt8.GetData(), datastream_TArrayUInt8.Num());
+		ByteBulk_FByteBulkObj.Write(speechSample_TensorFloat32.GetData(), speechSample_TensorFloat32.Num());
 
 		// Save the FByteBulk object to disk
 
@@ -53,7 +57,7 @@ public:
 	{
 		bool retval{};
 		/*
-		// Create a FLAC Encoder from the datastream_TArrayUInt8
+		// Create a FLAC Encoder from the speechSample_TensorFloat32
 
 		FFLACEncoder Encoder{};
 
@@ -71,7 +75,7 @@ public:
 
 		FByteStream ByteStream_FByteStream{};
 
-		for (const uint8& byte : datastream_TArrayUInt8)
+		for (const uint8& byte : speechSample_TensorFloat32)
 		{
 			ByteStream_FByteStream.Add(byte);
 		}
@@ -99,7 +103,7 @@ public:
 
 	/** Save .voice data from USpeechSynthesisBPLibrary to persistent disk */
 	UFUNCTION(BlueprintCallable, Category = TextToSpeech, meta = ( keywords = "TTS, SpeechSynthesis, TextToSpeech", DisplayName = "ARPABETAudio: toVoiceFile" ))
-	bool toVoiceFile(UPARAM(DisplayName = "filename") const FString& filename_ConstFStringRef)
+	bool toVoiceFile(UPARAM(DisplayName = "filename") const FText& filename_ConstFStringRef)
 	{
 		bool retval{};
 
@@ -136,7 +140,7 @@ public:
 	{
 		bool retval{};
 		/*
-		// Create a ByteReader from the datastream_TArrayUInt8
+		// Create a ByteReader from the speechSample_TensorFloat32
 
 		FByteReader ByteReader(filename_ConstFTextRef);
 
