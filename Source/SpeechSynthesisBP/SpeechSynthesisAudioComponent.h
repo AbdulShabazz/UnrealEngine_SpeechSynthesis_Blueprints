@@ -2,6 +2,8 @@
 
 #pragma once
 
+#include <memory>
+
 #include "CoreMinimal.h"
 #include "Components/AudioComponent.h"
 #include "Public/TTSVoice.h"
@@ -9,6 +11,7 @@
 #include "Public/EmotiveCurve.h"
 #include "Public/DurationCurve.h"
 #include "Public/ARPABETAudio.h"
+#include <vector>
 #include "FPhone.h"
 
 // begin: phone libraries
@@ -68,7 +71,7 @@
 
 // Strong Typing for Configuration Parameters
 
-using VoiceArray = TArray<UTTSVoice>;  // Only one voice for simplicity
+using VoiceArray = TArray<class UTTSVoice>;  // Only one voice for simplicity
 using ChannelCount = unsigned int;
 using SampleWidth = unsigned int;
 using FrameRate = unsigned int;
@@ -117,7 +120,7 @@ class SPEECHSYNTHESISBP_API USpeechSynthesisAudioComponent : public UAudioCompon
 	void ARPABETSpeechSynthesis_IY(
 		UPARAM(DisplayName = "Voices") const int Voices)
 	{
-		speechSample_VecFPhone.Add(ARPABETPhone::IY_Base());
+		speechSample_FPhoneVec.push_back(ARPABETPhone::ARPABETPhone_IY());
 	};
 
 	/** Activates speech synthesis channel phoneme functionality 'IH' ( B_i_t ) */
@@ -125,7 +128,7 @@ class SPEECHSYNTHESISBP_API USpeechSynthesisAudioComponent : public UAudioCompon
 	void ARPABETSpeechSynthesis_IH(
 		UPARAM(DisplayName = "Voices") const int Voices)
 	{
-		speechSample_VecFPhone.Add(ARPABETPhone::IH_Base());
+		speechSample_FPhoneVec.push_back(ARPABETPhone::ARPABETPhone_IH());
 	};
 
 	/** Activates speech synthesis channel phoneme functionality 'EH' ( B_e_t ) */
@@ -133,7 +136,7 @@ class SPEECHSYNTHESISBP_API USpeechSynthesisAudioComponent : public UAudioCompon
 	void ARPABETSpeechSynthesis_EH(
 		UPARAM(DisplayName = "Voices") const int Voices)
 	{
-		speechSample_VecFPhone.Add(ARPABETPhone::EH_Base());
+		speechSample_FPhoneVec.push_back(ARPABETPhone::ARPABETPhone_EH());
 	};
 
 	/** Activates speech synthesis channel phoneme functionality 'EY' ( B_ai_t ) */
@@ -141,7 +144,7 @@ class SPEECHSYNTHESISBP_API USpeechSynthesisAudioComponent : public UAudioCompon
 	void ARPABETSpeechSynthesis_EY(
 		UPARAM(DisplayName = "Voices") const int Voices)
 	{
-		speechSample_VecFPhone.Add(ARPABETPhone::EY_Base());
+		speechSample_FPhoneVec.push_back(ARPABETPhone::ARPABETPhone_EY());
 	};
 
 	/** Activates speech synthesis channel phoneme functionality 'AE' ( B_a_t ) */
@@ -149,7 +152,7 @@ class SPEECHSYNTHESISBP_API USpeechSynthesisAudioComponent : public UAudioCompon
 	void ARPABETSpeechSynthesis_AE(
 		UPARAM(DisplayName = "Voices") const int Voices)
 	{
-		speechSample_VecFPhone.Add(ARPABETPhone::AE_Base());
+		speechSample_FPhoneVec.push_back(ARPABETPhone::ARPABETPhone_AE());
 	};
 
 	// vowels > back > ARPABET UV >
@@ -159,7 +162,7 @@ class SPEECHSYNTHESISBP_API USpeechSynthesisAudioComponent : public UAudioCompon
 	void ARPABETSpeechSynthesis_AA(
 		UPARAM(DisplayName = "Voices") const int Voices)
 	{
-		speechSample_VecFPhone.Add(ARPABETPhone::AA_Base());
+		speechSample_FPhoneVec.push_back(ARPABETPhone::ARPABETPhone_AA());
 	};
 
 	/** Activates speech synthesis channel phoneme functionality 'AO' ( B_ough_t ) */
@@ -167,7 +170,7 @@ class SPEECHSYNTHESISBP_API USpeechSynthesisAudioComponent : public UAudioCompon
 	void ARPABETSpeechSynthesis_AO(
 		UPARAM(DisplayName = "Voices") const int Voices)
 	{
-		speechSample_VecFPhone.Add(ARPABETPhone::AO_Base());
+		speechSample_FPhoneVec.push_back(ARPABETPhone::ARPABETPhone_AO());
 	};
 
 	/** Activates speech synthesis channel phoneme functionality 'OW' ( B_oa_t ) */
@@ -175,7 +178,7 @@ class SPEECHSYNTHESISBP_API USpeechSynthesisAudioComponent : public UAudioCompon
 	void ARPABETSpeechSynthesis_OW(
 		UPARAM(DisplayName = "Voices") const int Voices)
 	{
-		speechSample_VecFPhone.Add(ARPABETPhone::OW_Base());
+		speechSample_FPhoneVec.push_back(ARPABETPhone::ARPABETPhone_OW());
 	};
 
 	/** Activates speech synthesis channel phoneme functionality 'UH' ( B_oo_k ) */
@@ -183,7 +186,7 @@ class SPEECHSYNTHESISBP_API USpeechSynthesisAudioComponent : public UAudioCompon
 	void ARPABETSpeechSynthesis_UH(
 		UPARAM(DisplayName = "Voices") const int Voices)
 	{
-		speechSample_VecFPhone.Add(ARPABETPhone::UH_Base());
+		speechSample_FPhoneVec.push_back(ARPABETPhone::ARPABETPhone_UH());
 	};
 
 	/** Activates speech synthesis channel phoneme functionality 'UW' ( B_oot_ ) */
@@ -191,7 +194,7 @@ class SPEECHSYNTHESISBP_API USpeechSynthesisAudioComponent : public UAudioCompon
 	void ARPABETSpeechSynthesis_UW(
 		UPARAM(DisplayName = "Voices") const int Voices)
 	{
-		speechSample_VecFPhone.Add(ARPABETPhone::UW_Base());
+		speechSample_FPhoneVec.push_back(ARPABETPhone::ARPABETPhone_UW());
 	};
 
 	// vowels > mid > ARPABET UV >
@@ -201,7 +204,7 @@ class SPEECHSYNTHESISBP_API USpeechSynthesisAudioComponent : public UAudioCompon
 	void ARPABETSpeechSynthesis_ER(
 		UPARAM(DisplayName = "Voices") const int Voices)
 	{
-		speechSample_VecFPhone.Add(ARPABETPhone::ER_Base());
+		speechSample_FPhoneVec.push_back(ARPABETPhone::ARPABETPhone_ER());
 	};
 
 	/** Activates speech synthesis channel phoneme functionality 'AX' ( Ab_ou_t ) */
@@ -209,7 +212,7 @@ class SPEECHSYNTHESISBP_API USpeechSynthesisAudioComponent : public UAudioCompon
 	void ARPABETSpeechSynthesis_AX(
 		UPARAM(DisplayName = "Voices") const int Voices)
 	{
-		speechSample_VecFPhone.Add(ARPABETPhone::AX_Base());
+		speechSample_FPhoneVec.push_back(ARPABETPhone::ARPABETPhone_AX());
 	};
 
 	/** Activates speech synthesis channel phoneme functionality 'AH' ( B_u_tt ) */
@@ -217,7 +220,7 @@ class SPEECHSYNTHESISBP_API USpeechSynthesisAudioComponent : public UAudioCompon
 	void ARPABETSpeechSynthesis_AH(
 		UPARAM(DisplayName = "Voices") const int Voices)
 	{
-		speechSample_VecFPhone.Add(ARPABETPhone::AH_Base());
+		speechSample_FPhoneVec.push_back(ARPABETPhone::ARPABETPhone_AH());
 	};
 
 	// vowels > diphthongs > ARPABET UV >
@@ -227,7 +230,7 @@ class SPEECHSYNTHESISBP_API USpeechSynthesisAudioComponent : public UAudioCompon
 	void ARPABETSpeechSynthesis_AY(
 		UPARAM(DisplayName = "Voices") const int Voices)
 	{
-		speechSample_VecFPhone.Add(ARPABETPhone::AY_Base());
+		speechSample_FPhoneVec.push_back(ARPABETPhone::ARPABETPhone_AY());
 	};
 
 	/** Activates speech synthesis channel phoneme functionality 'AW' ( B_ite_ ) */
@@ -235,7 +238,7 @@ class SPEECHSYNTHESISBP_API USpeechSynthesisAudioComponent : public UAudioCompon
 	void ARPABETSpeechSynthesis_AW(
 		UPARAM(DisplayName = "Voices") const int Voices)
 	{
-		speechSample_VecFPhone.Add(ARPABETPhone::AW_Base());
+		speechSample_FPhoneVec.push_back(ARPABETPhone::ARPABETPhone_AW());
 	};
 
 	/** Activates speech synthesis channel phoneme functionality 'OY' ( B_o_y ) */
@@ -243,7 +246,7 @@ class SPEECHSYNTHESISBP_API USpeechSynthesisAudioComponent : public UAudioCompon
 	void ARPABETSpeechSynthesis_OY(
 		UPARAM(DisplayName = "Voices") const int Voices)
 	{
-		speechSample_VecFPhone.Add(ARPABETPhone::OY_Base());
+		speechSample_FPhoneVec.push_back(ARPABETPhone::ARPABETPhone_OY());
 	};
 
 	/** Activates speech synthesis channel phoneme functionality 'IX' ( Rabb_i_t ) */
@@ -251,7 +254,7 @@ class SPEECHSYNTHESISBP_API USpeechSynthesisAudioComponent : public UAudioCompon
 	void ARPABETSpeechSynthesis_IX(
 		UPARAM(DisplayName = "Voices") const int Voices)
 	{
-		speechSample_VecFPhone.Add(ARPABETPhone::IX_Base());
+		speechSample_FPhoneVec.push_back(ARPABETPhone::ARPABETPhone_IX());
 	};
 
 	// stopConsonants > voiced > ARPABET UV >
@@ -261,7 +264,7 @@ class SPEECHSYNTHESISBP_API USpeechSynthesisAudioComponent : public UAudioCompon
 	void ARPABETSpeechSynthesis_B(
 		UPARAM(DisplayName = "Voices") const int Voices)
 	{
-		speechSample_VecFPhone.Add(ARPABETPhone::B_Base());
+		speechSample_FPhoneVec.push_back(ARPABETPhone::ARPABETPhone_B());
 	};
 
 	/** Activates speech synthesis channel phoneme functionality 'D' ( _D_eep ) */
@@ -269,7 +272,7 @@ class SPEECHSYNTHESISBP_API USpeechSynthesisAudioComponent : public UAudioCompon
 	void ARPABETSpeechSynthesis_D(
 		UPARAM(DisplayName = "Voices") const int Voices)
 	{
-		speechSample_VecFPhone.Add(ARPABETPhone::D_Base());
+		speechSample_FPhoneVec.push_back(ARPABETPhone::ARPABETPhone_D());
 	};
 
 	/** Activates speech synthesis channel phoneme functionality 'G' ( _G_o ) */
@@ -277,7 +280,7 @@ class SPEECHSYNTHESISBP_API USpeechSynthesisAudioComponent : public UAudioCompon
 	void ARPABETSpeechSynthesis_G(
 		UPARAM(DisplayName = "Voices") const int Voices)
 	{
-		speechSample_VecFPhone.Add(ARPABETPhone::G_Base());
+		speechSample_FPhoneVec.push_back(ARPABETPhone::ARPABETPhone_G());
 	};
 
 	// stopConsonants > voiced > > ARPABET UV >
@@ -287,7 +290,7 @@ class SPEECHSYNTHESISBP_API USpeechSynthesisAudioComponent : public UAudioCompon
 	void ARPABETSpeechSynthesis_P(
 		UPARAM(DisplayName = "Voices") const int Voices)
 	{
-		speechSample_VecFPhone.Add(ARPABETPhone::P_Base());
+		speechSample_FPhoneVec.push_back(ARPABETPhone::ARPABETPhone_P());
 	};
 
 	/** Activates speech synthesis channel phoneme functionality 'T' ( _T_ea ) */
@@ -295,7 +298,7 @@ class SPEECHSYNTHESISBP_API USpeechSynthesisAudioComponent : public UAudioCompon
 	void ARPABETSpeechSynthesis_T(
 		UPARAM(DisplayName = "Voices") const int Voices)
 	{
-		speechSample_VecFPhone.Add(ARPABETPhone::T_Base());
+		speechSample_FPhoneVec.push_back(ARPABETPhone::ARPABETPhone_T());
 	};
 
 	/** Activates speech synthesis channel phoneme functionality 'K' ( _K_ick ) */
@@ -303,7 +306,7 @@ class SPEECHSYNTHESISBP_API USpeechSynthesisAudioComponent : public UAudioCompon
 	void ARPABETSpeechSynthesis_K(
 		UPARAM(DisplayName = "Voices") const int Voices)
 	{
-		speechSample_VecFPhone.Add(ARPABETPhone::K_Base());
+		speechSample_FPhoneVec.push_back(ARPABETPhone::ARPABETPhone_K());
 	};
 
 	// fricatives > voiced > ARPABET UV >
@@ -313,7 +316,7 @@ class SPEECHSYNTHESISBP_API USpeechSynthesisAudioComponent : public UAudioCompon
 	void ARPABETSpeechSynthesis_V(
 		UPARAM(DisplayName = "Voices") const int Voices)
 	{
-		speechSample_VecFPhone.Add(ARPABETPhone::V_Base());
+		speechSample_FPhoneVec.push_back(ARPABETPhone::ARPABETPhone_V());
 	};
 
 	/** Activates speech synthesis channel phoneme functionality 'DH' ( _Th_en ) */
@@ -321,7 +324,7 @@ class SPEECHSYNTHESISBP_API USpeechSynthesisAudioComponent : public UAudioCompon
 	void ARPABETSpeechSynthesis_DH(
 		UPARAM(DisplayName = "Voices") const int Voices)
 	{
-		speechSample_VecFPhone.Add(ARPABETPhone::DH_Base());
+		speechSample_FPhoneVec.push_back(ARPABETPhone::ARPABETPhone_DH());
 	};
 
 	// fricatives > unvoiced > ARPABET UV >
@@ -331,7 +334,7 @@ class SPEECHSYNTHESISBP_API USpeechSynthesisAudioComponent : public UAudioCompon
 	void ARPABETSpeechSynthesis_F(
 		UPARAM(DisplayName = "Voices") const int Voices)
 	{
-		speechSample_VecFPhone.Add(ARPABETPhone::F_Base());
+		speechSample_FPhoneVec.push_back(ARPABETPhone::ARPABETPhone_F());
 	};
 
 	/** Activates speech synthesis channel phoneme functionality 'TH' ( _Th_ink ) */
@@ -339,7 +342,7 @@ class SPEECHSYNTHESISBP_API USpeechSynthesisAudioComponent : public UAudioCompon
 	void ARPABETSpeechSynthesis_TH(
 		UPARAM(DisplayName = "Voices") const int Voices)
 	{
-		speechSample_VecFPhone.Add(ARPABETPhone::TH_Base());
+		speechSample_FPhoneVec.push_back(ARPABETPhone::ARPABETPhone_TH());
 	};
 
 	/** Activates speech synthesis channel phoneme functionality 'S' ( _S_ee ) */
@@ -347,7 +350,7 @@ class SPEECHSYNTHESISBP_API USpeechSynthesisAudioComponent : public UAudioCompon
 	void ARPABETSpeechSynthesis_S(
 		UPARAM(DisplayName = "Voices") const int Voices)
 	{
-		speechSample_VecFPhone.Add(ARPABETPhone::S_Base());
+		speechSample_FPhoneVec.push_back(ARPABETPhone::ARPABETPhone_S());
 	};
 
 	/** Activates speech synthesis channel phoneme functionality 'SH' ( _Sh_e ) */
@@ -355,7 +358,7 @@ class SPEECHSYNTHESISBP_API USpeechSynthesisAudioComponent : public UAudioCompon
 	void ARPABETSpeechSynthesis_SH(
 		UPARAM(DisplayName = "Voices") const int Voices)
 	{
-		speechSample_VecFPhone.Add(ARPABETPhone::SH_Base());
+		speechSample_FPhoneVec.push_back(ARPABETPhone::ARPABETPhone_SH());
 	};
 
 	// semivowels > liquid > ARPABET UV >
@@ -365,7 +368,7 @@ class SPEECHSYNTHESISBP_API USpeechSynthesisAudioComponent : public UAudioCompon
 	void ARPABETSpeechSynthesis_L(
 		UPARAM(DisplayName = "Voices") const int Voices)
 	{
-		speechSample_VecFPhone.Add(ARPABETPhone::L_Base());
+		speechSample_FPhoneVec.push_back(ARPABETPhone::ARPABETPhone_L());
 	};
 
 	/** Activates speech synthesis channel phoneme functionality 'EL' ( Bott_le_ ) */
@@ -373,7 +376,7 @@ class SPEECHSYNTHESISBP_API USpeechSynthesisAudioComponent : public UAudioCompon
 	void ARPABETSpeechSynthesis_EL(
 		UPARAM(DisplayName = "Voices") const int Voices)
 	{
-		speechSample_VecFPhone.Add(ARPABETPhone::EL_Base());
+		speechSample_FPhoneVec.push_back(ARPABETPhone::ARPABETPhone_EL());
 	};
 
 	/** Activates speech synthesis channel phoneme functionality 'R' ( _R_ed ) */
@@ -381,7 +384,7 @@ class SPEECHSYNTHESISBP_API USpeechSynthesisAudioComponent : public UAudioCompon
 	void ARPABETSpeechSynthesis_R(
 		UPARAM(DisplayName = "Voices") const int Voices)
 	{
-		speechSample_VecFPhone.Add(ARPABETPhone::R_Base());
+		speechSample_FPhoneVec.push_back(ARPABETPhone::ARPABETPhone_R());
 	};
 
 	// semivowels > glides > ARPABET UV >
@@ -391,7 +394,7 @@ class SPEECHSYNTHESISBP_API USpeechSynthesisAudioComponent : public UAudioCompon
 	void ARPABETSpeechSynthesis_W(
 		UPARAM(DisplayName = "Voices") const int Voices)
 	{
-		speechSample_VecFPhone.Add(ARPABETPhone::W_Base());
+		speechSample_FPhoneVec.push_back(ARPABETPhone::ARPABETPhone_W());
 	};
 
 	/** Activates speech synthesis channel phoneme functionality 'WH' ( _Wh_at ) */
@@ -399,7 +402,7 @@ class SPEECHSYNTHESISBP_API USpeechSynthesisAudioComponent : public UAudioCompon
 	void ARPABETSpeechSynthesis_WH(
 		UPARAM(DisplayName = "Voices") const int Voices)
 	{
-		speechSample_VecFPhone.Add(ARPABETPhone::WH_Base());
+		speechSample_FPhoneVec.push_back(ARPABETPhone::ARPABETPhone_WH());
 	};
 
 	/** Activates speech synthesis channel phoneme functionality 'Y' ( _Y_es ) */
@@ -407,7 +410,7 @@ class SPEECHSYNTHESISBP_API USpeechSynthesisAudioComponent : public UAudioCompon
 	void ARPABETSpeechSynthesis_Y(
 		UPARAM(DisplayName = "Voices") const int Voices)
 	{
-		speechSample_VecFPhone.Add(ARPABETPhone::Y_Base());
+		speechSample_FPhoneVec.push_back(ARPABETPhone::ARPABETPhone_Y());
 	};
 
 	// nasals > non vocalic > ARPABET UV >
@@ -417,7 +420,7 @@ class SPEECHSYNTHESISBP_API USpeechSynthesisAudioComponent : public UAudioCompon
 	void ARPABETSpeechSynthesis_M(
 		UPARAM(DisplayName = "Voices") const int Voices)
 	{
-		speechSample_VecFPhone.Add(ARPABETPhone::M_Base());
+		speechSample_FPhoneVec.push_back(ARPABETPhone::ARPABETPhone_M());
 	};
 
 	/** Activates speech synthesis channel phoneme functionality 'N' ( _N_ow ) */
@@ -425,7 +428,7 @@ class SPEECHSYNTHESISBP_API USpeechSynthesisAudioComponent : public UAudioCompon
 	void ARPABETSpeechSynthesis_N(
 		UPARAM(DisplayName = "Voices") const int Voices)
 	{
-		speechSample_VecFPhone.Add(ARPABETPhone::N_Base());
+		speechSample_FPhoneVec.push_back(ARPABETPhone::ARPABETPhone_N());
 	};
 
 	/** Activates speech synthesis channel phoneme functionality 'NX' ( Si_ng_ ) */
@@ -433,7 +436,7 @@ class SPEECHSYNTHESISBP_API USpeechSynthesisAudioComponent : public UAudioCompon
 	void ARPABETSpeechSynthesis_NX(
 		UPARAM(DisplayName = "Voices") const int Voices)
 	{
-		speechSample_VecFPhone.Add(ARPABETPhone::NX_Base());
+		speechSample_FPhoneVec.push_back(ARPABETPhone::ARPABETPhone_NX());
 	};
 
 	/** Activates speech synthesis channel phoneme functionality 'NG' ( Si_ng_ ) */
@@ -441,7 +444,7 @@ class SPEECHSYNTHESISBP_API USpeechSynthesisAudioComponent : public UAudioCompon
 	void ARPABETSpeechSynthesis_NG(
 		UPARAM(DisplayName = "Voices") const int Voices)
 	{
-		speechSample_VecFPhone.Add(ARPABETPhone::NG_Base());
+		speechSample_FPhoneVec.push_back(ARPABETPhone::ARPABETPhone_NG());
 	};
 
 	// nasals > vocalic > ARPABET UV >
@@ -451,7 +454,7 @@ class SPEECHSYNTHESISBP_API USpeechSynthesisAudioComponent : public UAudioCompon
 	void ARPABETSpeechSynthesis_EM(
 		UPARAM(DisplayName = "Voices") const int Voices)
 	{
-		speechSample_VecFPhone.Add(ARPABETPhone::EM_Base());
+		speechSample_FPhoneVec.push_back(ARPABETPhone::ARPABETPhone_EM());
 	};
 
 	/** Activates speech synthesis channel phoneme functionality 'EN' ( S_o_n ) */
@@ -459,7 +462,7 @@ class SPEECHSYNTHESISBP_API USpeechSynthesisAudioComponent : public UAudioCompon
 	void ARPABETSpeechSynthesis_EN(
 		UPARAM(DisplayName = "Voices") const int Voices)
 	{
-		speechSample_VecFPhone.Add(ARPABETPhone::EN_Base());
+		speechSample_FPhoneVec.push_back(ARPABETPhone::ARPABETPhone_EN());
 	};
 
 	// affricates > voiced > ARPABET UV >
@@ -469,7 +472,7 @@ class SPEECHSYNTHESISBP_API USpeechSynthesisAudioComponent : public UAudioCompon
 	void ARPABETSpeechSynthesis_CH(
 		UPARAM(DisplayName = "Voices") const int Voices)
 	{
-		speechSample_VecFPhone.Add(ARPABETPhone::CH_Base());
+		speechSample_FPhoneVec.push_back(ARPABETPhone::ARPABETPhone_CH());
 	};
 
 	/** Activates speech synthesis channel phoneme functionality 'JH' ( _J_ump ) */
@@ -477,7 +480,7 @@ class SPEECHSYNTHESISBP_API USpeechSynthesisAudioComponent : public UAudioCompon
 	void ARPABETSpeechSynthesis_JH(
 		UPARAM(DisplayName = "Voices") const int Voices)
 	{
-		speechSample_VecFPhone.Add(ARPABETPhone::JH_Base());
+		speechSample_FPhoneVec.push_back(ARPABETPhone::ARPABETPhone_JH());
 	};
 
 	// other > whisper > ARPABET UV >
@@ -487,7 +490,7 @@ class SPEECHSYNTHESISBP_API USpeechSynthesisAudioComponent : public UAudioCompon
 	void ARPABETSpeechSynthesis_HH(
 		UPARAM(DisplayName = "Voices") const int Voices)
 	{
-		speechSample_VecFPhone.Add(ARPABETPhone::HH_Base());
+		speechSample_FPhoneVec.push_back(ARPABETPhone::ARPABETPhone_HH());
 	};
 
 	// other > vocalic > ARPABET UV >
@@ -497,7 +500,7 @@ class SPEECHSYNTHESISBP_API USpeechSynthesisAudioComponent : public UAudioCompon
 	void ARPABETSpeechSynthesis_DX(
 		UPARAM(DisplayName = "Voices") const int Voices)
 	{
-		speechSample_VecFPhone.Add(ARPABETPhone::DX_Base());
+		speechSample_FPhoneVec.push_back(ARPABETPhone::ARPABETPhone_DX());
 	};
 
 	// other > pause or glottal_stop > ARPABET UV >
@@ -507,27 +510,27 @@ class SPEECHSYNTHESISBP_API USpeechSynthesisAudioComponent : public UAudioCompon
 	void ARPABETSpeechSynthesis_Q(
 		UPARAM(DisplayName = "Voices") const int Voices)
 	{
-		speechSample_VecFPhone.Add(ARPABETPhone::Q_Base());
+		speechSample_FPhoneVec.push_back(ARPABETPhone::ARPABETPhone_Q());
 	};
 
 	// Setup and Activation APIs
 
 	/** Activates speech synthesis channel functionality 'Voice' */
 	UFUNCTION(BlueprintCallable, Category = TextToSpeech, meta = ( keywords = "TTS, SpeechSynthesis, TextToSpeech, Voice", DisplayName = "ARPABETSpeechSynthesis: Voice [compile]" ))
-	int /*ARPABETAudio*/ Voice()
+	int /*UARPABETAudio*/ Voice()
 	{
-		/*
-		for (const auto& nextPhone : speechSample_VecFPhone) {
-			currentPhone.setState(nextPhone.cloneState()); 
-			currentPhone.handle();
-			speechSample_TensorFloat32.push_back(currentPhone.getSampleFloat32());
+		
+		for (const auto& nextPhone : speechSample_FPhoneVec) {
+			currentPhone.setPhone(nextPhone); 
+			currentPhone.process();
+			m_UARPABETAudio.speechSample_TensorFloat32.push_back(currentPhone.getSpeechSampleTensorFloat32());
 		}
 
 		// Finalize the last phone
-		currentPhone.handle();
-		speechSample_TensorFloat32.push_back(currentPhone.getSampleFloat32());
-		*/
-		return 1;
+		currentPhone.process();
+		m_UARPABETAudio.speechSample_TensorFloat32.push_back(currentPhone.getSpeechSampleTensorFloat32());
+
+		return 1; // m_UARPABETAudio; //
 	};
 
 	/** Activates speech synthesis channel functionality 'Init' */
@@ -541,15 +544,8 @@ class SPEECHSYNTHESISBP_API USpeechSynthesisAudioComponent : public UAudioCompon
 		return true;
 	};
 
-private:
-
-	TArray<FPhone> speechSample_VecFPhone{}; 
-	TArray<float> speechSample_TensorFloat32{};
-
-	FPhone currentPhone{};
-
 	//UPROPERTY()
-	VoiceArray voices_FTTSVoiceArray{};
+	//VoiceArray voices_UTTSVoiceArray{};
 
 	//UPROPERTY()
 	ChannelCount ChannelCount_UInt32{};
@@ -561,6 +557,15 @@ private:
 	FrameRate FrameRateHz_UInt32{};
 
 	//UPROPERTY()
-	TArray<uint8> datastream_TArrayUInt8{};
+	std::vector<uint8> datastream_UInt8Vec{};
+
+	//UPROPERTY()
+	//std::unique_ptr<UTTSVoice> voice_UTTSVoice{};
+	
+	//UPROPERTY
+	UARPABETAudio m_UARPABETAudio{};
+
+	UTTSVoice currentPhone{};
+	std::vector<FPhone> speechSample_FPhoneVec{};
 
 };
