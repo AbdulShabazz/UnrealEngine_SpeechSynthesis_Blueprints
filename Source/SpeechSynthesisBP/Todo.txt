@@ -10,6 +10,63 @@ TODO: Use distinct sine audio chords to simulate the ADSR characteristics that e
 TODO: Use primes to represent unique phone- and or formant-characteristics, which are allowed to represent irreducible modular forms
 TODO: import voice libraries as separate .DLL modules to allow for dynamic loading and unloading of voice libraries without recompilation.
 TODO: compute the delta- and the delta-delta features near the hand-off points of the ADSR envelope to facilitate a smooth-transition between phones.
+TODO: support voice re-mapping (eg. to allow Sara's accent to be used for Bob's voice), and other voice-traits such as
+
+    1. **Timbre**: The color or quality of the voice, distinct from its pitch or intensity.
+    2. **Fundamental Frequency**: The lowest frequency of a voice, often perceived as its pitch.
+    3. **Formant Frequencies**: Resonant frequencies that shape the vocal tone.
+    4. **Harmonic Structure**: The distribution and amplitude of harmonics in the voice.
+    5. **Voice Onset Time**: The time it takes for the voice to start after a consonant.
+    6. **Voice Offset Time**: How quickly the voice ceases after speaking.
+    7. **Speech Rate**: The speed at which someone speaks.
+    8. **Rhythm**: The pattern of movement or fluctuation in speech.
+    9. **Intonation Patterns**: The rise and fall in pitch while speaking.
+    10. **Breathiness**: The amount of audible breath in the voice.
+    11. **Nasality**: The degree of nasal resonance in the voice.
+    12. **Vocal Fry**: The low, creaky vibration caused by slow glottal pulses.
+    13. **Glottal Tension**: The tension in the vocal folds while speaking.
+    14. **Volume Dynamics**: Variations in loudness.
+    15. **Articulatory Precision**: How clearly the individual articulates words.
+    16. **Diction**: Clarity in the way one pronounces words.
+    17. **Phonation Type**: The mode of vibration of the vocal folds.
+    18. **Vowel Space Area**: The acoustic space covered by vowel sounds.
+    19. **Jitter**: Small variations in pitch.
+    20. **Shimmer**: Small amplitude variations.
+    21. **Speech Clarity**: How clearly individual sounds are produced.
+    22. **Loudness Variability**: Fluctuations in the volume.
+    23. **Vocal Range**: The range between the highest and lowest pitches.
+    24. **Voice Quality Variability**: Changes in voice quality during speech.
+    25. **Spectral Slope**: How energy distributes across frequencies.
+    26. **Vocal Tract Length**: The length of the vocal tract which affects the voice quality.
+    27. **Sibilance**: The characteristic sound of "s" and "sh" in speech.
+    28. **Vocal Attack Time**: The time it takes for the voice to reach full amplitude.
+    29. **Voice Decay Time**: How quickly the voice fades after speaking.
+    30. **Accentuation**: The emphasis placed on certain syllables or words.
+    31. **Word Stress**: The relative emphasis on words within sentences.
+    32. **Voice Smoothness**: The consistency of the voice quality.
+    33. **Resonance**: The quality of the voice that is affected by the resonating cavities.
+    34. **Vocal Fatigue**: The wearing out of voice quality after prolonged use.
+    35. **Dynamic Range**: The contrast between the loudest and softest parts of speech.
+    36. **Pitch Variation**: Changes in pitch throughout speech.
+    37. **Pitch Range**: The range of pitch variation.
+    38. **Articulatory Habits**: Unique patterns in the way one articulates.
+    39. **Vibrato**: A rapid, slight variation in pitch in singing or speaking.
+    40. **Speaking Style**: The unique style in which an individual communicates verbally.
+    41. **Lexical Choice**: The specific words and vocabulary that a person uses.
+    42. **Phonetic Peculiarities**: Unique ways of producing certain sounds.
+    43. **Speech Melody**: The musical quality of speech.
+    44. **Emotional Expression**: How emotions are conveyed in voice.
+    45. **Fluency**: The smoothness and flow of speech.
+    46. **Tongue Positioning**: Differences in how the tongue is positioned during speech.
+    47. **Laryngeal Tension**: Tension in the larynx which affects voice quality.
+    48. **Voice Resilience**: How well the voice maintains quality under strain.
+    49. **Microprosody**: Very subtle variations in prosody.
+    50. **Cultural Speech Characteristics**: Traits influenced by one's cultural background.
+
+    (A human voices is incredibly unique, and various characteristics contribute to this uniqueness. These were fifty traits that create distinguishing characteristics of a human voice)
+
+    Each of these traits contributes to the distinctiveness of a human voice, making it possible to identify individuals by their voice alone. 
+    The combination and interaction of these traits create the rich diversity found in human speech.
 
 TODO via ChatGPT-4:
 
