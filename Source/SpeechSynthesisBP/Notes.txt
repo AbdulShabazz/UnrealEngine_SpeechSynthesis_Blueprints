@@ -1,50 +1,26 @@
-Manually adding blueprint macros to a project seems to break subsequent C++ builds or are just ignored by the UE INI pkg compiler!
+Manually adding Unreal Engine Blueprint macros to a project seems to somehow break subsequent C++ rebuilds operations or are simply just ignored by the UE .INI pkg compiler! Hmm.
 Adding custom blueprints as C++ compenents in the UE event graph seems to work fine. Each blueprint class is then compiled as a separate implementation file.
-It appears verbals consonats and vowels carry the most information in speech. The library should be able to generate these sounds with a high degree of delineation.
+It appears verbals consonats and vowels carry the most information in audio speech. The final library should be able to generate these sounds with a high degree of separation.
 
 Circular convolution on a pair of finite length signals can be accomplished by performing a fast fourier transform on the signals, 
-multiplying them (in the Frequency domain), performing an inverse fourier transform on the signal, and then scaling them by the bit-depth-per-sample 
+multiplying them (in the Frequency domain), then performing an inverse fourier transform on the signal, and finally scaling it by the bit-depth-per-sample 
 (ie. the N bit dynamic range) to avoid clipping (lossy).
 
-BitDepthPerSample = 16; Encodes 2^16 = 65536 possible amplitude values per sample.
+BitDepthPerSample = 16; Encodes 2^16 = 65536 possible amplitude values per sample!
+
 SampleRate = 44100; Encodes 44100 frequency values per sample per second. Nyquist frequency is 22050 Hz. (Human hearing range is 20 Hz to 20 kHz.)
 
-If I intend to rely on Spectrograms for their realism versus signal formants because of their computational simplicity and ease of use, 
-I should consider using Generative Adversarial Networks (GANs) to generate the spectrograms from a set of training data.
+Spectrograms offer realism, computational simplicity, and ease of use compared to other methods of speech synthesis such concatenative- and formant synthesis.
+However, this library will support formant sythesis due to its ability to generate a wider range of sounds and its ability to generate sounds with a higher degree of expression separation.
+For better fidelity, Generative Adversarial Networks (GANs) will be used to generate the spectrograms from sets of training data.
 
-Source Signal matching involves several components: amplitude, phase, frequency, wave-shape, duration, noise-type
+De novo Source Signal matching for deconstruction involves matching several components: amplitude, phase, frequency, wave-shape, duration, noise-type.
 
-sin approximation (performance)
+Consider convolution as a weighted moving-average or smoothing filter (cf. moving-averages as computed in statistics).
 
-```cpp
-    float approximate_sin_f(const float x)
-    {
-        // Calculate 2 PI inverse (once)
-        const float inverse_2pi_ConstFloat32 = 1 / 2 * PI;
+The allotment of energy at a given amplitude during speech is under 300 Hz and does not change, reaportionments are made for each phone
 
-        // Calculate t_step_float32 
-        float t_step_float32 = x * inverse_2pi_ConstFloat32;
-
-        // Wrap t_step_float32 to fit [0, 1]
-        t_step_float32 = t_step_float32 - static_cast<int>(t_step_float32);
-
-        // Calculate sin(x) using a quadratic approximation cf. square wave (eg. pipe organ)
-        return (t_step_float32 < 0.5f) ? 
-        -16 * t_step_float32 * t_step_float32 + 8 * t_step_float32 :    // positive half
-         16 * t_step_float32 * t_step_float32 - 8 * t_step_float32 + 8; // negative half
-
-        // Calculate sin(x) using a cubic approximation cf. sawtooth (eg. flutish)
-        /*
-        return 20.785f * (t_step_float32  - 0.0f) * (t_step_float32  - 0.5f) * (t_step_float32  - 1.0f);
-        */
-    }
-```
-
-Consider convolutin a weighted moving average or smoothing filter (cf. statistics).
-
-The allotment of energy for a given amplitude during speech does not change, the apportionments are reaportioned for each proceeding phone
-
-Sonic Visualizer preferred settings:
+Sonic Visualizer settings:
     COLOR: Sunset
     SCALE: dB
     NORMALIZATION: Col
@@ -55,3 +31,11 @@ Sonic Visualizer preferred settings:
     FREQUENCY SCALE: Log
 
 Wave-Shaper: Desmos Graphing Calculator (https://www.desmos.com/calculator)
+
+The MyST children's audio speech corpus is compiled from a free children's science education website (https://www.mysciencetutor.org/) which has a focus on physics and chemistry. 
+It has a corpus of 393 hours of speech from 1,371 third-, fourth-, and fifth-graders and children aged 5-18 years old. The speech is recorded in a quiet room using a high-quality microphone.
+Adult pitch range is 75-250 Hz and Children pitch range is 200-500 Hz. ref.(Effect of Prosody Modification on Children’s ASR & Speech Intelligibility, 
+2017-2019, IEEE Signal Processing Letters, vol. 24 (issue 11) pp. 1749-1753, https://doi.org/10.1109/LSP.2017.2756347; 1781-1785, https://doi.org/10.1109/LSP.2019.2949241)
+
+Ideally within the log-mels will be encoded the per-sample frequency, amplitude, duration, and the constituent wave-shapes of each phone in the speech signal 
+to reliably reconstruct the original signal and or alter its attributes in a meaningful way.
