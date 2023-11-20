@@ -360,7 +360,7 @@ public:
         typename TimeStepType = double,
         typename OscillatorParameterType
     >
-        requires ( bitwise_ops_compatible_shapeType<ShapeType> )
+    requires ( bitwise_ops_compatible_shapeType<ShapeType> )
     double generateBasicSignal(const OscillatorParameters<AmplitudeType
         , FrequencyHzType
         , ThetaType
@@ -458,6 +458,125 @@ public:
             return outShape;
         }
     } // End of generateBasicSignal() function
+
+    /**
+    @brief Generates basic signal based on specific wave-shape parameters.
+    @details Generates basic signal based on specific wave-shape parameters.
+    @param shapes_oscilatorParamsVec: The complex wave-shapes to develop.
+    @param customUpdateCallback: A lambda function that can be used to update the oscillator parameters.
+    @return double (The oscillator signal at time-step t).*/
+    template <
+        typename AmplitudeType = double,
+        typename FrequencyHzType = double,
+        typename ThetaType = double,
+        typename ShapeType = WaveShape,
+        typename OutputShapeType = double,
+        typename TimeStepType = double,
+        typename OscillatorParameterType
+    >
+    requires ( bitwise_ops_compatible_shapeType<ShapeType> )
+    std::vector<double> generateComplexSignal(
+        const std::vector<OscillatorParameters<AmplitudeType
+        , FrequencyHzType
+        , ThetaType
+        , ShapeType
+        , OutputShapeType
+        , TimeStepType>>& shapes_oscilatorParamsVec
+        , UpdateFunction<OscillatorParameterType, OutputShapeType> customUpdateCallback) {
+
+        std::vector<double> totalOutShape{};
+
+        for (const auto& shape_oscillatorParams : shapes_oscilatorParamsVec) {
+            double outShape{};
+
+            // Custom updates using the lambda function
+            if (customUpdateCallback) {
+                outShape = customUpdateCallback(
+                    std::make_shared<Oscillator>(*this),
+                    shape_oscillatorParams,
+                    outShape);
+            } else {
+                switch (shape_oscillatorParams.shape) {
+                case boolean_and(shape_oscillatorParams.shape, WaveShape::Sine_enum):
+                    outShape += sine(shape_oscillatorParams.amplitude
+                        , shape_oscillatorParams.frequencyHz
+                        , shape_oscillatorParams.timeStepStart
+                        , shape_oscillatorParams.theta);
+                    [[fallthrough]]
+                case boolean_and(shape_oscillatorParams.shape, WaveShape::Cosine_enum):
+                    outShape += cosine(shape_oscillatorParams.amplitude
+                        , shape_oscillatorParams.frequencyHz
+                        , shape_oscillatorParams.timeStepStart
+                        , shape_oscillatorParams.theta);
+                    [[fallthrough]]
+                case boolean_and(shape_oscillatorParams.shape, WaveShape::QuarterSine_enum):
+                    outShape += quarterSine(shape_oscillatorParams.amplitude
+                        , shape_oscillatorParams.frequencyHz
+                        , shape_oscillatorParams.timeStepStart
+                        , shape_oscillatorParams.theta);
+                    [[fallthrough]]
+                case boolean_and(shape_oscillatorParams.shape, WaveShape::HalfSine_enum):
+                    outShape += halfSine(shape_oscillatorParams.amplitude
+                        , shape_oscillatorParams.frequencyHz
+                        , shape_oscillatorParams.timeStepStart
+                        , shape_oscillatorParams.theta);
+                    [[fallthrough]]
+                case boolean_and(shape_oscillatorParams.shape, WaveShape::Triangle_enum):
+                    outShape += Triangle(shape_oscillatorParams.amplitude
+                        , shape_oscillatorParams.frequencyHz
+                        , shape_oscillatorParams.timeStepStart);
+                    [[fallthrough]]
+                case boolean_and(shape_oscillatorParams.shape, WaveShape::Square_enum):
+                    outShape += Square(shape_oscillatorParams.amplitude
+                        , shape_oscillatorParams.frequencyHz
+                        , shape_oscillatorParams.timeStepStart);
+                    [[fallthrough]]
+                case boolean_and(shape_oscillatorParams.shape, WaveShape::ForwardSawtooth_enum):
+                    outShape += forwardSaw(shape_oscillatorParams.amplitude
+                        , shape_oscillatorParams.frequencyHz
+                        , shape_oscillatorParams.timeStepStart);
+                    [[fallthrough]]
+                case boolean_and(shape_oscillatorParams.shape, WaveShape::ReverseSawtooth_enum):
+                    outShape += ReverseSaw(shape_oscillatorParams.amplitude
+                        , shape_oscillatorParams.frequencyHz
+                        , shape_oscillatorParams.timeStepStart);
+                    [[fallthrough]]
+                case boolean_and(shape_oscillatorParams.shape, WaveShape::WhiteNoise_enum):
+                    outShape += whiteNoise(shape_oscillatorParams.amplitude_constDouble);
+                    [[fallthrough]]
+                case boolean_and(shape_oscillatorParams.shape, WaveShape::BrownNoise_enum):
+                    outShape += brownNoise(shape_oscillatorParams.amplitude
+                        , shape_oscillatorParams.frequencyHz
+                        , shape_oscillatorParams.timeStepStart);
+                    [[fallthrough]]
+                case boolean_and(shape_oscillatorParams.shape, WaveShape::PinkNoise_enum):
+                    outShape += pinkNoise(shape_oscillatorParams.amplitude
+                        , shape_oscillatorParams.frequencyHz
+                        , shape_oscillatorParams.timeStepStart);
+                    [[fallthrough]]
+                case boolean_and(shape_oscillatorParams.shape, WaveShape::YellowNoise_enum):
+                    outShape += yellowNoise(shape_oscillatorParams.amplitude
+                        , shape_oscillatorParams.frequencyHz
+                        , shape_oscillatorParams.timeStepStart);
+                    [[fallthrough]]
+                case boolean_and(shape_oscillatorParams.shape, WaveShape::BlueNoise_enum):
+                    outShape += blueNoise(shape_oscillatorParams.amplitude
+                        , shape_oscillatorParams.frequencyHz
+                        , shape_oscillatorParams.timeStepStart);
+                    [[fallthrough]]
+                case boolean_and(shape_oscillatorParams.shape, WaveShape::GreyNoise_enum):
+                    outShape += greyNoise(shape_oscillatorParams.amplitude
+                        , shape_oscillatorParams.frequencyHz
+                        , shape_oscillatorParams.timeStepStart);
+                    [[fallthrough]]
+                default:
+                    throw std::invalid_argument("Unexpected or Unknown wave-shape.");
+                } // End of switch statement
+            } // End of else statement
+            totalOutShape.push_back(outShape);
+        } // End of for loop
+        return totalOutShape;
+    } // End of generateComplexSignal() function
 
     /**
     @brief Determines if the specified wave-shape should be present in the complex wave-shape.
