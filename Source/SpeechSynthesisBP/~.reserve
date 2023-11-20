@@ -1,4 +1,306 @@
 
+
+
+    /**
+    @brief Generates formant signals based on specific wave-shape parameters.
+    @details Generates formant signals based on specific wave-shape parameters.
+    @param shapes_oscilatorParamsVec: The complex wave-shapes to develop.
+    @param customUpdateCallback: A lambda function that can be used to update the oscillator parameters.
+    @return double (The oscillator signal at time-step t).*/
+    template <
+        typename AmplitudeType = double,
+        typename FrequencyHzType = double,
+        typename ThetaType = double,
+        typename ShapeType = enum class WaveShape,
+        typename OutputShapeType = double,
+        typename TimeStepType = double,
+        typename OscillatorParameterType = OscillatorParameters<AmplitudeType
+        , FrequencyHzType
+        , ThetaType
+        , ShapeType
+        , OutputShapeType
+        , TimeStepType>
+    >
+    requires ( bitwise_ops_compatible_shapeType<ShapeType> )
+    double generateComplexSignal(const std::vector<OscillatorParameterType>& shapes_oscillatorParamsVec
+        , UpdateFunction<OscillatorParameterType, OutputShapeType> customUpdateCallback) {
+
+        double outShape {};
+
+        for (const OscillatorParameterType& shape_oscillatorParams : shapes_oscillatorParamsVec) {
+
+            const WaveShape& shape_enumClass = shape_oscillatorParams.shape;
+            double timeStep_Double = shape_oscillatorParams.timeStepStart;
+            const double& timeStepEnd_constDouble = !shape_oscillatorParams.usesTimeInterval_flag ? 
+                shape_oscillatorParams.timeStepEnd : 
+                shape_oscillatorParams.timeStepStart 
+                + shape_oscillatorParams.timeInterval.value;
+
+            while (timeStep_Double < timeStepEnd_constDouble) {
+                // Custom updates using the optional lambda function
+                if (customUpdateCallback) {
+                    outShape = customUpdateCallback(
+                        std::make_shared<Oscillator>(*this),
+                        shape_oscillatorParams,
+                        outShape);
+                } else {
+
+                    bool isShapeSpecified_flag = false;
+
+                    if (hasShape(shape_enumClass, WaveShape::Sine_enum)) {
+                        outShape += sine(shape_oscillatorParams.amplitude
+                            , shape_oscillatorParams.frequencyHz
+                            , shape_oscillatorParams.timeStepStart
+                            , shape_oscillatorParams.theta);
+                        isShapeSpecified_flag = true;
+                    }
+
+                    if (hasShape(shape_enumClass, WaveShape::Cosine_enum)) {
+                        outShape += cosine(shape_oscillatorParams.amplitude
+                            , shape_oscillatorParams.frequencyHz
+                            , shape_oscillatorParams.timeStepStart
+                            , shape_oscillatorParams.theta);
+                        isShapeSpecified_flag = true;
+                    }
+
+                    if (hasShape(shape_enumClass, WaveShape::QuarterSine_enum)) {
+                        outShape += quarterSine(shape_oscillatorParams.amplitude
+                            , shape_oscillatorParams.frequencyHz
+                            , shape_oscillatorParams.timeStepStart
+                            , shape_oscillatorParams.theta);
+                        isShapeSpecified_flag = true;
+                    }
+
+                    if (hasShape(shape_enumClass, WaveShape::HalfSine_enum)) {
+                        outShape += halfSine(shape_oscillatorParams.amplitude
+                            , shape_oscillatorParams.frequencyHz
+                            , shape_oscillatorParams.timeStepStart
+                            , shape_oscillatorParams.theta);
+                        isShapeSpecified_flag = true;
+                    }
+
+                    if (hasShape(shape_enumClass, WaveShape::Triangle_enum)) {
+                        outShape += Triangle(shape_oscillatorParams.amplitude
+                            , shape_oscillatorParams.frequencyHz
+                            , shape_oscillatorParams.timeStepStart);
+                        isShapeSpecified_flag = true;
+                    }
+
+                    if (hasShape(shape_enumClass, WaveShape::Square_enum)) {
+                        outShape += Square(shape_oscillatorParams.amplitude
+                            , shape_oscillatorParams.frequencyHz
+                            , shape_oscillatorParams.timeStepStart);
+                        isShapeSpecified_flag = true;
+                    }
+
+                    if (hasShape(shape_enumClass, WaveShape::ForwardSawtooth_enum)) {
+                        outShape += forwardSaw(shape_oscillatorParams.amplitude
+                            , shape_oscillatorParams.frequencyHz
+                            , shape_oscillatorParams.timeStepStart);
+                        isShapeSpecified_flag = true;
+                    }
+
+                    if (hasShape(shape_enumClass, WaveShape::ReverseSawtooth_enum)) {
+                        outShape += ReverseSaw (shape_oscillatorParams.amplitude
+                            , shape_oscillatorParams.frequencyHz
+                            , shape_oscillatorParams.timeStepStart);
+                        isShapeSpecified_flag = true;
+                    }
+
+                    if (hasShape(shape_enumClass, WaveShape::WhiteNoise_enum)) {
+                        outShape += whiteNoise (shape_oscillatorParams.amplitude
+                            , shape_oscillatorParams.frequencyHz
+                            , shape_oscillatorParams.timeStepStart);
+                        isShapeSpecified_flag = true;
+                    }
+
+                    if (hasShape(shape_enumClass, WaveShape::BrownNoise_enum)) {
+                        outShape += brownNoise (shape_oscillatorParams.amplitude
+                            , shape_oscillatorParams.frequencyHz
+                            , shape_oscillatorParams.timeStepStart);
+                        isShapeSpecified_flag = true;
+                    }
+
+                    if (hasShape(shape_enumClass, WaveShape::PinkNoise_enum)) {
+                        outShape += pinkNoise (shape_oscillatorParams.amplitude
+                            , shape_oscillatorParams.frequencyHz
+                            , shape_oscillatorParams.timeStepStart);
+                        isShapeSpecified_flag = true;
+                    }
+
+                    if (hasShape(shape_enumClass, WaveShape::YellowNoise_enum)) {
+                        outShape += yellowNoise (shape_oscillatorParams.amplitude
+                            , shape_oscillatorParams.frequencyHz
+                            , shape_oscillatorParams.timeStepStart);
+                        isShapeSpecified_flag = true;
+                    }
+
+                    if (hasShape(shape_enumClass, WaveShape::BlueNoise_enum)) {
+                        outShape += blueNoise (shape_oscillatorParams.amplitude
+                            , shape_oscillatorParams.frequencyHz
+                            , shape_oscillatorParams.timeStepStart);
+                        isShapeSpecified_flag = true;
+                    }
+
+                    if (hasShape(shape_enumClass, WaveShape::GreyNoise_enum)) {
+                        outShape += greyNoise (shape_oscillatorParams.amplitude
+                            , shape_oscillatorParams.frequencyHz
+                            , shape_oscillatorParams.timeStepStart);
+                        isShapeSpecified_flag = true;
+                    }
+
+                    if (!isShapeSpecified_flag) 
+                        throw std::invalid_argument("Unexpected or Unknown wave-shape.");
+
+                }
+                timeStep_constDouble += timeIntervalOption_constDouble;
+            } // End of while loop
+        } // End of for loop
+
+        return outShape;
+    } // End of generateComplexSignal() function
+//
+    /**
+    @brief Generates a monolithic signal based on the specified wave-shape.
+    @details Generates a monolithic signal based on the specified wave-shape.
+    @param amplitude_constDouble - The amplitude of the oscillator signal.
+    @param frequencyHz_double - The frequency of the oscillator signal.
+    @param theta_constDouble - The phase of the oscillator signal.
+    @param shape - The wave-shape of the oscillator signal.
+    @param OutputShape_numericType - The output shape of the oscillator signal.
+    @param timeStepStart_constDouble - The time-step (t) at which the oscillator is to be evaluated.
+    @param timeInterval - The time-step (t) at which the oscillator is to be evaluated.
+    @param customUpdateCallback - A lambda function that can be used to update the oscillator parameters.
+    @return double (The oscillator signal at time-step t).*/
+    double generateBasicSignal(const OscillatorParameters<>& oscillatorParams
+        , UpdateFunction<>& customUpdateCallback
+    ) const {
+        return generateBasicSignal(amplitude_constDouble
+            , frequencyHz_double
+            , theta_constDouble
+            , shape
+            , OutputShape_numericType
+            , timeStepStart_constDouble
+            , timeStepStart_constDouble + timeInterval.value
+            , customUpdateCallback);
+    }
+//
+    /**
+    @brief The UpdateFunction class is used to (custom) update the oscillator parameters at time-step (t).
+    @details The UpdateFunction class is used to (custom) update the oscillator parameters at time-step (t).
+    @param Oscillator_sharedPtr: A shared pointer to the Oscillator class (*self).
+    @param Amplitude_numericType: The amplitude of the oscillator signal.
+    @param FrequencyHz_numericType: The frequency of the oscillator signal.
+    @param Theta_numericType: The phase of the oscillator signal.
+    @param Shape_numericType: The wave-shape of the oscillator signal.
+    @param OutputShape_numericType: The output shape of the oscillator signal.
+    @param TimeStepStart_numericType: The time-step (t) at which the oscillator is to be evaluated.
+    @param TimeStepEnd_numericType: The time-step (tEnd) at which the oscillator is to be evaluated.
+    @param TimeStepInterval_TimeIntervalType: The time-step (t) at which the oscillator is to be evaluated.
+    @return OutputShape_numericType (The oscillator signal at time-step t).*/
+    template <
+        typename Amplitude_numericType = double
+        , typename FrequencyHz_numericType = double
+        , typename Theta_numericType = double
+        , typename Shape_numericType = enum class WaveShape
+        , typename OutputShape_numericType = double
+        , typename TimeStepStart_numericType = double
+        , typename TimeStepEnd_numericType = double
+    >
+    using UpdateFunction = 
+        std::function<OutputShape_numericType(
+            std::shared_ptr<class Oscillator>
+            , const Amplitude_numericType
+            , const FrequencyHz_numericType
+            , const Theta_numericType
+            , const Shape_numericType
+            , OutputShape_numericType
+            , const TimeStepStart_numericType
+            , const TimeStepEnd_numericType
+        )>;
+//
+    /**
+    @brief Generates a mxed signal based on the specified wave-shape.
+    @param shapes_constVec: The wave-shapes to generate.
+    @param timeStepStart_constDouble: The time-step (t) at which the oscillator is to be evaluated.
+    @param timeIntervalOption_constDouble: (option 2)The time-step (t) at which the oscillator is to be evaluated.
+    @param customUpdateCallback: A lambda function that can be used to update the oscillator parameters.
+    @return double (The oscillator signal at time-step t).*/
+    double generateComplexSignal(
+        const std::vector<WaveShape>& shapes_constVec, 
+        const double timeStepStart_constDouble, 
+        const double timeInterval_constDouble,
+        UpdateFunction<> customUpdateCallback) {
+            return generateComplexSignal(shapes_constVec
+                , timeStepStart_constDouble
+                , timeStepStart_constDouble + timeInterval_constDouble
+                , customUpdateCallback);
+        }
+//
+    Oscillator(
+    const double amplitude = 0.6f, 
+    const double frequency = 440.0f, 
+    const double phase = 0.0f)
+    : amplitude_double(amplitude), frequencyHz_double(frequency), theta_double(phase) {}
+//
+    /**
+    @brief Generates a signal based on the specified wave-shape.
+    @param amplitude: The amplitude of the oscillator signal. */
+    void setAmplitude(const double amplitude) noexcept {
+        amplitude_double = amplitude;
+    }
+//
+    template <typename T, typename U>
+    concept bitwise_ops = requires(T a, U b) {
+        // Check if both operands are enum types
+        static_cast<uint32_t>(a) & static_cast<uint32_t>(b);
+        static_cast<uint32_t>(a) | static_cast<uint32_t>(b);
+    };
+
+    template <typename T, typename U>
+    concept bitwise_ops_compatible = requires(T a, U b) {
+        // Check if both operands are WaveShapeType or ComplexWaveShape
+        static_cast<uint32_t>(a) & static_cast<uint32_t>(b);
+        static_cast<uint32_t>(a) | static_cast<uint32_t>(b);
+    };
+//
+    template <typename T, typename U>
+    concept bitwise_ops = requires(T a, U b) {
+        // Check if both operands are enum types
+        static_cast<uint32_t>(a) & static_cast<uint32_t>(b);
+        static_cast<uint32_t>(a) | static_cast<uint32_t>(b);
+    };
+//
+    /**
+    @brief The UpdateFunction class is used to (custom) update the oscillator parameters at time-step (t).
+    @details The UpdateFunction class is used to (custom) update the oscillator parameters at time-step (t).
+    @param Amplitude_numericType: The amplitude of the oscillator signal.
+    @param FrequencyHz_numericType: The frequency of the oscillator signal.
+    @param Theta_numericType: The phase of the oscillator signal.
+    @param Shape_numericType: The wave-shape of the oscillator signal.
+    @param OutputShape_numericType: The output shape of the oscillator signal.
+    @param TimeStep_numericType: The time-step (t) at which the oscillator is to be evaluated.
+    @return OutputShape_numericType (The oscillator signal at time-step t).*/
+    template <
+        typename Amplitude_numericType = double
+        , typename FrequencyHz_numericType = double
+        , typename Theta_numericType = double
+        , typename Shape_numericType = enum class WaveShape
+        , typename OutputShape_numericType = double
+        , typename TimeStep_numericType = double
+    >
+    using UpdateFunction = 
+        std::function<OutputShape_numericType(
+            std::shared_ptr<class Oscillator>&
+            , Amplitude_numericType&   // Amplitude
+            , FrequencyHz_numericType& // Frequency in Hz
+            , Theta_numericType&       // Theta
+            , Shape_numericType&       // Shape
+            , OutputShape_numericType& // Output Shape
+            , const TimeStep_numericType& // Time Step Start
+            , const TimeStep_numericType& // Time Step End
+            , const TimeInterval&  // Time Interval (optional)
+        )>;
 //
 sin approximation (performance)
 
