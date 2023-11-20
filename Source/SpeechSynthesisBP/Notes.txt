@@ -39,3 +39,5 @@ Adult pitch range is 75-250 Hz and Children pitch range is 200-500 Hz. ref.(Effe
 
 Ideally within the log-mels will be encoded the per-sample frequency, amplitude, duration, and the constituent wave-shapes of each phone in the speech signal 
 to reliably reconstruct the original signal and or alter its attributes in a meaningful way.
+
+Theatrical speech is a form of speech used in theatre which involves the use of clear enunciation, projection, and the use of vocal inflections, which may be uncommon in everyday speech.
