@@ -3,6 +3,7 @@
 #pragma once
 
 #include <memory>
+#include <vector>
 
 #include "CoreMinimal.h"
 #include "Components/AudioComponent.h"
@@ -11,7 +12,7 @@
 #include "Public/EmotiveCurve.h"
 #include "Public/DurationCurve.h"
 #include "Public/ARPABETAudio.h"
-#include <vector>
+#include "Public/Oscillator.h"
 #include "FPhone.h"
 
 // begin: phone libraries
