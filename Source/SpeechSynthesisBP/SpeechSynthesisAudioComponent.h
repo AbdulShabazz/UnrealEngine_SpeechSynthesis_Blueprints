@@ -112,6 +112,174 @@ class SPEECHSYNTHESISBP_API USpeechSynthesisAudioComponent : public UAudioCompon
 		return 0;
 	}
 
+	// re-speecher file-loading utilities //
+	
+	/** Load .WAV data for USpeechSynthesisBPLibrary from persistent disk */
+	UFUNCTION(BlueprintCallable, Category = TextToSpeech, meta = ( keywords = "TTS, SpeechSynthesis, TextToSpeech", DisplayName = "ARPABETAudio: fromWAVFile" ))
+	bool fromWAVFile(UPARAM(DisplayName = "filename") const FText& filename_ConstFTextRef)
+	{
+		bool retval{};
+		/*
+		// Create a FWaveFormat object
+
+		FWaveFormat WaveFormat_FWaveFormatFile{};
+		WaveFormat_FWaveFormatFile.NumChannels = 2; // Stereo
+		WaveFormat_FWaveFormatFile.SampleRate = 44100; // 44.1 kHz
+
+		// Create a FByteBulk object
+
+		FByteBulk ByteBulk_FByteBulkObj{};
+		ByteBulk_FByteBulkObj.WaveFormat = WaveFormat_FWaveFormatFile;
+
+		// Write the speechSample_TensorFloat32 to the FByteBulk object
+
+		ByteBulk_FByteBulkObj.Write(speechSample_TensorFloat32.GetData(), speechSample_TensorFloat32.Num());
+
+		// Save the FByteBulk object to disk
+
+		FFileHandle fh_FileHandle{};
+		fh_FileHandle.Open(filename_ConstFTextRef, EFileWrite::FILEWRITE_Append);
+		retval = ByteBulk_FByteBulkObj.Save(fh_FileHandle);
+		fh_FileHandle.Close();
+		*/
+		return retval;
+	};
+
+	/** Load .FLAC data for USpeechSynthesisBPLibrary from persistent disk */
+	UFUNCTION(BlueprintCallable, Category = TextToSpeech, meta = ( keywords = "TTS, SpeechSynthesis, TextToSpeech", DisplayName = "Speech Synthesis: fromFLACFile" ))
+	bool fromFLACFile(UPARAM(DisplayName = "filename") const FText& filename_ConstFTextRef)
+	{
+		bool retval{};
+		/*
+		// Create a FLAC Encoder from the speechSample_TensorFloat32
+
+		FFLACEncoder Encoder{};
+
+		// Set the FLAC Encoder's parameters
+
+		Encoder.SetChannels(2);
+		Encoder.SetBitRate(192000);
+		Encoder.SetSampleRate(44100);
+
+		// Initialize the FLAC Encoder
+
+		Encoder.Initialize();
+
+		// Write the data to the FLAC Encoder
+
+		FByteStream ByteStream_FByteStream{};
+
+		for (const uint8& byte : speechSample_TensorFloat32)
+		{
+			ByteStream_FByteStream.Add(byte);
+		}
+
+		ByteStream_FByteStream.Seek(0);
+
+		Encoder.WriteData(ByteStream_FByteStream);
+
+		TArray<uint8> EncodedData_TArrayUInt8 = Encoder.GetEncodedData();
+
+		// Flush the FLAC Encoder
+
+		Encoder.Flush();
+
+		// Close the FLAC Encoder
+
+		Encoder.Close();
+
+		// Save the FLAC Encoder to a file
+
+		retval = FFileHelper::SaveArrayToFile(EncodedData_TArrayUInt8, *filename_ConstFTextRef);
+		*/
+		return retval;
+	};
+
+	/** Load .voice data for USpeechSynthesisBPLibrary from persistent disk */
+	UFUNCTION(BlueprintCallable, Category = TextToSpeech, meta = ( keywords = "TTS, SpeechSynthesis, TextToSpeech", DisplayName = "Speech Synthesis: fromVoiceFile" ))
+	bool fromVoiceFile(UPARAM(DisplayName = "filename") const FText& filename_ConstFStringRef)
+	{
+		bool retval{};
+
+		/*
+
+			VoiceFile.WavParams.SampleRateInHz_UInt64 = 44100;
+			VoiceFile.WavParams.FrequencyInHz_UInt64T = 440;
+			VoiceFile.WavParams.DurationInSeconds_UInt64T = 5;
+			VoiceFile.WavParams.Amplitude_UIn64T = 16000;
+			VoiceFile.WavParams.BitsPerSample_UInt64T = 32;
+
+			// Populate VoiceFile.AudioData from the en vivo (WAV) file buffer or generated audio data
+			
+			TSharedRef<TJsonWriter<>> Writer = TJsonWriterFactory<>::Create(&filename_ConstFStringRef);
+
+			FJsonSerializer::Serialize(Writer, FJsonObjectConverter::UStructToJsonObject(FVoiceFile::StaticStruct(), &VoiceFile));
+
+			FString SaveDirectory = FPaths::ProjectSavedDir();
+			FString FileName = filename_ConstFStringRef; // "MyVoiceFile.voice";
+			FString FilePath = SaveDirectory + "/" + FileName;
+
+			FFileHelper::SaveStringToFile(OutputString, *FilePath);
+
+		*/
+
+		return retval;
+	};
+
+	// Lossy Audio Formats
+
+	/** Load .MP3 voice data for USpeechSynthesisBPLibrary from persistent disk */
+	UFUNCTION(BlueprintCallable, Category = TextToSpeech, meta = ( keywords = "TTS, SpeechSynthesis, TextToSpeech", DisplayName = "Speech Synthesis: fromMP3File" ))
+	bool fromMP3File(UPARAM(DisplayName = "filename") const FText& filename_ConstFTextRef)
+	{
+		bool retval{};
+		/*
+		// Create a ByteReader from the speechSample_TensorFloat32
+
+		FByteReader ByteReader(filename_ConstFTextRef);
+
+		// Create an MP3Encoder from the ByteReader
+
+		FMP3Encoder MP3Encoder(ByteReader);
+
+		// Encode the MP3Encoder
+
+		MP3Encoder.Encode();
+
+		// Get the MP3Encoder's encoded data
+
+		TArray<uint8> EncodedData_TArrayUInt8 = MP3Encoder.GetEncodedData();
+
+		// Write the MP3Encoder to a file
+
+		retval = FFileHelper::SaveArrayToFile(EncodedData_TArrayUInt8, filename_ConstFTextRef);
+		*/
+		return retval;
+	};
+
+	/** Load .AAC voice data for USpeechSynthesisBPLibrary from persistent disk */
+	UFUNCTION(BlueprintCallable, Category = TextToSpeech, meta = ( keywords = "TTS, SpeechSynthesis, TextToSpeech", DisplayName = "Speech Synthesis: fromAACFile" ))
+	bool fromAACFile(UPARAM(DisplayName = "filename") const FText& filename_ConstFTextRef)
+	{
+		bool retval{};
+		/*
+		// Create a new USoundWave object
+
+		TSharedPtr<USoundWave>() SoundWave_Ptr = NewObject<USoundWave>();
+		SoundWave_Ptr->SetFormat(EAC_AAC);
+
+		// Create a new FByteReader object
+
+		TSharedPtr<FByteBulkData>() ByteBulkData_Ptr = NewObject< FByteBulkData>();
+		ByteBulkData_Ptr->SetData(ByteStream);
+
+		// Set the USoundWaves's asset to disk
+
+		retval = SounWave_Ptr->SaveToFile(filename_ConstFTextRef);
+		*/
+		return retval;
+	};
+
 	// Other member functions:
 
 	// vowels > front > ARPABET UV >
