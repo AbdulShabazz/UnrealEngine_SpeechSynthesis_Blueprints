@@ -1,3 +1,6 @@
+Speech Synthesis Library (Original Pull Request URL)
+https://github.com/EpicGames/UnrealEngine/pull/11021
+
 Manually adding Unreal Engine Blueprint macros to a project seems to somehow break subsequent C++ rebuilds operations or are simply just ignored by the UE .INI pkg compiler! Hmm.
 Adding custom blueprints as C++ compenents in the UE event graph seems to work fine. Each blueprint class is then compiled as a separate implementation file.
 It appears verbals consonats and vowels carry the most information in audio speech. The final library should be able to generate these sounds with a high degree of separation.
