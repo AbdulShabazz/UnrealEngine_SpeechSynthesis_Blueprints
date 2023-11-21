@@ -43,6 +43,8 @@ public:
     TimeInterval timeInterval{}; 
     /*bool isaComplexWaveShape_flag{};*/
     bool usesTimeInterval_flag{};
+    bool advanceSample_flag{};
+    int8_t formantNumber_Int8{};
 
     // Constructor, getters, setters, etc. as needed
 };
