@@ -472,16 +472,16 @@ public:
         typename ShapeType = WaveShape,
         typename OutputShapeType = double,
         typename TimeStepType = double,
-        typename OscillatorParameterType
-    >
-    requires ( bitwise_ops_compatible_shapeType<ShapeType> )
-    std::vector<double> generateComplexSignal(
-        const std::vector<OscillatorParameters<AmplitudeType
+        typename OscillatorParameterType = OscillatorParameters<AmplitudeType
         , FrequencyHzType
         , ThetaType
         , ShapeType
         , OutputShapeType
-        , TimeStepType>>& shapes_oscilatorParamsVec
+        , TimeStepType>
+    >
+    requires ( bitwise_ops_compatible_shapeType<ShapeType> )
+    std::vector<double> generateComplexSignal(
+        const std::vector<OscillatorParameterType>& shapes_oscilatorParamsVec
         , UpdateFunction<OscillatorParameterType, OutputShapeType> customUpdateCallback) {
 
         std::vector<double> totalOutShape{};
@@ -573,8 +573,16 @@ public:
                     throw std::invalid_argument("Unexpected or Unknown wave-shape.");
                 } // End of switch statement
             } // End of else statement
-            totalOutShape.push_back(outShape);
+
+            /* 
+            Each sample may have multiple formants, 
+            so only advance the sample when the 
+            advanceSample_flag is set to true.*/
+            if ( shape_oscillatorParams.advanceSample_flag ) {
+                totalOutShape.push_back(outShape);
+            }
         } // End of for loop
+        
         return totalOutShape;
     } // End of generateComplexSignal() function
 
