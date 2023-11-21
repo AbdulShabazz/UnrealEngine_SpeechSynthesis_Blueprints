@@ -45,6 +45,29 @@ public:
         SpeechLibrary.SetSampleWidth(sample_width_uint32);
         SpeechLibrary.SetFrameRate(frame_rate_hz_uint32);
 
+        // Optional: re-speecher functionality
+        /*
+        SpeechLibrary.fromWAVFile("Sara.wav");   // lossless (Windows)
+        SpeechLibrary.fromFLACFile("Sara.flac");  // lossless (Linux, MAC)
+        SpeechLibrary.fromVOICEFile("Sara.voice");  // lossless
+        SpeechLibrary.fromMP3File("Sara.mp3");   // lossy
+        SpeechLibrary.fromAACFile("Sara.aac");   // lossy
+
+        // Compile ...
+
+        UARPABETAudio Voice = SpeechLibrary.Voice();
+
+        // Play back the synthesized speech
+
+        Voice.PlayBack();
+
+        Voice.toWAVFile("Sara.wav");   // lossless (Windows)
+        Voice.toFLACFile("Sara.flac");  // lossless (Linux, MAC)
+        Voice.toVOICEFile("Sara.voice");  // lossless 
+        Voice.toMP3File("Sara.mp3");   // lossy 
+        Voice.toAACFile("Sara.aac");   // lossy
+        */
+
         UProsodyCurve ProsodyCurveObjArray{};
         UDurationCurve DurationCurveObjArray{};
         UEmotiveCurve EmotiveCurveObjArray{};
