@@ -6,12 +6,12 @@ Adding custom blueprints as C++ compenents in the UE event graph seems to work f
 It appears verbals consonats and vowels carry the most information in audio speech. The final library should be able to generate these sounds with a high degree of separation.
 
 Circular convolution on a pair of finite length signals can be accomplished by performing a fast fourier transform on the signals, 
-multiplying them (in the Frequency domain), then performing an inverse fourier transform on the signal, and finally scaling it by the bit-depth-per-sample 
+multiplying them (in the Frequency domain), then performing an inverse fourier transform on the signal, and finally scaling it by the bit-depth-per-frame 
 (ie. the N bit dynamic range) to avoid clipping (lossy).
 
-BitDepthPerSample = 16; Encodes 2^16 = 65536 possible amplitude values per sample!
+BitDepthPerFrame = 16; Encodes 2^16 = 65536 possible amplitude values per frame!
 
-SampleRate = 44100; Encodes 44100 frequency values per sample per second. Nyquist frequency is 22050 Hz. (Human hearing range is 20 Hz to 20 kHz.)
+FrameRate = 44100; Encodes 44100 frequency values per frame per second. Nyquist frequency is 22050 Hz. (Human hearing range is from 20 Hz to 20 kHz)
 
 Spectrograms offer realism, computational simplicity, and ease of use compared to other methods of speech synthesis such concatenative- and formant synthesis.
 However, this library will support formant sythesis due to its ability to generate a wider range of sounds and its ability to generate sounds with a higher degree of expression separation.
@@ -40,7 +40,23 @@ It has a corpus of 393 hours of speech from 1,371 third-, fourth-, and fifth-gra
 Adult pitch range is 75-250 Hz and Children pitch range is 200-500 Hz. ref.(Effect of Prosody Modification on Children’s ASR & Speech Intelligibility, 
 2017-2019, IEEE Signal Processing Letters, vol. 24 (issue 11) pp. 1749-1753, https://doi.org/10.1109/LSP.2017.2756347; 1781-1785, https://doi.org/10.1109/LSP.2019.2949241)
 
-Ideally within the log-mels will be encoded the per-sample frequency, amplitude, duration, and the constituent wave-shapes of each phone in the speech signal 
+Ideally within the log-mels will be encoded the per-frame frequency, amplitude, duration, and the constituent wave-shapes of each phone in the speech signal 
 to reliably reconstruct the original signal and or alter its attributes in a meaningful way.
 
-Theatrical speech is a form of speech used in theatre which involves the use of clear enunciation, projection, and the use of vocal inflections, which may be uncommon in everyday speech.
+Theatrical speech is a form of speech primarily used in theatre which involves the use of clear enunciation, projection, and the use of vocal inflection, which is not common in everyday speech.
+
+Higher quality headphones and hgh-end audio speakers-- because they have a wider frequency response (eg. from 0 hz to 768 khz) which in turn require a fast diaphram/woofer response-- 
+are able to reproduce the higher frequency components of audio more faithfully; a fast diaphram/woofer response also facilitates improved detail retrieval from the audio signal.
+In audio, these higher frequency components are often referred to as the "air" or "sparkle" of the audio and aid the listener in essence to "Hear the room".
+In speech, when they are not skillfully employed, these higher frequency components often contribute to the "sibilance" of the audio signal which though it may add some character to a particular voice does not 
+aid the listener to "Perceive the quality and fidelity of the voice or the room". However, when skillfully employed, these higher frequency components contribute to the intelligibility, 
+sharpness and quality of the spoken voice. 
+
+One particular wave-shape motif decoding strategy is to employ a neural network to classify the wave-shapes utilized for each phone in the audio speech signal. Another strategy is to use 
+a state-machine which represents each wave-shape motif and compare it against the current frame. The subsequemnt closest match to the frame during that timestep is assigned the responsibility 
+to contribute as a formant to that frame during later synthesis. Any non-conforming frame-constituents are marked as noise and their frequency-, amplitude-, 
+and duration- spectral components are colorized into the noise band (eg. white, brown, yellow, pink, blue, grey) for later synthesis.
+
+Machine learning needs to be treated like a gameplay session for the model. Gameplay sessions are basically learning sessions. The player (ie. model) is learning the rules for the game. 
+Fun games are those that have the rules, no matter how complex, layed out at the start of the game. ie. There are no hidden states or rules. 
+The player is able to learn the rules and the game is fun. If the player is not able to invoke all of the rules, the rules should be invoked by NPCs for the player to witness as a kind of foreshadowing.
