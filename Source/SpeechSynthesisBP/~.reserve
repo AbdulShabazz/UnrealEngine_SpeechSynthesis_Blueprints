@@ -1,6 +1,70 @@
 
 
+//
+    /**
+    @brief Generates a Quarter-Sine wave.
+    @param amplitude_constDouble: The amplitude of the oscillator signal.
+    @param frequencyHz_double: The frequency of the oscillator signal.
+    @param timeStep_constDouble: The time-step (t) at which the oscillator is to be evaluated.
+    @param theta_constDouble: The phase of the oscillator signal.
+    @param quarterPeriod_constDouble: The quarter-period of the oscillator signal.
+    @return double ( The oscillator signal at time-step t).*/
+    double quarterSine(const double amplitude_constDouble
+        , const double frequencyHz_double
+        , const double timeStep_constDouble
+        , const double theta_constDouble) const {
+            const double RF = 1 / frequencyHz_double * timeStep_constDouble; // Relative Frequency
+        return amplitude_constDouble * std::sin(0.5f * PI_HiRes * RF + theta_constDouble);
+    }
 
+    /**
+    @brief Generates a Half-Sine wave.
+    @param amplitude_constDouble: The amplitude of the oscillator signal.
+    @param frequencyHz_double: The frequency of the oscillator signal.
+    @param timeStep_constDouble: The time-step (t) at which the oscillator is to be evaluated.
+    @param theta_constDouble: The phase of the oscillator signal.
+    @return double ( The oscillator signal at time-step (t).*/
+    double halfSine(const double amplitude_constDouble
+        , const double frequencyHz_double
+        , const double timeStep_constDouble
+        , const double theta_constDouble) const {
+            const double RF = 1 / frequencyHz_double * timeStep_constDouble; // Relative Frequency
+        return amplitude_constDouble * std::sin(PI_HiRes * RF + theta_constDouble);
+    }
+//
+    /**
+    @brief Generates a Quarter-Sine wave.
+    @param amplitude_constDouble: The amplitude of the oscillator signal.
+    @param frequencyHz_double: The frequency of the oscillator signal.
+    @param timeStep_constDouble: The time-step (t) at which the oscillator is to be evaluated.
+    @param theta_constDouble: The phase of the oscillator signal.
+    @param quarterPeriod_constDouble: The quarter-period of the oscillator signal.
+    @return double ( The oscillator signal at time-step t).*/
+    double quarterSine(const double amplitude_constDouble
+        , const double frequencyHz_double
+        , const double timeStep_constDouble
+        , const double theta_constDouble) const {
+            const double RF = 1 / frequencyHz_double * timeStep_constDouble; // Relative Frequency
+            const double quarterPeriod_constDouble = 1 / (4 * frequencyHz_double);
+        return amplitude_constDouble * std::sin(2 * PI_HiRes * std::fmod(std::abs(timeStep_constDouble), quarterPeriod_constDouble) + theta_constDouble);
+    }
+
+    /**
+    @brief Generates a Half-Sine wave.
+    @param amplitude_constDouble: The amplitude of the oscillator signal.
+    @param frequencyHz_double: The frequency of the oscillator signal.
+    @param timeStep_constDouble: The time-step (t) at which the oscillator is to be evaluated.
+    @param theta_constDouble: The phase of the oscillator signal.
+    @return double ( The oscillator signal at time-step (t).*/
+    double halfSine(const double amplitude_constDouble
+        , const double frequencyHz_double
+        , const double timeStep_constDouble
+        , const double theta_constDouble) const {
+            const double RF = 1 / frequencyHz_double * timeStep_constDouble; // Relative Frequency
+            const double halfPeriod_constDouble = 1 / (2 * frequencyHz_double);
+        return amplitude_constDouble * std::sin(2 * PI_HiRes * std::fmod(std::abs(timeStep_constDouble), halfPeriod_constDouble) + theta_constDouble);
+    }
+//
     /**
     @brief Generates formant signals based on specific wave-shape parameters.
     @details Generates formant signals based on specific wave-shape parameters.
