@@ -148,7 +148,10 @@ public:
     
     /**
     @brief Generates a Sine wave.
+    @param amplitude_constDouble: The amplitude of the oscillator signal.
+    @param frequencyHz_double: The frequency of the oscillator signal.
     @param timeStep_constDouble: The time-step (t) at which the oscillator is to be evaluated.
+    @param theta_constDouble: The phase of the oscillator signal.
     @return double ( The oscillator signal at time-step t).*/
     double sine(const double amplitude_constDouble
         , const double frequencyHz_double
@@ -159,7 +162,10 @@ public:
 
     /**
     @brief Generates a Cosine wave.
+    @param amplitude_constDouble: The amplitude of the oscillator signal.
+    @param frequencyHz_double: The frequency of the oscillator signal.
     @param timeStep_constDouble: The time-step (t) at which the oscillator is to be evaluated.
+    @param theta_constDouble: The phase of the oscillator signal.
     @return double ( The oscillator signal at time-step t).*/
     double cosine(const double amplitude_constDouble
         , const double frequencyHz_double
@@ -170,7 +176,11 @@ public:
 
     /**
     @brief Generates a Quarter-Sine wave.
+    @param amplitude_constDouble: The amplitude of the oscillator signal.
+    @param frequencyHz_double: The frequency of the oscillator signal.
     @param timeStep_constDouble: The time-step (t) at which the oscillator is to be evaluated.
+    @param theta_constDouble: The phase of the oscillator signal.
+    @param quarterPeriod_constDouble: The quarter-period of the oscillator signal.
     @return double ( The oscillator signal at time-step t).*/
     double quarterSine(const double amplitude_constDouble
         , const double frequencyHz_double
@@ -182,7 +192,10 @@ public:
 
     /**
     @brief Generates a Half-Sine wave.
+    @param amplitude_constDouble: The amplitude of the oscillator signal.
+    @param frequencyHz_double: The frequency of the oscillator signal.
     @param timeStep_constDouble: The time-step (t) at which the oscillator is to be evaluated.
+    @param theta_constDouble: The phase of the oscillator signal.
     @return double ( The oscillator signal at time-step (t).*/
     double halfSine(const double amplitude_constDouble
         , const double frequencyHz_double
@@ -194,6 +207,8 @@ public:
 
     /**
     @brief Generates a Forward Sawtooth wave.
+    @param amplitude_constDouble: The amplitude of the oscillator signal.
+    @param frequencyHz_double: The frequency of the oscillator signal.
     @param timeStep_constDouble: The time-step (t) at which the oscillator is to be evaluated.
     @return double ( The oscillator signal at time-step (t).*/
     double forwardSaw(const double amplitude_constDouble
@@ -204,6 +219,8 @@ public:
 
     /**
     @brief Generates a Reverse Sawtooth wave.
+    @param amplitude_constDouble: The amplitude of the oscillator signal.
+    @param frequencyHz_double: The frequency of the oscillator signal.
     @param timeStep_constDouble: The time-step (t) at which the oscillator is to be evaluated.
     @return double ( The oscillator signal at time-step (t).*/
     double ReverseSaw(const double amplitude_constDouble
@@ -214,6 +231,8 @@ public:
 
     /**
     @brief Generates a Triangle wave.
+    @param amplitude_constDouble: The amplitude of the oscillator signal.
+    @param frequencyHz_double: The frequency of the oscillator signal.
     @param timeStep_constDouble: The time-step (t) at which the oscillator is to be evaluated.
     @return double (The oscillator signal at time-step t).*/
     double Triangle(const double amplitude_constDouble
@@ -224,6 +243,8 @@ public:
 
     /**
     @brief Generates a Square wave.
+    @param amplitude_constDouble: The amplitude of the oscillator signal.
+    @param frequencyHz_double: The frequency of the oscillator signal.
     @param timeStep_constDouble: The time-step (t) at which the oscillator is to be evaluated.
     @return double (The oscillator signal at time-step t).*/
     double Square(const double amplitude_constDouble
@@ -242,7 +263,9 @@ public:
 
     /**
     @brief Generate a brown noise signal.
-    @param timeStep_constDouble
+    @param amplitude_constDouble: The amplitude of the oscillator signal.
+    @param frequencyHz_double: The frequency of the oscillator signal.
+    @param timeStep_constDouble: The time-step (t) at which the oscillator is to be evaluated.
     @return double */
     double brownNoise(const double amplitude_constDouble
         , const double frequencyHz_double
@@ -263,7 +286,9 @@ public:
 
     /**
     @brief Generate a pink noise signal.
-    @param timeStep_constDouble
+    @param amplitude_constDouble: The amplitude of the oscillator signal.
+    @param frequencyHz_double: The frequency of the oscillator signal.
+    @param timeStep_constDouble: The time-step (t) at which the oscillator is to be evaluated.
     @return double */
     double pinkNoise(const double amplitude_constDouble
         , const double frequencyHz_double
@@ -284,7 +309,9 @@ public:
 
     /**
     @brief Generate a yellow noise signal.
-    @param timeStep_constDouble
+    @param amplitude_constDouble: The amplitude of the oscillator signal.
+    @param frequencyHz_double: The frequency of the oscillator signal.
+    @param timeStep_constDouble: The time-step (t) at which the oscillator is to be evaluated.
     @return double */
     double yellowNoise(const double amplitude_constDouble
         , const double frequencyHz_double
@@ -305,7 +332,9 @@ public:
 
     /**
     @brief Generate a blue noise signal.
-    @param timeStep_constDouble
+    @param amplitude_constDouble: The amplitude of the oscillator signal.
+    @param frequencyHz_double: The frequency of the oscillator signal.
+    @param timeStep_constDouble: The time-step (t) at which the oscillator is to be evaluated.
     @return double */
     double blueNoise(const double amplitude_constDouble
         , const double frequencyHz_double
@@ -326,7 +355,9 @@ public:
 
     /**
     @brief Generate a grey noise signal.
-    @param timeStep_constDouble - The time-step (t) at which the oscillator is to be evaluated.
+    @param amplitude_constDouble: The amplitude of the oscillator signal.
+    @param frequencyHz_double: The frequency of the oscillator signal.
+    @param timeStep_constDouble: The time-step (t) at which the oscillator is to be evaluated.
     @return double */
     double greyNoise(const double amplitude_constDouble
         , const double frequencyHz_double
@@ -348,7 +379,7 @@ public:
     /**
     @brief Generates basic signal based on specific wave-shape parameters.
     @details Generates basic signal based on specific wave-shape parameters.
-    @param shapes_oscilatorParamsVec: The complex wave-shapes to develop.
+    @param shape_oscilatorParamsVec: The complex wave-shapes to develop.
     @param customUpdateCallback: A lambda function that can be used to update the oscillator parameters.
     @return double (The oscillator signal at time-step t).*/
     template <
