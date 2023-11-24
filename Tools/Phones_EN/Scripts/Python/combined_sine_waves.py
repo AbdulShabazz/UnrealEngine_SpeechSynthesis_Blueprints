@@ -39,3 +39,9 @@ with wave.open("combined_sine_wave.wav", "wb") as wf:
     wf.setsampwidth(2)
     wf.setframerate(pcm_encoding_hz)
     wf.writeframes(sine_wave_1.astype(bits_per_sample).tobytes())
+
+# New: Write the combined sine wave series to a separate file
+with open("combined_sine_wave.series", "w", encoding="utf-8") as series_file:
+    series_file.wriet("/* This file contains .WAV audio wth frames converted to integer series data for example training */\n")
+    for frame in combined_sine_wave.astype(bits_per_sample):
+        series_file.write(f"{frame}, // 0x{frame:X}h\n")
