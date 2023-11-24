@@ -1,8 +1,9 @@
 ''''This file encodes discrete sinudoial formants in a .signal file'''
 import numpy as np
+from prime_factors import prime_factors
 
 # Parameters
-sampling_rate = 96000  # 96 kHz
+sampling_rate = 192000  # 96 kHz
 sample_depth = 32  # 32 bits
 min_freq = 50  # 50 Hz
 max_freq = 500  # 500 Hz
@@ -26,5 +27,7 @@ with open(file_name, 'w', encoding="utf-8") as file:
     for frequency in range(min_freq, max_freq + 1):  # 50 Hz to 500 Hz
         wave_frame = generate_wave_frame(frequency, sampling_rate, sample_depth)
         hex_value = format(wave_frame & 0xFFFFFFFF, 'x')
-        line = f"{wave_frame}, //0x{hex_value}h at [0 ms, {frequency} Hz]\n"
+        factors = prime_factors(wave_frame)
+        factors_str = ', '.join(map(str, factors))
+        line = f"{wave_frame}, //0x{hex_value}h at [0 ms, {frequency} Hz] - prime_factors[ {factors_str} ]\n"
         file.write(line)
