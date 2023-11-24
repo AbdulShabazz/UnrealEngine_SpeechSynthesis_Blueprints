@@ -60,3 +60,8 @@ and duration- spectral components are colorized into the noise band (eg. white, 
 Machine learning needs to be treated like a gameplay session for the model. Gameplay sessions are basically learning sessions. The player (ie. model) is learning the rules for the game. 
 Fun games are those that have the rules, no matter how complex, layed out at the start of the game. ie. There are no hidden states or rules. 
 The player is able to learn the rules and the game is fun. If the player is not able to invoke all of the rules, the rules should be invoked by NPCs for the player to witness as a kind of foreshadowing.
+
+Data Types for Floating Points:
+***float***: Typically 32 bits, offers ~7 decimal digits of precision.
+***double***: Typically 64 bits, offers ~15-16 decimal digits of precision.
+***long double***: Implementation-dependent, can be 80, 96, or 128 bits, offering more precision than double.
