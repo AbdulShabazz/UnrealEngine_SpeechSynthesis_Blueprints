@@ -3,7 +3,7 @@ import numpy as np
 from prime_factors import prime_factors
 
 # Parameters
-sampling_rate = 192000  # 96 kHz
+sampling_rate = 96000  # 96 kHz
 sample_depth = 32  # 32 bits
 min_freq = 50  # 50 Hz
 max_freq = 500  # 500 Hz
