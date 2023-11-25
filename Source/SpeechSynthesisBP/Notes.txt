@@ -65,3 +65,8 @@ Data Types for Floating Points:
 ***float***: Typically 32 bits, offers ~7 decimal digits of precision.
 ***double***: Typically 64 bits, offers ~15-16 decimal digits of precision.
 ***long double***: Implementation-dependent, can be 80, 96, or 128 bits, offering more precision than double.
+
+Granted, it is a bit impractical to compute the prime factors for every frame of an audio signal and then attempt to reconstruct the signal (formants) 
+in real-time by matching them with the prime factors of arbitrary frequency, amplitude, and durations. 
+However, the project emphasis is on high fidelity voice synthesis rather than processing speed, 
+and so are not constrained by real-time (signal) reconstruction performance nor interested in the quantization errors introduced by use of the FFT.
