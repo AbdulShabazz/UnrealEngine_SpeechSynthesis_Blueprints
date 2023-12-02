@@ -141,4 +141,11 @@ TODO via ChatGPT-4:
     complex spectrograms or linear-frequency spectrograms with magnitude and phase information are recommended. For applications in machine learning and audio classification where human perception is more relevant, 
     Mel spectrograms or log-Mel spectrograms may be preferred, with the trade-off of reconstruction fidelity.
 
-TODO: Attack Decay Sustain Release (ADSR) envelope for each phone.
+TODO: Implement an Attack-Decay-Sustain-Release (ADSR) envelope for each phone.
+TODO: Include an AUDITION button in each blueprint to allow the user to audition phones before voice synthesis.
+TODO: To add new samples to the library, use the following steps:
+    1. reconstruct the audio file formants. Compute half-periods to improve performance, accuracy, reduce noise, and improve the quality of the synthesized voice.
+    2. generate an audio file spectrogram from the audio file formants
+    3. compare the spectrogram with the original audio file spectrogram, calculate-, and try to minimize- error
+    4. and finally perform a boolen AND of the result of step 3 with Gaussian noise mask, allowing only frames that are in the noise mask ito the signal for a more life-like presentation.
+TODO: For voice remapping, map the library formant ocillators onto the target audio file's ocillator (amplitude) curves (re-speech)
