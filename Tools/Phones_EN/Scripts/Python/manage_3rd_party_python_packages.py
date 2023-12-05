@@ -51,6 +51,7 @@ if __name__ == "__main__":
     $ pip install torch
     $ pip install torchaudio
     $ pip install torchvision
+    $ pip install praat-parselmouth
     ```
 
     ```bash
@@ -58,7 +59,7 @@ if __name__ == "__main__":
     $ pip install librosa
     ```
     """
-    packages = ["wave", "ffmpeg-python", "numpy", "scipy", "matplotlib", "pydub", "torch","torchaudio", "torchvision"]
+    packages = ["wave", "ffmpeg-python", "numpy", "scipy", "matplotlib", "pydub", "torch","torchaudio", "torchvision","praat-parselmouth"]
     # manage_packages("install", packages)
     # manage_packages("uninstall", packages)
     # manage_packages("upgrade", packages)
