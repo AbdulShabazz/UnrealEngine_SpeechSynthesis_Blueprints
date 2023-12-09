@@ -149,3 +149,44 @@ TODO: To add new samples to the library, use the following steps:
     3. compare the spectrogram with the original audio file spectrogram, calculate-, and try to minimize- error
     4. and finally perform a boolen AND of the result of step 3 with Gaussian noise mask, allowing only frames that are in the noise mask ito the signal for a more life-like presentation.
 TODO: For voice remapping, map the library formant ocillators onto the target audio file's ocillator (amplitude) curves (re-speech)
+
+TODO via Bard:
+
+Extracting prosody and emotional curves from audio content to expand the prosody library involves analyzing various acoustic features and mapping them to your target voice library for realistic speech synthesis. Here's a strategy to achieve this:
+
+**1. Feature Extraction:**
+
+* **Prosody:**
+    * **Pitch:** Extract fundamental frequency (f0) contour to capture intonation and inflection.
+    * **Energy:** Analyze short-term energy envelope to identify loudness variations and emphasis.
+    * **Duration:** Measure the duration of phonemes and syllables to understand speaking rate and rhythm.
+* **Emotion:**
+    * **Mel-frequency cepstral coefficients (MFCCs):** Capture spectral envelope variations associated with different emotions.
+    * **Spectral tilt:** Analyze the overall spectral balance for indicators of emotions like sadness or anger.
+    * **Energy and pitch statistics:** Utilize statistical measures of pitch and energy distribution for emotion recognition.
+
+**2. Mapping to Target Voice Library:**
+
+* **Prosody:**
+    * **Statistical modeling:** Train statistical models like GMMs or HMMs to learn the relationship between prosodic features and target voice characteristics.
+    * **Dynamic time warping (DTW):** Align prosodic contours of the source and target voices to capture timing differences.
+    * **Neural networks:** Implement neural networks to learn complex relationships and achieve more nuanced and natural-sounding prosody mapping.
+* **Emotion:**
+    * **Emotion recognition models:** Train machine learning models (e.g., SVM, CNNs) to recognize emotions from the extracted features and map them to the target voice's emotional range.
+    * **Emotional prosody mapping:** Use the predicted emotions to modify the prosodic features of the target voice to convey the desired emotion.
+    * **Blending emotional features:** Combine features extracted from source audio with similar emotional content from the target voice library for a more realistic representation.
+
+**3. User Choice and Customization:**
+
+* **Offer user-selectable options for different prosodic styles (e.g., neutral, emphatic) and emotions.**
+* **Allow users to adjust the intensity of emotional expression.**
+* **Provide feedback mechanisms for users to refine the mapping and personalize their experience.**
+
+**Additional considerations:**
+
+* **Voice quality:** Ensure the target voice library has sufficient diversity and emotional range to handle the desired mapping.
+* **Data availability:** Train your models on a large and diverse dataset of audio recordings with labeled prosody and emotions.
+* **Real-time processing:** Choose efficient algorithms for real-time application of the extracted features.
+
+By applying these strategies and taking into account the various factors, you can effectively extract and map prosody and emotional curves from audio content to your target voice library, enabling users to choose and customize their preferred voice styles and emotions for a more natural and engaging speech synthesis experience.
+
