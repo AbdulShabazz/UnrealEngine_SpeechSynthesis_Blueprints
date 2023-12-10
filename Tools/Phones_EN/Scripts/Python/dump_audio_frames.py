@@ -17,7 +17,11 @@ def dump_audio_frames(fn: str) -> None:
     # Print each sample
     with open(f"{fn_short}__{ext}.series", "w", encoding="utf-8") as f:
 
+        # Calculate the total number of frames
         total_frames = (len(audio) / 1000) * audio.frame_rate
+
+        # Calculate the bit depth
+        bit_depth = audio.sample_width * 8
 
         # Split into channels
         channels = audio.split_to_mono()
@@ -44,7 +48,7 @@ def dump_audio_frames(fn: str) -> None:
         except Exception as e:
             print(tags)
 
-        f.write(f"This .series file displays the audio frames for {fn} [ frames: {total_frames}, length (seconds): {duration_seconds}, bitrate: {bitrate}, audio channels: {len(channels)}, meta tags: {tags} ]\n")
+        f.write(f"This .series file displays the audio frames for {fn} [ frames: {total_frames}, length (seconds): {duration_seconds}, bitrate: {bitrate}, audio channels: {len(channels)}, resolution: {bit_depth}-bit PCM, meta tags: {tags} ]\n")
         for frame_group in zip(*channel_samples):
             # print(f"{frame_group},\n")
             f.write(f"{frame_group},\n")
