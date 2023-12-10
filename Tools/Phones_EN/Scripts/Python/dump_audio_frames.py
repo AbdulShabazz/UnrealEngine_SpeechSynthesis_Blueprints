@@ -9,12 +9,15 @@ def dump_audio_frames(fn: str) -> None:
     fn_short = fn.split(".")[0]
     tags = "No metadata tags available."
     bitrate = "Bitrate information not available."
+    total_frames = "Total frames not available."
 
     # Load the audio file
     audio = AudioSegment.from_file(fn, format=ext)
 
     # Print each sample
     with open(f"{fn_short}__{ext}.series", "w", encoding="utf-8") as f:
+
+        total_frames = (len(audio) / 1000.0) * audio.frame_rate
 
         # Split into channels
         channels = audio.split_to_mono()
@@ -41,7 +44,7 @@ def dump_audio_frames(fn: str) -> None:
         except Exception as e:
             print(tags)
 
-        f.write(f"This .series file displays the audio frames for {fn} [ frames: {len(audio)}, length (seconds): {duration_seconds}, bitrate: {bitrate}, audio channels: {len(channels)}, meta tags: {tags} ]\n")
+        f.write(f"This .series file displays the audio frames for {fn} [ frames: {total_frames}, length (seconds): {duration_seconds}, bitrate: {bitrate}, audio channels: {len(channels)}, meta tags: {tags} ]\n")
         for frame_group in zip(*channel_samples):
             # print(f"{frame_group},\n")
             f.write(f"{frame_group},\n")
