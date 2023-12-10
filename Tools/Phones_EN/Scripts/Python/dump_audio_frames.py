@@ -17,7 +17,7 @@ def dump_audio_frames(fn: str) -> None:
     # Print each sample
     with open(f"{fn_short}__{ext}.series", "w", encoding="utf-8") as f:
 
-        total_frames = (len(audio) / 1000.0) * audio.frame_rate
+        total_frames = (len(audio) / 1000) * audio.frame_rate
 
         # Split into channels
         channels = audio.split_to_mono()
