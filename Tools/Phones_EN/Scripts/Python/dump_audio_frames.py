@@ -10,6 +10,7 @@ def dump_audio_frames(fn: str) -> None:
     tags = "No metadata tags available."
     bitrate = "Bitrate information not available."
     total_frames = "Total frames not available."
+    sampling_rate = "Sampling rate not available."
 
     # Load the audio file
     audio = AudioSegment.from_file(fn, format=ext)
@@ -19,6 +20,9 @@ def dump_audio_frames(fn: str) -> None:
 
         # Calculate the total number of frames
         total_frames = (len(audio) / 1000) * audio.frame_rate
+
+        # extracr the sampling rate
+        sampling_rate = audio.frame_rate
 
         # Calculate the bit depth
         bit_depth = audio.sample_width * 8
@@ -48,7 +52,7 @@ def dump_audio_frames(fn: str) -> None:
         except Exception as e:
             print(tags)
 
-        f.write(f"This .series file displays the audio frames for {fn} [ frames: {total_frames}, length (seconds): {duration_seconds}, bitrate: {bitrate}, audio channels: {len(channels)}, resolution: {bit_depth}-bit PCM, meta tags: {tags} ]\n")
+        f.write(f"This .series file displays the audio frames for {fn} [ frames: {total_frames}, length (seconds): {duration_seconds}, bitrate: {bitrate}, audio channels: {len(channels)}, resolution: {bit_depth}-bit PCM @ {sampling_rate} Hz sample rate, meta tags: {tags} ]\n")
         for frame_group in zip(*channel_samples):
             # print(f"{frame_group},\n")
             f.write(f"{frame_group},\n")
