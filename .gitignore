@@ -41,5 +41,5 @@ Saved/Crashes/**
 Saved/Config/CrashReportClient/**
 
 # Exceptions
-!Intermediate/Build/Win64/UnrealEditor/Inc/SpeechSynthesisBP/UHT
+!Intermediate/Build/Win64/UnrealEditor/Inc/SpeechSynthesisBP/UHT/**
 
