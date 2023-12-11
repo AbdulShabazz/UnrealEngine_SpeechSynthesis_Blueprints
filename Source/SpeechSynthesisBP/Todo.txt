@@ -8,9 +8,9 @@ TODO: Allow the user to customize the voice signal's fundamental- and formant-fr
 TODO: Use a state-machine to switch modes within the ADSR envelope to prevent signal discontinuities and drop-outs.
 TODO: Use distinct sine audio chords to simulate the ADSR characteristics that each formant signal contributes to the phone used to model aspects of a speaker's voice.
 TODO: Use primes to represent unique phone- and or formant-characteristics, which are allowed to represent irreducible modular forms
-TODO: import voice libraries as separate .DLL modules to allow for dynamic loading and unloading of voice libraries without recompilation.
-TODO: compute the delta- and the delta-delta features near the hand-off points of the ADSR envelope to facilitate a smooth-transition between phones.
-TODO: support voice re-mapping (eg. to allow Sara's accent to be used for Bob's voice), and other voice-traits such as
+TODO: import Header voice libraries as separate .DLL modules to allow for dynamic loading and unloading of the voice libraries without recompilation.
+TODO: compute the widest-spanning delta- and delta-delta- features near the hand-off points and synthesize connectives with the use of the ADSR envelope to facilitate a smooth-transition between phones.
+TODO: support voice re-mapping (eg. to allow Sara's accent, Emotive, Prosody, ADSR envelope to be used for Bob's voice), and other voice-traits such as
 
     1. **Timbre**: The color or quality of the voice, distinct from its pitch or intensity.
     2. **Fundamental Frequency**: The lowest frequency of a voice, often perceived as its pitch.
