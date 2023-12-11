@@ -2,7 +2,7 @@ import os
 import arpabet_phoneme_library as apl
 
 
-updateFilesFlag = "False"
+updateFilesFlag = "Ask"
 
 
 def get_yes_or_no_confirmation(prompt: str):
@@ -28,8 +28,7 @@ foundation_class = '''
 #include "oscillatorConfig.h"
 
 namespace ARPABETPhone
-{
-'''
+{'''
 
 for ph in apl.arpabet_phone_library:
 
@@ -53,12 +52,14 @@ for ph in apl.arpabet_phone_library:
 
         foundation_class += transition_class
 
-    if updateFilesFlag == "False" and os.path.exists("ARPABETPhones.h"):
-        if get_yes_or_no_confirmation("ARPABETPhones.h and similar \
-    files already exists. Do you want to overwrite it? (yes/no)") == "y":
-            updateFilesFlag = "True"
+    if updateFilesFlag == "Ask":
+        if os.path.exists("ARPABETPhones.h"):
+            if get_yes_or_no_confirmation("ARPABETPhones.h file already exists. Do you want to overwrite it? (yes/no)") == "y":
+                updateFilesFlag = "True"
+            else:
+                updateFilesFlag = "False"
         else:
-            updateFilesFlag = "Skip"
+            updateFilesFlag = "True"
 
 
 foundation_class += '\n\n}\n'
