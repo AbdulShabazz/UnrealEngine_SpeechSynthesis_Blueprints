@@ -39,4 +39,5 @@ Release/**
 Debug/**
 Saved/Crashes/**
 Saved/Config/CrashReportClient/**
+!Intermediate/Build/Win64/UnrealEditor/Inc/SpeechSynthesisBP/UHT
 
