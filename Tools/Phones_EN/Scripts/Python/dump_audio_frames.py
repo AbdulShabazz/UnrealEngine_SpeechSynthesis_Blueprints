@@ -52,7 +52,7 @@ def dump_audio_frames(fn: str) -> None:
         except Exception as e:
             print(tags)
 
-        f.write(f"This .series file displays the audio frames for {fn} [ frames: {total_frames}, length (seconds): {duration_seconds}, bitrate: {bitrate}, audio channels: {len(channels)}, resolution: {bit_depth}-bit PCM @ {sampling_rate} Hz sample rate, meta tags: {tags} ]\n")
+        f.write(f"This .series file displays the audio frames for {fn} [ frames: {total_frames}, length (seconds): {duration_seconds}, bitrate: {bitrate}, audio channels: {len(channels)}, sample-rate: {sampling_rate} Hz PCM {bit_depth}-bit resolution, meta tags: {tags} ]\n")
         for frame_group in zip(*channel_samples):
             # print(f"{frame_group},\n")
             f.write(f"{frame_group},\n")
