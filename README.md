@@ -13,7 +13,10 @@ This is a multilingual open-source text-to-speech and speech-to-speech platform 
 <span>Schwa.Phoneme.Synthesis.Parameters</span>
 
 <img title='Schwa.Phoneme.(Formants).Synthesis.Curves' style='margin-top:24px;' alt='Schwa.Phoneme.(Formants).Synthesis.Curves' src='IMG/Phoneme.(Formants).Synthesis.Curves.Screen.PNG'/><br>
-<span>Schwa.Phoneme.(Formants).Synthesis.Curves</span>
+<span>Custom.Schwa.Phoneme.(Formants).Synthesis.Curves</span>
+
+<img title='UE 5 Voice Configurator' style='margin-top:24px;' alt='UE 5 Voice Configurator (Blueprints)' src='IMG/UE_5_SpeechSynthesis_Configurator.png'/><br>
+<span>UE 5 Voice Configurator</span>
 
 <img title='Hello World!' style='margin-top:24px;' alt='Hello World! (Blueprints)' src='IMG/Hello.World.5.BP.2023.PNG'/><br>
 <span>Hello World! UE Blueprint</span>
@@ -36,81 +39,81 @@ ARPA ARPABET - Wikipedia
 The CMU Pronouncing Dictionary  
   
 vowels > front > ARPABET UV >  
-IY (B_ea_t)  
-IH (B_i_t)  
-EH (B_e_t)  
-EY (B_ate_)  
-AE (B_a_t)  
+IY (Beat)  
+IH (Bit)  
+EH (Bet)  
+EY (Bate)  
+AE (Bat)  
   
 vowels > back > ARPABET UV >  
-AA (B_o_t)  
-AO (B_ough_t)  
-OW (B_oa_t)  
-UH (B_oo_k)  
-UW (B_oot_)  
+AA (Bot)  
+AO (Bought)  
+OW (Boat)  
+UH (Book)  
+UW (Boot)  
   
 vowels > mid > ARPABET UV >  
-ER (B_ir_d)  
-AX (Ab_ou_t)  
-AH (B_u_tt)  
+ER (Bird)  
+AX (About)  
+AH (Butt)  
   
 vowels > diphthongs > ARPABET UV >  
-AY (B_ite_)  
-AW (B_ou_t)  
-OY (B_o_y)  
-IX (Rabb_i_t)  
+AY (Bite)  
+AW (Bout)  
+OY (Boy)  
+IX (Rabbit)  
   
 stopConsonants > voiced > ARPABET UV >  
-B (_B_eat)  
-D (_D_eep)  
-G (_G_o)  
+B (Beat)  
+D (Deep)  
+G (Go)  
   
 stopConsonants > unvoiced > ARPABET UV >  
-P (_P_ea)  
-T (_T_ea)  
-K (_K_ick)  
+P (Pea)  
+T (Tea)  
+K (Kick)  
   
 fricatives > voiced > ARPABET UV >  
-V (_V_ery)  
-DH (_Th_en)  
+V (Very)  
+DH (Then)  
   
 fricatives > unvoiced > ARPABET UV >  
-F (_F_ive)  
-TH (_Th_ink)  
-S (_S_ee)  
-SH (_Sh_e)  
+F (Five)  
+TH (Think)  
+S (See)  
+SH (She)  
   
 semivowels > liquid > ARPABET UV >  
-L (_L_ove)  
-EL (Bott_le_)  
-R (_R_ed)  
+L (Love)  
+EL (Bottle)  
+R (Red)  
   
 semivowels > glides > ARPABET UV >  
-W (_W_ater)  
-WH (_Wh_at)  
-Y (_Y_es)  
+W (Water)  
+WH (What)  
+Y (Yes)  
   
 nasals > non vocalic > ARPABET UV >  
-M (_M_ore)  
-N (_N_ow)  
-NX or NG (Si_ng_)  
+M (More)  
+N (Now)  
+NX or NG (Sing)  
   
 nasals > vocalic > ARPABET UV >  
-EM (Butt_o_n)  
-EN (S_o_n)  
+EM (Button)  
+EN (Son)  
   
 affricates > voiced > ARPABET UV >  
-CH (_Ch_urch)  
-JH (_J_ump)  
+CH (Church)  
+JH (Jump)  
   
 other > whisper > ARPABET UV >  
-HH (_H_ow)  
+HH (How)  
   
 other > vocalic > ARPABET UV >  
-DX (Ri_dd_le)  
+DX (Riddle)  
   
 other > pause or glottal_stop > ARPABET UV >  
-Q (_Q_uestion)  
+Q (Question)  
 
 
 ### Example:  
