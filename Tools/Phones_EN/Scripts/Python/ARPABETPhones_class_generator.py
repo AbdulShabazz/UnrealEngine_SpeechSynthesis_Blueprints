@@ -1,22 +1,9 @@
 import os
 import arpabet_phoneme_library as apl
+import get_yes_or_no_confirmation as get_confirmation
 
 
 updateFilesFlag = "Ask"
-
-
-def get_yes_or_no_confirmation(prompt: str):
-    '''Prompts the user for a yes or no response. Returns 'y' or 'n'. '''
-    response_str = {"yes": "y", "y": "y", "no": "n", "n": "n"}
-    valid_responses = {"yes": True, "y": True, "no": False, "n": False}
-
-    response = input(prompt).lower()
-
-    while True:
-        if response in valid_responses:
-            return response_str[response]
-        else:
-            print("Invalid response. Please enter 'yes' or 'no'.")
 
 
 foundation_class = '''
@@ -54,7 +41,7 @@ for ph in apl.arpabet_phone_library:
 
     if updateFilesFlag == "Ask":
         if os.path.exists("ARPABETPhones.h"):
-            if get_yes_or_no_confirmation("ARPABETPhones.h file already exists. Do you want to overwrite it? (yes/no)") == "y":
+            if get_confirmation.get_yes_or_no_confirmation("ARPABETPhones.h file already exists. Do you want to overwrite it? (yes/no)") == "y":
                 updateFilesFlag = "True"
             else:
                 updateFilesFlag = "False"
