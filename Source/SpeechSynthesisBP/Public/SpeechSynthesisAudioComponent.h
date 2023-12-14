@@ -1097,6 +1097,825 @@ class SPEECHSYNTHESISBP_API USpeechSynthesisAudioComponent : public UObject
 		return true;
 	};
 
+	// Other > non verbals > ARPABET UV
+
+	/** Activates speech synthesis channel phoneme functionality 'Babble' */
+	UFUNCTION(BlueprintCallable, Category = TextToSpeech, meta = ( keywords = "TTS, SpeechSynthesis, TextToSpeech", DisplayName = "ARPABETSpeechSynthesis: other > non-verbal > Babble" ))
+	void ARPABETSpeechSynthesis_Babble(
+		UPARAM(DisplayName = "Voices") const int Voices)
+	{
+		speechSample_FPhoneVec.push_back(ARPABETPhone::ARPABETPhone_Babble());
+	};
+
+	/** Activates speech synthesis channel phoneme functionality 'Bang' */
+	UFUNCTION(BlueprintCallable, Category = TextToSpeech, meta = ( keywords = "TTS, SpeechSynthesis, TextToSpeech", DisplayName = "ARPABETSpeechSynthesis: other > non-verbal > Bang" ))
+	void ARPABETSpeechSynthesis_Bang(
+		UPARAM(DisplayName = "Voices") const int Voices)
+	{
+		speechSample_FPhoneVec.push_back(ARPABETPhone::ARPABETPhone_Bang());
+	};
+
+	/** Activates speech synthesis channel phoneme functionality 'Bark' */
+	UFUNCTION(BlueprintCallable, Category = TextToSpeech, meta = ( keywords = "TTS, SpeechSynthesis, TextToSpeech", DisplayName = "ARPABETSpeechSynthesis: other > non-verbal > Bark" ))
+	void ARPABETSpeechSynthesis_Bark(
+		UPARAM(DisplayName = "Voices") const int Voices)
+	{
+		speechSample_FPhoneVec.push_back(ARPABETPhone::ARPABETPhone_Bark());
+	};
+
+	/** Activates speech synthesis channel phoneme functionality 'Bawl' */
+	UFUNCTION(BlueprintCallable, Category = TextToSpeech, meta = ( keywords = "TTS, SpeechSynthesis, TextToSpeech", DisplayName = "ARPABETSpeechSynthesis: other > non-verbal > Bawl" ))
+	void ARPABETSpeechSynthesis_Bawl(
+		UPARAM(DisplayName = "Voices") const int Voices)
+	{
+		speechSample_FPhoneVec.push_back(ARPABETPhone::ARPABETPhone_Bawl());
+	};
+
+	/** Activates speech synthesis channel phoneme functionality 'Beep' */
+	UFUNCTION(BlueprintCallable, Category = TextToSpeech, meta = ( keywords = "TTS, SpeechSynthesis, TextToSpeech", DisplayName = "ARPABETSpeechSynthesis: other > non-verbal > Beep" ))
+	void ARPABETSpeechSynthesis_Beep(
+		UPARAM(DisplayName = "Voices") const int Voices)
+	{
+		speechSample_FPhoneVec.push_back(ARPABETPhone::ARPABETPhone_Beep());
+	};
+
+	/** Activates speech synthesis channel phoneme functionality 'Bellow' */
+	UFUNCTION(BlueprintCallable, Category = TextToSpeech, meta = ( keywords = "TTS, SpeechSynthesis, TextToSpeech", DisplayName = "ARPABETSpeechSynthesis: other > non-verbal > Bellow" ))
+	void ARPABETSpeechSynthesis_Bellow(
+		UPARAM(DisplayName = "Voices") const int Voices)
+	{
+		speechSample_FPhoneVec.push_back(ARPABETPhone::ARPABETPhone_Bellow());
+	};
+
+	/** Activates speech synthesis channel phoneme functionality 'Blare' */
+	UFUNCTION(BlueprintCallable, Category = TextToSpeech, meta = ( keywords = "TTS, SpeechSynthesis, TextToSpeech", DisplayName = "ARPABETSpeechSynthesis: other > non-verbal > Blare" ))
+	void ARPABETSpeechSynthesis_Blare(
+		UPARAM(DisplayName = "Voices") const int Voices)
+	{
+		speechSample_FPhoneVec.push_back(ARPABETPhone::ARPABETPhone_Blare());
+	};
+
+	/** Activates speech synthesis channel phoneme functionality 'Breathe_Heavily' */
+	UFUNCTION(BlueprintCallable, Category = TextToSpeech, meta = ( keywords = "TTS, SpeechSynthesis, TextToSpeech", DisplayName = "ARPABETSpeechSynthesis: other > non-verbal > Breathe_Heavily" ))
+	void ARPABETSpeechSynthesis_Breathe_heavily(
+		UPARAM(DisplayName = "Voices") const int Voices)
+	{
+		speechSample_FPhoneVec.push_back(ARPABETPhone::ARPABETPhone_Breathe_heavily());
+	};
+
+	/** Activates speech synthesis channel phoneme functionality 'Bruxism' */
+	UFUNCTION(BlueprintCallable, Category = TextToSpeech, meta = ( keywords = "TTS, SpeechSynthesis, TextToSpeech", DisplayName = "ARPABETSpeechSynthesis: other > non-verbal > Bruxism" ))
+	void ARPABETSpeechSynthesis_Bruxism(
+		UPARAM(DisplayName = "Voices") const int Voices)
+	{
+		speechSample_FPhoneVec.push_back(ARPABETPhone::ARPABETPhone_Bruxism());
+	};
+
+	/** Activates speech synthesis channel phoneme functionality 'Burp' */
+	UFUNCTION(BlueprintCallable, Category = TextToSpeech, meta = ( keywords = "TTS, SpeechSynthesis, TextToSpeech", DisplayName = "ARPABETSpeechSynthesis: other > non-verbal > Burp" ))
+	void ARPABETSpeechSynthesis_Burp(
+		UPARAM(DisplayName = "Voices") const int Voices)
+	{
+		speechSample_FPhoneVec.push_back(ARPABETPhone::ARPABETPhone_Burp());
+	};
+
+	/** Activates speech synthesis channel phoneme functionality 'Buzz' */
+	UFUNCTION(BlueprintCallable, Category = TextToSpeech, meta = ( keywords = "TTS, SpeechSynthesis, TextToSpeech", DisplayName = "ARPABETSpeechSynthesis: other > non-verbal > Buzz" ))
+	void ARPABETSpeechSynthesis_Buzz(
+		UPARAM(DisplayName = "Voices") const int Voices)
+	{
+		speechSample_FPhoneVec.push_back(ARPABETPhone::ARPABETPhone_Buzz());
+	};
+
+	/** Activates speech synthesis channel phoneme functionality 'Cackle' */
+	UFUNCTION(BlueprintCallable, Category = TextToSpeech, meta = ( keywords = "TTS, SpeechSynthesis, TextToSpeech", DisplayName = "ARPABETSpeechSynthesis: other > non-verbal > Cackle" ))
+	void ARPABETSpeechSynthesis_Cackle(
+		UPARAM(DisplayName = "Voices") const int Voices)
+	{
+		speechSample_FPhoneVec.push_back(ARPABETPhone::ARPABETPhone_Cackle());
+	};
+
+	/** Activates speech synthesis channel phoneme functionality 'Chew' */
+	UFUNCTION(BlueprintCallable, Category = TextToSpeech, meta = ( keywords = "TTS, SpeechSynthesis, TextToSpeech", DisplayName = "ARPABETSpeechSynthesis: other > non-verbal > Chew" ))
+	void ARPABETSpeechSynthesis_Chew(
+		UPARAM(DisplayName = "Voices") const int Voices)
+	{
+		speechSample_FPhoneVec.push_back(ARPABETPhone::ARPABETPhone_Chew());
+	};
+
+	/** Activates speech synthesis channel phoneme functionality 'Chime' */
+	UFUNCTION(BlueprintCallable, Category = TextToSpeech, meta = ( keywords = "TTS, SpeechSynthesis, TextToSpeech", DisplayName = "ARPABETSpeechSynthesis: other > non-verbal > Chime" ))
+	void ARPABETSpeechSynthesis_Chime(
+		UPARAM(DisplayName = "Voices") const int Voices)
+	{
+		speechSample_FPhoneVec.push_back(ARPABETPhone::ARPABETPhone_Chime());
+	};
+
+	/** Activates speech synthesis channel phoneme functionality 'Chime_in' */
+	UFUNCTION(BlueprintCallable, Category = TextToSpeech, meta = ( keywords = "TTS, SpeechSynthesis, TextToSpeech", DisplayName = "ARPABETSpeechSynthesis: other > non-verbal > Chime_in" ))
+	void ARPABETSpeechSynthesis_Chime_in(
+		UPARAM(DisplayName = "Voices") const int Voices)
+	{
+		speechSample_FPhoneVec.push_back(ARPABETPhone::ARPABETPhone_Chime_in());
+	};
+
+	/** Activates speech synthesis channel phoneme functionality 'Chirp' */
+	UFUNCTION(BlueprintCallable, Category = TextToSpeech, meta = ( keywords = "TTS, SpeechSynthesis, TextToSpeech", DisplayName = "ARPABETSpeechSynthesis: other > non-verbal > Chirp" ))
+	void ARPABETSpeechSynthesis_Chirp(
+		UPARAM(DisplayName = "Voices") const int Voices)
+	{
+		speechSample_FPhoneVec.push_back(ARPABETPhone::ARPABETPhone_Chirp());
+	};
+
+	/** Activates speech synthesis channel phoneme functionality 'Chortle' */
+	UFUNCTION(BlueprintCallable, Category = TextToSpeech, meta = ( keywords = "TTS, SpeechSynthesis, TextToSpeech", DisplayName = "ARPABETSpeechSynthesis: other > non-verbal > Chortle" ))
+	void ARPABETSpeechSynthesis_Chortle(
+		UPARAM(DisplayName = "Voices") const int Voices)
+	{
+		speechSample_FPhoneVec.push_back(ARPABETPhone::ARPABETPhone_Chortle());
+	};
+
+	/** Activates speech synthesis channel phoneme functionality 'Chuckle' */
+	UFUNCTION(BlueprintCallable, Category = TextToSpeech, meta = ( keywords = "TTS, SpeechSynthesis, TextToSpeech", DisplayName = "ARPABETSpeechSynthesis: other > non-verbal > Chuckle" ))
+	void ARPABETSpeechSynthesis_Chuckle(
+		UPARAM(DisplayName = "Voices") const int Voices)
+	{
+		speechSample_FPhoneVec.push_back(ARPABETPhone::ARPABETPhone_Chuckle());
+	};
+
+	/** Activates speech synthesis channel phoneme functionality 'Clap' */
+	UFUNCTION(BlueprintCallable, Category = TextToSpeech, meta = ( keywords = "TTS, SpeechSynthesis, TextToSpeech", DisplayName = "ARPABETSpeechSynthesis: other > non-verbal > Clap" ))
+	void ARPABETSpeechSynthesis_Clap(
+		UPARAM(DisplayName = "Voices") const int Voices)
+	{
+		speechSample_FPhoneVec.push_back(ARPABETPhone::ARPABETPhone_Clap());
+	};
+
+	/** Activates speech synthesis channel phoneme functionality 'Clear_Throat' */
+	UFUNCTION(BlueprintCallable, Category = TextToSpeech, meta = ( keywords = "TTS, SpeechSynthesis, TextToSpeech", DisplayName = "ARPABETSpeechSynthesis: other > non-verbal > Clear_Throat" ))
+	void ARPABETSpeechSynthesis_Clear_throat(
+		UPARAM(DisplayName = "Voices") const int Voices)
+	{
+		speechSample_FPhoneVec.push_back(ARPABETPhone::ARPABETPhone_Clear_throat());
+	};
+
+	/** Activates speech synthesis channel phoneme functionality 'Click' */
+	UFUNCTION(BlueprintCallable, Category = TextToSpeech, meta = ( keywords = "TTS, SpeechSynthesis, TextToSpeech", DisplayName = "ARPABETSpeechSynthesis: other > non-verbal > Click" ))
+	void ARPABETSpeechSynthesis_Click(
+		UPARAM(DisplayName = "Voices") const int Voices)
+	{
+		speechSample_FPhoneVec.push_back(ARPABETPhone::ARPABETPhone_Click());
+	};
+
+	/** Activates speech synthesis channel phoneme functionality 'Clink' */
+	UFUNCTION(BlueprintCallable, Category = TextToSpeech, meta = ( keywords = "TTS, SpeechSynthesis, TextToSpeech", DisplayName = "ARPABETSpeechSynthesis: other > non-verbal > Clink" ))
+	void ARPABETSpeechSynthesis_Clink(
+		UPARAM(DisplayName = "Voices") const int Voices)
+	{
+		speechSample_FPhoneVec.push_back(ARPABETPhone::ARPABETPhone_Clink());
+	};
+
+	/** Activates speech synthesis channel phoneme functionality 'Cluck' */
+	UFUNCTION(BlueprintCallable, Category = TextToSpeech, meta = ( keywords = "TTS, SpeechSynthesis, TextToSpeech", DisplayName = "ARPABETSpeechSynthesis: other > non-verbal > Cluck" ))
+	void ARPABETSpeechSynthesis_Cluck(
+		UPARAM(DisplayName = "Voices") const int Voices)
+	{
+		speechSample_FPhoneVec.push_back(ARPABETPhone::ARPABETPhone_Cluck());
+	};
+
+	/** Activates speech synthesis channel phoneme functionality 'Cough' */
+	UFUNCTION(BlueprintCallable, Category = TextToSpeech, meta = ( keywords = "TTS, SpeechSynthesis, TextToSpeech", DisplayName = "ARPABETSpeechSynthesis: other > non-verbal > Cough" ))
+	void ARPABETSpeechSynthesis_Cough(
+		UPARAM(DisplayName = "Voices") const int Voices)
+	{
+		speechSample_FPhoneVec.push_back(ARPABETPhone::ARPABETPhone_Cough());
+	};
+
+	/** Activates speech synthesis channel phoneme functionality 'Crack' */
+	UFUNCTION(BlueprintCallable, Category = TextToSpeech, meta = ( keywords = "TTS, SpeechSynthesis, TextToSpeech", DisplayName = "ARPABETSpeechSynthesis: other > non-verbal > Crack" ))
+	void ARPABETSpeechSynthesis_Crack(
+		UPARAM(DisplayName = "Voices") const int Voices)
+	{
+		speechSample_FPhoneVec.push_back(ARPABETPhone::ARPABETPhone_Crack());
+	};
+
+	/** Activates speech synthesis channel phoneme functionality 'Croak' */
+	UFUNCTION(BlueprintCallable, Category = TextToSpeech, meta = ( keywords = "TTS, SpeechSynthesis, TextToSpeech", DisplayName = "ARPABETSpeechSynthesis: other > non-verbal > Croak" ))
+	void ARPABETSpeechSynthesis_Croak(
+		UPARAM(DisplayName = "Voices") const int Voices)
+	{
+		speechSample_FPhoneVec.push_back(ARPABETPhone::ARPABETPhone_Croak());
+	};
+
+	/** Activates speech synthesis channel phoneme functionality 'Crunch' */
+	UFUNCTION(BlueprintCallable, Category = TextToSpeech, meta = ( keywords = "TTS, SpeechSynthesis, TextToSpeech", DisplayName = "ARPABETSpeechSynthesis: other > non-verbal > Crunch" ))
+	void ARPABETSpeechSynthesis_Crunch(
+		UPARAM(DisplayName = "Voices") const int Voices)
+	{
+		speechSample_FPhoneVec.push_back(ARPABETPhone::ARPABETPhone_Crunch());
+	};
+
+	/** Activates speech synthesis channel phoneme functionality 'Cry' */
+	UFUNCTION(BlueprintCallable, Category = TextToSpeech, meta = ( keywords = "TTS, SpeechSynthesis, TextToSpeech", DisplayName = "ARPABETSpeechSynthesis: other > non-verbal > Cry" ))
+	void ARPABETSpeechSynthesis_Cry(
+		UPARAM(DisplayName = "Voices") const int Voices)
+	{
+		speechSample_FPhoneVec.push_back(ARPABETPhone::ARPABETPhone_Cry());
+	};
+
+	/** Activates speech synthesis channel phoneme functionality 'Drone' */
+	UFUNCTION(BlueprintCallable, Category = TextToSpeech, meta = ( keywords = "TTS, SpeechSynthesis, TextToSpeech", DisplayName = "ARPABETSpeechSynthesis: other > non-verbal > Drone" ))
+	void ARPABETSpeechSynthesis_Drone(
+		UPARAM(DisplayName = "Voices") const int Voices)
+	{
+		speechSample_FPhoneVec.push_back(ARPABETPhone::ARPABETPhone_Drone());
+	};
+
+	/** Activates speech synthesis channel phoneme functionality 'Exclaim' */
+	UFUNCTION(BlueprintCallable, Category = TextToSpeech, meta = ( keywords = "TTS, SpeechSynthesis, TextToSpeech", DisplayName = "ARPABETSpeechSynthesis: other > non-verbal > Exclaim" ))
+	void ARPABETSpeechSynthesis_Exclaim(
+		UPARAM(DisplayName = "Voices") const int Voices)
+	{
+		speechSample_FPhoneVec.push_back(ARPABETPhone::ARPABETPhone_Exclaim());
+	};
+
+	/** Activates speech synthesis channel phoneme functionality 'Fizz' */
+	UFUNCTION(BlueprintCallable, Category = TextToSpeech, meta = ( keywords = "TTS, SpeechSynthesis, TextToSpeech", DisplayName = "ARPABETSpeechSynthesis: other > non-verbal > Fizz" ))
+	void ARPABETSpeechSynthesis_Fizz(
+		UPARAM(DisplayName = "Voices") const int Voices)
+	{
+		speechSample_FPhoneVec.push_back(ARPABETPhone::ARPABETPhone_Fizz());
+	};
+
+	/** Activates speech synthesis channel phoneme functionality 'Gasp' */
+	UFUNCTION(BlueprintCallable, Category = TextToSpeech, meta = ( keywords = "TTS, SpeechSynthesis, TextToSpeech", DisplayName = "ARPABETSpeechSynthesis: other > non-verbal > Gasp" ))
+	void ARPABETSpeechSynthesis_Gasp(
+		UPARAM(DisplayName = "Voices") const int Voices)
+	{
+		speechSample_FPhoneVec.push_back(ARPABETPhone::ARPABETPhone_Gasp());
+	};
+
+	/** Activates speech synthesis channel phoneme functionality 'Giggle' */
+	UFUNCTION(BlueprintCallable, Category = TextToSpeech, meta = ( keywords = "TTS, SpeechSynthesis, TextToSpeech", DisplayName = "ARPABETSpeechSynthesis: other > non-verbal > Giggle" ))
+	void ARPABETSpeechSynthesis_Giggle(
+		UPARAM(DisplayName = "Voices") const int Voices)
+	{
+		speechSample_FPhoneVec.push_back(ARPABETPhone::ARPABETPhone_Giggle());
+	};
+
+	/** Activates speech synthesis channel phoneme functionality 'Gnash' */
+	UFUNCTION(BlueprintCallable, Category = TextToSpeech, meta = ( keywords = "TTS, SpeechSynthesis, TextToSpeech", DisplayName = "ARPABETSpeechSynthesis: other > non-verbal > Gnash" ))
+	void ARPABETSpeechSynthesis_Gnash(
+		UPARAM(DisplayName = "Voices") const int Voices)
+	{
+		speechSample_FPhoneVec.push_back(ARPABETPhone::ARPABETPhone_Gnash());
+	};
+
+	/** Activates speech synthesis channel phoneme functionality 'Groan' */
+	UFUNCTION(BlueprintCallable, Category = TextToSpeech, meta = ( keywords = "TTS, SpeechSynthesis, TextToSpeech", DisplayName = "ARPABETSpeechSynthesis: other > non-verbal > Groan" ))
+	void ARPABETSpeechSynthesis_Groan(
+		UPARAM(DisplayName = "Voices") const int Voices)
+	{
+		speechSample_FPhoneVec.push_back(ARPABETPhone::ARPABETPhone_Groan());
+	};
+
+	/** Activates speech synthesis channel phoneme functionality 'Grovel' */
+	UFUNCTION(BlueprintCallable, Category = TextToSpeech, meta = ( keywords = "TTS, SpeechSynthesis, TextToSpeech", DisplayName = "ARPABETSpeechSynthesis: other > non-verbal > Grovel" ))
+	void ARPABETSpeechSynthesis_Grovel(
+		UPARAM(DisplayName = "Voices") const int Voices)
+	{
+		speechSample_FPhoneVec.push_back(ARPABETPhone::ARPABETPhone_Grovel());
+	};
+
+	/** Activates speech synthesis channel phoneme functionality 'Growl' */
+	UFUNCTION(BlueprintCallable, Category = TextToSpeech, meta = ( keywords = "TTS, SpeechSynthesis, TextToSpeech", DisplayName = "ARPABETSpeechSynthesis: other > non-verbal > Growl" ))
+	void ARPABETSpeechSynthesis_Growl(
+		UPARAM(DisplayName = "Voices") const int Voices)
+	{
+		speechSample_FPhoneVec.push_back(ARPABETPhone::ARPABETPhone_Growl());
+	};
+
+	/** Activates speech synthesis channel phoneme functionality 'Grunt' */
+	UFUNCTION(BlueprintCallable, Category = TextToSpeech, meta = ( keywords = "TTS, SpeechSynthesis, TextToSpeech", DisplayName = "ARPABETSpeechSynthesis: other > non-verbal > Grunt" ))
+	void ARPABETSpeechSynthesis_Grunt(
+		UPARAM(DisplayName = "Voices") const int Voices)
+	{
+		speechSample_FPhoneVec.push_back(ARPABETPhone::ARPABETPhone_Grunt());
+	};
+
+	/** Activates speech synthesis channel phoneme functionality 'Guffaw' */
+	UFUNCTION(BlueprintCallable, Category = TextToSpeech, meta = ( keywords = "TTS, SpeechSynthesis, TextToSpeech", DisplayName = "ARPABETSpeechSynthesis: other > non-verbal > Guffaw" ))
+	void ARPABETSpeechSynthesis_Guffaw(
+		UPARAM(DisplayName = "Voices") const int Voices)
+	{
+		speechSample_FPhoneVec.push_back(ARPABETPhone::ARPABETPhone_Guffaw());
+	};
+
+	/** Activates speech synthesis channel phoneme functionality 'Gurgle' */
+	UFUNCTION(BlueprintCallable, Category = TextToSpeech, meta = ( keywords = "TTS, SpeechSynthesis, TextToSpeech", DisplayName = "ARPABETSpeechSynthesis: other > non-verbal > Gurgle" ))
+	void ARPABETSpeechSynthesis_Gurgle(
+		UPARAM(DisplayName = "Voices") const int Voices)
+	{
+		speechSample_FPhoneVec.push_back(ARPABETPhone::ARPABETPhone_Gurgle());
+	};
+
+	/** Activates speech synthesis channel phoneme functionality 'Hiccup' */
+	UFUNCTION(BlueprintCallable, Category = TextToSpeech, meta = ( keywords = "TTS, SpeechSynthesis, TextToSpeech", DisplayName = "ARPABETSpeechSynthesis: other > non-verbal > Hiccup" ))
+	void ARPABETSpeechSynthesis_Hiccup(
+		UPARAM(DisplayName = "Voices") const int Voices)
+	{
+		speechSample_FPhoneVec.push_back(ARPABETPhone::ARPABETPhone_Hiccup());
+	};
+
+	/** Activates speech synthesis channel phoneme functionality 'Honk' */
+	UFUNCTION(BlueprintCallable, Category = TextToSpeech, meta = ( keywords = "TTS, SpeechSynthesis, TextToSpeech", DisplayName = "ARPABETSpeechSynthesis: other > non-verbal > Honk" ))
+	void ARPABETSpeechSynthesis_Honk(
+		UPARAM(DisplayName = "Voices") const int Voices)
+	{
+		speechSample_FPhoneVec.push_back(ARPABETPhone::ARPABETPhone_Honk());
+	};
+
+	/** Activates speech synthesis channel phoneme functionality 'Howl' */
+	UFUNCTION(BlueprintCallable, Category = TextToSpeech, meta = ( keywords = "TTS, SpeechSynthesis, TextToSpeech", DisplayName = "ARPABETSpeechSynthesis: other > non-verbal > Howl" ))
+	void ARPABETSpeechSynthesis_Howl(
+		UPARAM(DisplayName = "Voices") const int Voices)
+	{
+		speechSample_FPhoneVec.push_back(ARPABETPhone::ARPABETPhone_Howl());
+	};
+
+	/** Activates speech synthesis channel phoneme functionality 'Huff' */
+	UFUNCTION(BlueprintCallable, Category = TextToSpeech, meta = ( keywords = "TTS, SpeechSynthesis, TextToSpeech", DisplayName = "ARPABETSpeechSynthesis: other > non-verbal > Huff" ))
+	void ARPABETSpeechSynthesis_Huff(
+		UPARAM(DisplayName = "Voices") const int Voices)
+	{
+		speechSample_FPhoneVec.push_back(ARPABETPhone::ARPABETPhone_Huff());
+	};
+
+	/** Activates speech synthesis channel phoneme functionality 'Hum' */
+	UFUNCTION(BlueprintCallable, Category = TextToSpeech, meta = ( keywords = "TTS, SpeechSynthesis, TextToSpeech", DisplayName = "ARPABETSpeechSynthesis: other > non-verbal > Hum" ))
+	void ARPABETSpeechSynthesis_Hum(
+		UPARAM(DisplayName = "Voices") const int Voices)
+	{
+		speechSample_FPhoneVec.push_back(ARPABETPhone::ARPABETPhone_Hum());
+	};
+
+	/** Activates speech synthesis channel phoneme functionality 'Laugh' */
+	UFUNCTION(BlueprintCallable, Category = TextToSpeech, meta = ( keywords = "TTS, SpeechSynthesis, TextToSpeech", DisplayName = "ARPABETSpeechSynthesis: other > non-verbal > Laugh" ))
+	void ARPABETSpeechSynthesis_Laugh(
+		UPARAM(DisplayName = "Voices") const int Voices)
+	{
+		speechSample_FPhoneVec.push_back(ARPABETPhone::ARPABETPhone_Laugh());
+	};
+
+	/** Activates speech synthesis channel phoneme functionality 'Moan' */
+	UFUNCTION(BlueprintCallable, Category = TextToSpeech, meta = ( keywords = "TTS, SpeechSynthesis, TextToSpeech", DisplayName = "ARPABETSpeechSynthesis: other > non-verbal > Moan" ))
+	void ARPABETSpeechSynthesis_Moan(
+		UPARAM(DisplayName = "Voices") const int Voices)
+	{
+		speechSample_FPhoneVec.push_back(ARPABETPhone::ARPABETPhone_Moan());
+	};
+
+	/** Activates speech synthesis channel phoneme functionality 'Mumble' */
+	UFUNCTION(BlueprintCallable, Category = TextToSpeech, meta = ( keywords = "TTS, SpeechSynthesis, TextToSpeech", DisplayName = "ARPABETSpeechSynthesis: other > non-verbal > Mumble" ))
+	void ARPABETSpeechSynthesis_Mumble(
+		UPARAM(DisplayName = "Voices") const int Voices)
+	{
+		speechSample_FPhoneVec.push_back(ARPABETPhone::ARPABETPhone_Mumble());
+	};
+
+	/** Activates speech synthesis channel phoneme functionality 'Murmur' */
+	UFUNCTION(BlueprintCallable, Category = TextToSpeech, meta = ( keywords = "TTS, SpeechSynthesis, TextToSpeech", DisplayName = "ARPABETSpeechSynthesis: other > non-verbal > Murmur" ))
+	void ARPABETSpeechSynthesis_Murmur(
+		UPARAM(DisplayName = "Voices") const int Voices)
+	{
+		speechSample_FPhoneVec.push_back(ARPABETPhone::ARPABETPhone_Murmur());
+	};
+
+	/** Activates speech synthesis channel phoneme functionality 'Mutter' */
+	UFUNCTION(BlueprintCallable, Category = TextToSpeech, meta = ( keywords = "TTS, SpeechSynthesis, TextToSpeech", DisplayName = "ARPABETSpeechSynthesis: other > non-verbal > Mutter" ))
+	void ARPABETSpeechSynthesis_Mutter(
+		UPARAM(DisplayName = "Voices") const int Voices)
+	{
+		speechSample_FPhoneVec.push_back(ARPABETPhone::ARPABETPhone_Mutter());
+	};
+
+	/** Activates speech synthesis channel phoneme functionality 'Pant' */
+	UFUNCTION(BlueprintCallable, Category = TextToSpeech, meta = ( keywords = "TTS, SpeechSynthesis, TextToSpeech", DisplayName = "ARPABETSpeechSynthesis: other > non-verbal > Pant" ))
+	void ARPABETSpeechSynthesis_Pant(
+		UPARAM(DisplayName = "Voices") const int Voices)
+	{
+		speechSample_FPhoneVec.push_back(ARPABETPhone::ARPABETPhone_Pant());
+	};
+
+	/** Activates speech synthesis channel phoneme functionality 'Peal' */
+	UFUNCTION(BlueprintCallable, Category = TextToSpeech, meta = ( keywords = "TTS, SpeechSynthesis, TextToSpeech", DisplayName = "ARPABETSpeechSynthesis: other > non-verbal > Peal" ))
+	void ARPABETSpeechSynthesis_Peal(
+		UPARAM(DisplayName = "Voices") const int Voices)
+	{
+		speechSample_FPhoneVec.push_back(ARPABETPhone::ARPABETPhone_Peal());
+	};
+
+	/** Activates speech synthesis channel phoneme functionality 'Pop' */
+	UFUNCTION(BlueprintCallable, Category = TextToSpeech, meta = ( keywords = "TTS, SpeechSynthesis, TextToSpeech", DisplayName = "ARPABETSpeechSynthesis: other > non-verbal > Pop" ))
+	void ARPABETSpeechSynthesis_Pop(
+		UPARAM(DisplayName = "Voices") const int Voices)
+	{
+		speechSample_FPhoneVec.push_back(ARPABETPhone::ARPABETPhone_Pop());
+	};
+
+	/** Activates speech synthesis channel phoneme functionality 'Purr' */
+	UFUNCTION(BlueprintCallable, Category = TextToSpeech, meta = ( keywords = "TTS, SpeechSynthesis, TextToSpeech", DisplayName = "ARPABETSpeechSynthesis: other > non-verbal > Purr" ))
+	void ARPABETSpeechSynthesis_Purr(
+		UPARAM(DisplayName = "Voices") const int Voices)
+	{
+		speechSample_FPhoneVec.push_back(ARPABETPhone::ARPABETPhone_Purr());
+	};
+
+	/** Activates speech synthesis channel phoneme functionality 'Rasp' */
+	UFUNCTION(BlueprintCallable, Category = TextToSpeech, meta = ( keywords = "TTS, SpeechSynthesis, TextToSpeech", DisplayName = "ARPABETSpeechSynthesis: other > non-verbal > Rasp" ))
+	void ARPABETSpeechSynthesis_Rasp(
+		UPARAM(DisplayName = "Voices") const int Voices)
+	{
+		speechSample_FPhoneVec.push_back(ARPABETPhone::ARPABETPhone_Rasp());
+	};
+
+	/** Activates speech synthesis channel phoneme functionality 'Raspberries' */
+	UFUNCTION(BlueprintCallable, Category = TextToSpeech, meta = ( keywords = "TTS, SpeechSynthesis, TextToSpeech", DisplayName = "ARPABETSpeechSynthesis: other > non-verbal > Raspberries" ))
+	void ARPABETSpeechSynthesis_Raspberries(
+		UPARAM(DisplayName = "Voices") const int Voices)
+	{
+		speechSample_FPhoneVec.push_back(ARPABETPhone::ARPABETPhone_Raspberries());
+	};
+
+	/** Activates speech synthesis channel phoneme functionality 'Rattle' */
+	UFUNCTION(BlueprintCallable, Category = TextToSpeech, meta = ( keywords = "TTS, SpeechSynthesis, TextToSpeech", DisplayName = "ARPABETSpeechSynthesis: other > non-verbal > Rattle" ))
+	void ARPABETSpeechSynthesis_Rattle(
+		UPARAM(DisplayName = "Voices") const int Voices)
+	{
+		speechSample_FPhoneVec.push_back(ARPABETPhone::ARPABETPhone_Rattle());
+	};
+
+	/** Activates speech synthesis channel phoneme functionality 'Roar' */
+	UFUNCTION(BlueprintCallable, Category = TextToSpeech, meta = ( keywords = "TTS, SpeechSynthesis, TextToSpeech", DisplayName = "ARPABETSpeechSynthesis: other > non-verbal > Roar" ))
+	void ARPABETSpeechSynthesis_Roar(
+		UPARAM(DisplayName = "Voices") const int Voices)
+	{
+		speechSample_FPhoneVec.push_back(ARPABETPhone::ARPABETPhone_Roar());
+	};
+
+	/** Activates speech synthesis channel phoneme functionality 'Rustle' */
+	UFUNCTION(BlueprintCallable, Category = TextToSpeech, meta = ( keywords = "TTS, SpeechSynthesis, TextToSpeech", DisplayName = "ARPABETSpeechSynthesis: other > non-verbal > Rustle" ))
+	void ARPABETSpeechSynthesis_Rustle(
+		UPARAM(DisplayName = "Voices") const int Voices)
+	{
+		speechSample_FPhoneVec.push_back(ARPABETPhone::ARPABETPhone_Rustle());
+	};
+
+	/** Activates speech synthesis channel phoneme functionality 'Screech' */
+	UFUNCTION(BlueprintCallable, Category = TextToSpeech, meta = ( keywords = "TTS, SpeechSynthesis, TextToSpeech", DisplayName = "ARPABETSpeechSynthesis: other > non-verbal > Screech" ))
+	void ARPABETSpeechSynthesis_Screech(
+		UPARAM(DisplayName = "Voices") const int Voices)
+	{
+		speechSample_FPhoneVec.push_back(ARPABETPhone::ARPABETPhone_Screech());
+	};
+
+	/** Activates speech synthesis channel phoneme functionality 'Shout' */
+	UFUNCTION(BlueprintCallable, Category = TextToSpeech, meta = ( keywords = "TTS, SpeechSynthesis, TextToSpeech", DisplayName = "ARPABETSpeechSynthesis: other > non-verbal > Shout" ))
+	void ARPABETSpeechSynthesis_Shout(
+		UPARAM(DisplayName = "Voices") const int Voices)
+	{
+		speechSample_FPhoneVec.push_back(ARPABETPhone::ARPABETPhone_Shout());
+	};
+
+	/** Activates speech synthesis channel phoneme functionality 'Shriek' */
+	UFUNCTION(BlueprintCallable, Category = TextToSpeech, meta = ( keywords = "TTS, SpeechSynthesis, TextToSpeech", DisplayName = "ARPABETSpeechSynthesis: other > non-verbal > Shriek" ))
+	void ARPABETSpeechSynthesis_Shriek(
+		UPARAM(DisplayName = "Voices") const int Voices)
+	{
+		speechSample_FPhoneVec.push_back(ARPABETPhone::ARPABETPhone_Shriek());
+	};
+
+	/** Activates speech synthesis channel phoneme functionality 'Sigh' */
+	UFUNCTION(BlueprintCallable, Category = TextToSpeech, meta = ( keywords = "TTS, SpeechSynthesis, TextToSpeech", DisplayName = "ARPABETSpeechSynthesis: other > non-verbal > Sigh" ))
+	void ARPABETSpeechSynthesis_Sigh(
+		UPARAM(DisplayName = "Voices") const int Voices)
+	{
+		speechSample_FPhoneVec.push_back(ARPABETPhone::ARPABETPhone_Sigh());
+	};
+
+	/** Activates speech synthesis channel phoneme functionality 'Skeptical_Sigh_or_Hum' */
+	UFUNCTION(BlueprintCallable, Category = TextToSpeech, meta = ( keywords = "TTS, SpeechSynthesis, TextToSpeech", DisplayName = "ARPABETSpeechSynthesis: other > non-verbal > Skeptical_Sigh_or_Hum" ))
+	void ARPABETSpeechSynthesis_Skeptical_sigh_or_hum(
+		UPARAM(DisplayName = "Voices") const int Voices)
+	{
+		speechSample_FPhoneVec.push_back(ARPABETPhone::ARPABETPhone_Skeptical_sigh_or_hum());
+	};
+
+	/** Activates speech synthesis channel phoneme functionality 'Slam' */
+	UFUNCTION(BlueprintCallable, Category = TextToSpeech, meta = ( keywords = "TTS, SpeechSynthesis, TextToSpeech", DisplayName = "ARPABETSpeechSynthesis: other > non-verbal > Slam" ))
+	void ARPABETSpeechSynthesis_Slam(
+		UPARAM(DisplayName = "Voices") const int Voices)
+	{
+		speechSample_FPhoneVec.push_back(ARPABETPhone::ARPABETPhone_Slam());
+	};
+
+	/** Activates speech synthesis channel phoneme functionality 'Slap' */
+	UFUNCTION(BlueprintCallable, Category = TextToSpeech, meta = ( keywords = "TTS, SpeechSynthesis, TextToSpeech", DisplayName = "ARPABETSpeechSynthesis: other > non-verbal > Slap" ))
+	void ARPABETSpeechSynthesis_Slap(
+		UPARAM(DisplayName = "Voices") const int Voices)
+	{
+		speechSample_FPhoneVec.push_back(ARPABETPhone::ARPABETPhone_Slap());
+	};
+
+	/** Activates speech synthesis channel phoneme functionality 'Slurp' */
+	UFUNCTION(BlueprintCallable, Category = TextToSpeech, meta = ( keywords = "TTS, SpeechSynthesis, TextToSpeech", DisplayName = "ARPABETSpeechSynthesis: other > non-verbal > Slurp" ))
+	void ARPABETSpeechSynthesis_Slurp(
+		UPARAM(DisplayName = "Voices") const int Voices)
+	{
+		speechSample_FPhoneVec.push_back(ARPABETPhone::ARPABETPhone_Slurp());
+	};
+
+	/** Activates speech synthesis channel phoneme functionality 'Smack' */
+	UFUNCTION(BlueprintCallable, Category = TextToSpeech, meta = ( keywords = "TTS, SpeechSynthesis, TextToSpeech", DisplayName = "ARPABETSpeechSynthesis: other > non-verbal > Smack" ))
+	void ARPABETSpeechSynthesis_Smack(
+		UPARAM(DisplayName = "Voices") const int Voices)
+	{
+		speechSample_FPhoneVec.push_back(ARPABETPhone::ARPABETPhone_Smack());
+	};
+
+	/** Activates speech synthesis channel phoneme functionality 'Snarl' */
+	UFUNCTION(BlueprintCallable, Category = TextToSpeech, meta = ( keywords = "TTS, SpeechSynthesis, TextToSpeech", DisplayName = "ARPABETSpeechSynthesis: other > non-verbal > Snarl" ))
+	void ARPABETSpeechSynthesis_Snarl(
+		UPARAM(DisplayName = "Voices") const int Voices)
+	{
+		speechSample_FPhoneVec.push_back(ARPABETPhone::ARPABETPhone_Snarl());
+	};
+
+	/** Activates speech synthesis channel phoneme functionality 'Sneer' */
+	UFUNCTION(BlueprintCallable, Category = TextToSpeech, meta = ( keywords = "TTS, SpeechSynthesis, TextToSpeech", DisplayName = "ARPABETSpeechSynthesis: other > non-verbal > Sneer" ))
+	void ARPABETSpeechSynthesis_Sneer(
+		UPARAM(DisplayName = "Voices") const int Voices)
+	{
+		speechSample_FPhoneVec.push_back(ARPABETPhone::ARPABETPhone_Sneer());
+	};
+
+	/** Activates speech synthesis channel phoneme functionality 'Sneeze' */
+	UFUNCTION(BlueprintCallable, Category = TextToSpeech, meta = ( keywords = "TTS, SpeechSynthesis, TextToSpeech", DisplayName = "ARPABETSpeechSynthesis: other > non-verbal > Sneeze" ))
+	void ARPABETSpeechSynthesis_Sneeze(
+		UPARAM(DisplayName = "Voices") const int Voices)
+	{
+		speechSample_FPhoneVec.push_back(ARPABETPhone::ARPABETPhone_Sneeze());
+	};
+
+	/** Activates speech synthesis channel phoneme functionality 'Snicker' */
+	UFUNCTION(BlueprintCallable, Category = TextToSpeech, meta = ( keywords = "TTS, SpeechSynthesis, TextToSpeech", DisplayName = "ARPABETSpeechSynthesis: other > non-verbal > Snicker" ))
+	void ARPABETSpeechSynthesis_Snicker(
+		UPARAM(DisplayName = "Voices") const int Voices)
+	{
+		speechSample_FPhoneVec.push_back(ARPABETPhone::ARPABETPhone_Snicker());
+	};
+
+	/** Activates speech synthesis channel phoneme functionality 'Sniff' */
+	UFUNCTION(BlueprintCallable, Category = TextToSpeech, meta = ( keywords = "TTS, SpeechSynthesis, TextToSpeech", DisplayName = "ARPABETSpeechSynthesis: other > non-verbal > Sniff" ))
+	void ARPABETSpeechSynthesis_Sniff(
+		UPARAM(DisplayName = "Voices") const int Voices)
+	{
+		speechSample_FPhoneVec.push_back(ARPABETPhone::ARPABETPhone_Sniff());
+	};
+
+	/** Activates speech synthesis channel phoneme functionality 'Sniffle' */
+	UFUNCTION(BlueprintCallable, Category = TextToSpeech, meta = ( keywords = "TTS, SpeechSynthesis, TextToSpeech", DisplayName = "ARPABETSpeechSynthesis: other > non-verbal > Sniffle" ))
+	void ARPABETSpeechSynthesis_Sniffle(
+		UPARAM(DisplayName = "Voices") const int Voices)
+	{
+		speechSample_FPhoneVec.push_back(ARPABETPhone::ARPABETPhone_Sniffle());
+	};
+
+	/** Activates speech synthesis channel phoneme functionality 'Snore' */
+	UFUNCTION(BlueprintCallable, Category = TextToSpeech, meta = ( keywords = "TTS, SpeechSynthesis, TextToSpeech", DisplayName = "ARPABETSpeechSynthesis: other > non-verbal > Snore" ))
+	void ARPABETSpeechSynthesis_Snore(
+		UPARAM(DisplayName = "Voices") const int Voices)
+	{
+		speechSample_FPhoneVec.push_back(ARPABETPhone::ARPABETPhone_Snore());
+	};
+
+	/** Activates speech synthesis channel phoneme functionality 'Snort' */
+	UFUNCTION(BlueprintCallable, Category = TextToSpeech, meta = ( keywords = "TTS, SpeechSynthesis, TextToSpeech", DisplayName = "ARPABETSpeechSynthesis: other > non-verbal > Snort" ))
+	void ARPABETSpeechSynthesis_Snort(
+		UPARAM(DisplayName = "Voices") const int Voices)
+	{
+		speechSample_FPhoneVec.push_back(ARPABETPhone::ARPABETPhone_Snort());
+	};
+
+	/** Activates speech synthesis channel phoneme functionality 'Sob' */
+	UFUNCTION(BlueprintCallable, Category = TextToSpeech, meta = ( keywords = "TTS, SpeechSynthesis, TextToSpeech", DisplayName = "ARPABETSpeechSynthesis: other > non-verbal > Sob" ))
+	void ARPABETSpeechSynthesis_Sob(
+		UPARAM(DisplayName = "Voices") const int Voices)
+	{
+		speechSample_FPhoneVec.push_back(ARPABETPhone::ARPABETPhone_Sob());
+	};
+
+	/** Activates speech synthesis channel phoneme functionality 'Spit' */
+	UFUNCTION(BlueprintCallable, Category = TextToSpeech, meta = ( keywords = "TTS, SpeechSynthesis, TextToSpeech", DisplayName = "ARPABETSpeechSynthesis: other > non-verbal > Spit" ))
+	void ARPABETSpeechSynthesis_Spit(
+		UPARAM(DisplayName = "Voices") const int Voices)
+	{
+		speechSample_FPhoneVec.push_back(ARPABETPhone::ARPABETPhone_Spit());
+	};
+
+	/** Activates speech synthesis channel phoneme functionality 'Splutter' */
+	UFUNCTION(BlueprintCallable, Category = TextToSpeech, meta = ( keywords = "TTS, SpeechSynthesis, TextToSpeech", DisplayName = "ARPABETSpeechSynthesis: other > non-verbal > Splutter" ))
+	void ARPABETSpeechSynthesis_Splutter(
+		UPARAM(DisplayName = "Voices") const int Voices)
+	{
+		speechSample_FPhoneVec.push_back(ARPABETPhone::ARPABETPhone_Splutter());
+	};
+
+	/** Activates speech synthesis channel phoneme functionality 'Sputter' */
+	UFUNCTION(BlueprintCallable, Category = TextToSpeech, meta = ( keywords = "TTS, SpeechSynthesis, TextToSpeech", DisplayName = "ARPABETSpeechSynthesis: other > non-verbal > Sputter" ))
+	void ARPABETSpeechSynthesis_Sputter(
+		UPARAM(DisplayName = "Voices") const int Voices)
+	{
+		speechSample_FPhoneVec.push_back(ARPABETPhone::ARPABETPhone_Sputter());
+	};
+
+	/** Activates speech synthesis channel phoneme functionality 'Squawk' */
+	UFUNCTION(BlueprintCallable, Category = TextToSpeech, meta = ( keywords = "TTS, SpeechSynthesis, TextToSpeech", DisplayName = "ARPABETSpeechSynthesis: other > non-verbal > Squawk" ))
+	void ARPABETSpeechSynthesis_Squawk(
+		UPARAM(DisplayName = "Voices") const int Voices)
+	{
+		speechSample_FPhoneVec.push_back(ARPABETPhone::ARPABETPhone_Squawk());
+	};
+
+	/** Activates speech synthesis channel phoneme functionality 'Squeak' */
+	UFUNCTION(BlueprintCallable, Category = TextToSpeech, meta = ( keywords = "TTS, SpeechSynthesis, TextToSpeech", DisplayName = "ARPABETSpeechSynthesis: other > non-verbal > Squeak" ))
+	void ARPABETSpeechSynthesis_Squeak(
+		UPARAM(DisplayName = "Voices") const int Voices)
+	{
+		speechSample_FPhoneVec.push_back(ARPABETPhone::ARPABETPhone_Squeak());
+	};
+
+	/** Activates speech synthesis channel phoneme functionality 'Squeal' */
+	UFUNCTION(BlueprintCallable, Category = TextToSpeech, meta = ( keywords = "TTS, SpeechSynthesis, TextToSpeech", DisplayName = "ARPABETSpeechSynthesis: other > non-verbal > Squeal" ))
+	void ARPABETSpeechSynthesis_Squeal(
+		UPARAM(DisplayName = "Voices") const int Voices)
+	{
+		speechSample_FPhoneVec.push_back(ARPABETPhone::ARPABETPhone_Squeal());
+	};
+
+	/** Activates speech synthesis channel phoneme functionality 'Stammer' */
+	UFUNCTION(BlueprintCallable, Category = TextToSpeech, meta = ( keywords = "TTS, SpeechSynthesis, TextToSpeech", DisplayName = "ARPABETSpeechSynthesis: other > non-verbal > Stammer" ))
+	void ARPABETSpeechSynthesis_Stammer(
+		UPARAM(DisplayName = "Voices") const int Voices)
+	{
+		speechSample_FPhoneVec.push_back(ARPABETPhone::ARPABETPhone_Stammer());
+	};
+
+	/** Activates speech synthesis channel phoneme functionality 'Stamp' */
+	UFUNCTION(BlueprintCallable, Category = TextToSpeech, meta = ( keywords = "TTS, SpeechSynthesis, TextToSpeech", DisplayName = "ARPABETSpeechSynthesis: other > non-verbal > Stamp" ))
+	void ARPABETSpeechSynthesis_Stamp(
+		UPARAM(DisplayName = "Voices") const int Voices)
+	{
+		speechSample_FPhoneVec.push_back(ARPABETPhone::ARPABETPhone_Stamp());
+	};
+
+	/** Activates speech synthesis channel phoneme functionality 'Swallow' */
+	UFUNCTION(BlueprintCallable, Category = TextToSpeech, meta = ( keywords = "TTS, SpeechSynthesis, TextToSpeech", DisplayName = "ARPABETSpeechSynthesis: other > non-verbal > Swallow" ))
+	void ARPABETSpeechSynthesis_Swallow(
+		UPARAM(DisplayName = "Voices") const int Voices)
+	{
+		speechSample_FPhoneVec.push_back(ARPABETPhone::ARPABETPhone_Swallow());
+	};
+
+	/** Activates speech synthesis channel phoneme functionality 'Thump' */
+	UFUNCTION(BlueprintCallable, Category = TextToSpeech, meta = ( keywords = "TTS, SpeechSynthesis, TextToSpeech", DisplayName = "ARPABETSpeechSynthesis: other > non-verbal > Thump" ))
+	void ARPABETSpeechSynthesis_Thump(
+		UPARAM(DisplayName = "Voices") const int Voices)
+	{
+		speechSample_FPhoneVec.push_back(ARPABETPhone::ARPABETPhone_Thump());
+	};
+
+	/** Activates speech synthesis channel phoneme functionality 'Tick' */
+	UFUNCTION(BlueprintCallable, Category = TextToSpeech, meta = ( keywords = "TTS, SpeechSynthesis, TextToSpeech", DisplayName = "ARPABETSpeechSynthesis: other > non-verbal > Tick" ))
+	void ARPABETSpeechSynthesis_Tick(
+		UPARAM(DisplayName = "Voices") const int Voices)
+	{
+		speechSample_FPhoneVec.push_back(ARPABETPhone::ARPABETPhone_Tick());
+	};
+
+	/** Activates speech synthesis channel phoneme functionality 'Tinkle' */
+	UFUNCTION(BlueprintCallable, Category = TextToSpeech, meta = ( keywords = "TTS, SpeechSynthesis, TextToSpeech", DisplayName = "ARPABETSpeechSynthesis: other > non-verbal > Tinkle" ))
+	void ARPABETSpeechSynthesis_Tinkle(
+		UPARAM(DisplayName = "Voices") const int Voices)
+	{
+		speechSample_FPhoneVec.push_back(ARPABETPhone::ARPABETPhone_Tinkle());
+	};
+
+	/** Activates speech synthesis channel phoneme functionality 'Titter' */
+	UFUNCTION(BlueprintCallable, Category = TextToSpeech, meta = ( keywords = "TTS, SpeechSynthesis, TextToSpeech", DisplayName = "ARPABETSpeechSynthesis: other > non-verbal > Titter" ))
+	void ARPABETSpeechSynthesis_Titter(
+		UPARAM(DisplayName = "Voices") const int Voices)
+	{
+		speechSample_FPhoneVec.push_back(ARPABETPhone::ARPABETPhone_Titter());
+	};
+
+	/** Activates speech synthesis channel phoneme functionality 'Toot' */
+	UFUNCTION(BlueprintCallable, Category = TextToSpeech, meta = ( keywords = "TTS, SpeechSynthesis, TextToSpeech", DisplayName = "ARPABETSpeechSynthesis: other > non-verbal > Toot" ))
+	void ARPABETSpeechSynthesis_Toot(
+		UPARAM(DisplayName = "Voices") const int Voices)
+	{
+		speechSample_FPhoneVec.push_back(ARPABETPhone::ARPABETPhone_Toot());
+	};
+
+	/** Activates speech synthesis channel phoneme functionality 'Trill' */
+	UFUNCTION(BlueprintCallable, Category = TextToSpeech, meta = ( keywords = "TTS, SpeechSynthesis, TextToSpeech", DisplayName = "ARPABETSpeechSynthesis: other > non-verbal > Trill" ))
+	void ARPABETSpeechSynthesis_Trill(
+		UPARAM(DisplayName = "Voices") const int Voices)
+	{
+		speechSample_FPhoneVec.push_back(ARPABETPhone::ARPABETPhone_Trill());
+	};
+
+	/** Activates speech synthesis channel phoneme functionality 'Wail' */
+	UFUNCTION(BlueprintCallable, Category = TextToSpeech, meta = ( keywords = "TTS, SpeechSynthesis, TextToSpeech", DisplayName = "ARPABETSpeechSynthesis: other > non-verbal > Wail" ))
+	void ARPABETSpeechSynthesis_Wail(
+		UPARAM(DisplayName = "Voices") const int Voices)
+	{
+		speechSample_FPhoneVec.push_back(ARPABETPhone::ARPABETPhone_Wail());
+	};
+
+	/** Activates speech synthesis channel phoneme functionality 'Warble' */
+	UFUNCTION(BlueprintCallable, Category = TextToSpeech, meta = ( keywords = "TTS, SpeechSynthesis, TextToSpeech", DisplayName = "ARPABETSpeechSynthesis: other > non-verbal > Warble" ))
+	void ARPABETSpeechSynthesis_Warble(
+		UPARAM(DisplayName = "Voices") const int Voices)
+	{
+		speechSample_FPhoneVec.push_back(ARPABETPhone::ARPABETPhone_Warble());
+	};
+
+	/** Activates speech synthesis channel phoneme functionality 'Wheeze' */
+	UFUNCTION(BlueprintCallable, Category = TextToSpeech, meta = ( keywords = "TTS, SpeechSynthesis, TextToSpeech", DisplayName = "ARPABETSpeechSynthesis: other > non-verbal > Wheeze" ))
+	void ARPABETSpeechSynthesis_Wheeze(
+		UPARAM(DisplayName = "Voices") const int Voices)
+	{
+		speechSample_FPhoneVec.push_back(ARPABETPhone::ARPABETPhone_Wheeze());
+	};
+
+	/** Activates speech synthesis channel phoneme functionality 'Whimper' */
+	UFUNCTION(BlueprintCallable, Category = TextToSpeech, meta = ( keywords = "TTS, SpeechSynthesis, TextToSpeech", DisplayName = "ARPABETSpeechSynthesis: other > non-verbal > Whimper" ))
+	void ARPABETSpeechSynthesis_Whimper(
+		UPARAM(DisplayName = "Voices") const int Voices)
+	{
+		speechSample_FPhoneVec.push_back(ARPABETPhone::ARPABETPhone_Whimper());
+	};
+
+	/** Activates speech synthesis channel phoneme functionality 'Whine' */
+	UFUNCTION(BlueprintCallable, Category = TextToSpeech, meta = ( keywords = "TTS, SpeechSynthesis, TextToSpeech", DisplayName = "ARPABETSpeechSynthesis: other > non-verbal > Whine" ))
+	void ARPABETSpeechSynthesis_Whine(
+		UPARAM(DisplayName = "Voices") const int Voices)
+	{
+		speechSample_FPhoneVec.push_back(ARPABETPhone::ARPABETPhone_Whine());
+	};
+
+	/** Activates speech synthesis channel phoneme functionality 'Whisper' */
+	UFUNCTION(BlueprintCallable, Category = TextToSpeech, meta = ( keywords = "TTS, SpeechSynthesis, TextToSpeech", DisplayName = "ARPABETSpeechSynthesis: other > non-verbal > Whisper" ))
+	void ARPABETSpeechSynthesis_Whisper(
+		UPARAM(DisplayName = "Voices") const int Voices)
+	{
+		speechSample_FPhoneVec.push_back(ARPABETPhone::ARPABETPhone_Whisper());
+	};
+
+	/** Activates speech synthesis channel phoneme functionality 'Whistle' */
+	UFUNCTION(BlueprintCallable, Category = TextToSpeech, meta = ( keywords = "TTS, SpeechSynthesis, TextToSpeech", DisplayName = "ARPABETSpeechSynthesis: other > non-verbal > Whistle" ))
+	void ARPABETSpeechSynthesis_Whistle(
+		UPARAM(DisplayName = "Voices") const int Voices)
+	{
+		speechSample_FPhoneVec.push_back(ARPABETPhone::ARPABETPhone_Whistle());
+	};
+
+	/** Activates speech synthesis channel phoneme functionality 'Whoop' */
+	UFUNCTION(BlueprintCallable, Category = TextToSpeech, meta = ( keywords = "TTS, SpeechSynthesis, TextToSpeech", DisplayName = "ARPABETSpeechSynthesis: other > non-verbal > Whoop" ))
+	void ARPABETSpeechSynthesis_Whoop(
+		UPARAM(DisplayName = "Voices") const int Voices)
+	{
+		speechSample_FPhoneVec.push_back(ARPABETPhone::ARPABETPhone_Whoop());
+	};
+
+	/** Activates speech synthesis channel phoneme functionality 'Yawn' */
+	UFUNCTION(BlueprintCallable, Category = TextToSpeech, meta = ( keywords = "TTS, SpeechSynthesis, TextToSpeech", DisplayName = "ARPABETSpeechSynthesis: other > non-verbal > Yawn" ))
+	void ARPABETSpeechSynthesis_Yawn(
+		UPARAM(DisplayName = "Voices") const int Voices)
+	{
+		speechSample_FPhoneVec.push_back(ARPABETPhone::ARPABETPhone_Yawn());
+	};
+
+	/** Activates speech synthesis channel phoneme functionality 'Yelp' */
+	UFUNCTION(BlueprintCallable, Category = TextToSpeech, meta = ( keywords = "TTS, SpeechSynthesis, TextToSpeech", DisplayName = "ARPABETSpeechSynthesis: other > non-verbal > Yelp" ))
+	void ARPABETSpeechSynthesis_Yelp(
+		UPARAM(DisplayName = "Voices") const int Voices)
+	{
+		speechSample_FPhoneVec.push_back(ARPABETPhone::ARPABETPhone_Yelp());
+	};
+
+
 	//UPROPERTY()
 	VoiceArray voices_UTTSVoiceArray{};
 
