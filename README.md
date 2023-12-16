@@ -15,6 +15,9 @@ This is a multilingual open-source text-to-speech and speech-to-speech platform 
 <img title='Schwa.Phoneme.(Formants).Synthesis.Curves' style='margin-top:24px;' alt='Schwa.Phoneme.(Formants).Synthesis.Curves' src='IMG/Phoneme.(Formants).Synthesis.Curves.Screen.PNG'/><br>
 <span>Custom.Schwa.Phoneme.(Formants).Synthesis.Curves</span>
 
+<img title='Compact.Custom.Schwa.Phoneme.(Formants).Curve.Editor' style='margin-top:24px;' alt='Schwa.Phoneme.(Formants).Synthesis.Curves' src='IMG/Amplitude_vs_Frequency_vs_Time_Curve_UE.png'/><br>
+<span>Compact.Custom.Schwa.Phoneme.(Formants).Curve.Editor</span>
+
 <img title='UE 5 Voice Configurator' style='margin-top:24px;' alt='UE 5 Voice Configurator (Blueprints)' src='IMG/UE_5_SpeechSynthesis_Configurator.png'/><br>
 <span>UE 5 Voice Configurator</span>
 
