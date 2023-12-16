@@ -26,6 +26,9 @@
    - Use distinct sine audio chords to simulate ADSR characteristics for each formant signal.
    - Compute delta and delta-delta features near transition points for smooth phone transitions.
    - Consider using a single formant F0 per phone, using ADSR Oscillator's effects for other formant characteristics.
+   - Because Humans are so sensitive to speech, synthetic speech cannot be flat. One proposed solution is that
+every segment of generated speech requires a parenthetical caption (ie. a wryly) preceeding which describes the tone of speech generated.
+The system must also be capable of producing the tone of speech required in the caption.
 
 ### Machine Learning and Data Analysis
 1. **GAN Training for Spectrogram Generation**:
