@@ -15,16 +15,18 @@
 
 ### Audio Processing and Synthesis
 1. **Synthesis Techniques**:
+   - Generate the entire ARPABET phonetic alphabet from scratch using a single sine wave generator, F0.
    - Explore quarter-period synthesis for phone transition versatility and sound fidelity.
    - Use std::vector&lt;FTTSVoice::Sara::FFormants&gt; to build voice signal's fundamental and formant frequencies.
    - Provide a sine wave generator with a 10s decay envelope to simulate human lung capacity.
-   - Include a breath blueprint activated after 5s of speech for realistic breathing simulation.
-   - Integrate noise generators to mimic speaker's breath.
+   - Include an ARPABETPhone::breath UE Audio blueprint activated after 5s of speech for realistic breathing simulation.
+   - Integrate noise generators to mimic a speaker's breath.
 
 2. **Signal Processing**:
+   - Carve the F0 waveforms out of Gaussian noise mask filter.
    - Employ state-machine for ADSR envelope mode switching to prevent signal discontinuities.
-   - Use distinct sine audio chords to simulate ADSR characteristics for each formant signal.
-   - Compute delta and delta-delta features near transition points for smooth phone transitions.
+   - Use distinct sine audio chords to simulate ADSR characteristics in lieu of formant signals.
+   - Compute delta and delta-delta tangent (curve) features near transition points for smooth phone transitions.
    - Consider using a single formant F0 per phone, using ADSR Oscillator's effects for other formant characteristics.
    - Because Humans are so sensitive to speech, synthetic speech cannot be flat. One proposed solution is that
 every segment of generated speech requires a parenthetical caption (ie. a wryly) preceeding which describes the tone of speech generated.
@@ -44,7 +46,7 @@ The system must also be capable of producing the tone of speech required in the 
 
 ### Voice Library Expansion
 1. **Sample Addition Process**:
-   - Steps for adding new samples include reconstructing audio file formants, generating and comparing spectrograms, and applying Gaussian noise masks.
+   - Steps for adding new samples include reconstructing audio file formants, generating and comparing their spectrograms, and then applying Gaussian noise masks to carve out their waveforms.
 
 2. **Dynamic Voice Traits**:
    - Adjust voice attributes like age, sex, national origin, timbre, accent, and various non-verbal attributes.
