@@ -15,7 +15,7 @@
 
 ### Audio Processing and Synthesis
 1. **Synthesis Techniques**:
-   - Generate the entire ARPABET phonetic alphabet from scratch using a single sine wave generator, F0.
+   - Generate the entire ARPABET phonetic alphabet from scratch using a single sine wave generator, F0, and or all short- and long- vowel and consonant sounds for best coverage.
    - Explore quarter-period synthesis for phone transition versatility and sound fidelity.
    - Use std::vector&lt;FTTSVoice::Sara::FFormants&gt; to build voice signal's fundamental and formant frequencies.
    - Provide a sine wave generator with a 10s decay envelope to simulate human lung capacity.
