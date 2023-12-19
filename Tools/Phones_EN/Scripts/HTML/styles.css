@@ -1,0 +1,76 @@
+div {
+    background-color: #333;
+    color: #fff;
+    font-family: sans-serif;
+    font-size: 12px;
+    margin: 0;
+    padding: 0;
+}
+
+select:hover {
+    color: #eee;
+}
+
+#editor-container {
+    position: relative;
+    display: grid;
+    background-color: #333; /* Adjust to match the image */
+}
+
+.corner-dropdown {
+    background-color: #333;
+    color: #888;
+    border: 1px solid #666;
+    border-radius: 5px;
+    padding: 5px;
+    font-size: 12px;
+    /*display: inline-block;*/
+    /* Position each dropdown accordingly using top, right, bottom, left properties */
+}
+
+/*
+#frequency-selector {
+    //background-color: blue;
+}
+*/
+
+/* Color-coding for dropdowns */
+
+#formant-graph {
+    background-color: rgb(50, 50, 50); /* Set your desired color */
+    max-height: 800px;
+    max-width: 1600px;
+}
+/*
+#north-select {
+  top: 0;
+  left: 50%;
+  transform: translateX(-50%);
+}
+
+#east-select {
+  top: 50%;
+  right: 0;
+  transform: translateY(-50%);
+}
+
+#south-select {
+  bottom: 0;
+  left: 50%;
+  transform: translateX(-50%);
+}
+
+#west-select {
+  top: 50%;
+  left: 0;
+  transform: translateY(-50%);
+}
+
+canvas {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}
+*/
+  /* Repeat for other dropdowns with different colors */
