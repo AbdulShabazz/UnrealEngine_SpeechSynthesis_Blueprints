@@ -39,7 +39,6 @@ select:hover {
 #formant-graph {
     background-color: rgb(50, 50, 50); /* Set your desired color */
     max-height: 800px;
-    max-width: 1600px;
 }
 /*
 #north-select {
