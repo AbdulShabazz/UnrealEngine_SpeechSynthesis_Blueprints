@@ -4,94 +4,98 @@ const labels = ['0', '15', '30', '45', '60', '75', '90', '105'];
 const data = {
     labels: labels,
     datasets: [{
-        label: 'Formant F0 Amplitude - dB',
-        xAxisID: 'x-axis-1',
+        type: 'line',
+        label: 'F0 Amplitude - dB',
+        yAxisID: 'y-axis-1',
         data: [-6.0, -4.5, -4.0, -5.5, -5.8, -6.0, -7.0, -11.0],
         fill: false,
         borderWidth: 1,
         borderColor: 'rgb(75, 192, 192)',
         tension: 0.35,
-        backgroundColor: 'rgb(75, 192, 192)' //'rgb(61, 67, 67)'
+        backgroundColor: 'rgb(75, 192, 192)',
+        //datasets: [{ showLine: true }]
     }, {
         type: 'line',
-        label: 'Frequency - Hz',
-        yAxisID: 'y-axis-1',
-        fill: false,
-        borderWidth: 1,
-        borderColor: 'rgb(75, 192, 75)',
-        tension: 0.0,
-        backgroundColor: 'rgb(75, 192, 75)', //'rgb(61, 67, 67)'
-        data: [50, 60, 65, 60, 50, 40, 30, 20]
-    }, {
-        type: 'line',
-        label: 'Sample - Frame',
+        label: 'F0 Frame Number',
         yAxisID: 'y-axis-2',
+        data: [0, 200, 265, 600, 880, 1040, 1300, 2050],
         fill: false,
         borderWidth: 1,
         borderColor: 'rgb(255, 255, 0)',
         tension: 0.0,
-        backgroundColor: 'rgb(255, 255, 0)', //'rgb(61, 67, 67)'
-        data: [0, 200, 265, 600, 880, 1040, 1300, 2050]
+        backgroundColor: 'rgb(255, 255, 0)',
+        //datasets: [{ showLine: false /* disable for a single dataset*/ }]
+    }, {
+        type: 'line',
+        label: 'F0 Frequency - Hz',
+        yAxisID: 'y-axis-3',
+        data: [50, 60, 65, 60, 50, 40, 30, 20],
+        fill: false,
+        borderWidth: 1,
+        borderColor: 'rgb(75, 192, 75)',
+        tension: 0.0,
+        backgroundColor: 'rgb(75, 192, 75)',
+        //datasets: [{ showLine: true }]
     }]
 };
 const config = {
     type: 'line',
     data: data,
     options: {
-      plugins: {
-        beforeDraw: (chart) => {
-          //const ctx = chart.ctx;
-          //ctx.fillStyle = 'slategrey'; // Set to your desired background color
-          //ctx.fillRect(0, 0, chart.width, chart.height);
-        }
-      },
-      scales: {
-        xAxes: [{
-            id: 'x-axis-1',
-            position: 'bottom',
-            ticks: {
-                fontSize: 12, // Y-Axis tick font size
-                fontColor: '#eeeeee' // Sets the color of the y-axis ticks (labels)
-            },
-            gridLines: {
-              color: '#eee' // Sets the y-axis grid lines to a shade of gray
+        plugins: {/*
+            beforeDraw: (chart) => {
+            //const ctx = chart.ctx;
+            //ctx.fillStyle = 'slategrey'; // Set to your desired background color
+            //ctx.fillRect(0, 0, chart.width, chart.height);
             }
-        }],
-        yAxes: [{
-            id: 'y-axis-1',
-            position: 'left',
-            ticks: {
-                fontSize: 12, // Y-Axis tick font size
-                fontColor: '#ffff00' // Sets the color of the y-axis ticks (labels)
+        */
+            title: {
+                display: true,
+                text: 'F0 Formant Editor',
+                fontSize: 20 // Title font size
             },
-            gridLines: {
-              color: '#eeeeee' // Sets the y-axis grid lines to a shade of gray
+            legend: {
+                labels: {
+                    fontSize: 14 // Legend font size
+                }
             },
-          }, {
-            id: 'y-axis-2',
-            position: 'right',
-            ticks: {
-                fontSize: 12, // Y-Axis tick font size
-                fontColor: '#eeeeee' // Sets the color of the y-axis ticks (labels)
-            },
-            gridLines: {
-              color: '#eee' // Sets the y-axis grid lines to a shade of gray
+            tooltips: {
+                bodyFontSize: 12 // Tooltip font size
             }
-        }]
-      },
-      title: {
-        display: true,
-        text: 'Formant Editor',
-        fontSize: 20 // Title font size
-      },
-      legend: {
-        labels: {
-          fontSize: 14 // Legend font size
-        }
-      },
-      tooltips: {
-        bodyFontSize: 12 // Tooltip font size
-      }
+        },
+        scales: {
+            yAxes: [{
+                id: 'y-axis-1',
+                position: 'left',
+                ticks: {
+                    fontSize: 12, // Y-Axis tick font size
+                    fontColor: '#eeeeee' // Sets the color of the y-axis ticks (labels)
+                },
+                gridLines: {
+                    color: '#eee' // Sets the y-axis grid lines to a shade of gray
+                }
+            }, {
+                id: 'y-axis-2',
+                position: 'top',
+                ticks: {
+                    fontSize: 12, // Y-Axis tick font size
+                    fontColor: '#eeeeee' // Sets the color of the y-axis ticks (labels)
+                },
+                gridLines: {
+                    color: '#eee' // Sets the y-axis grid lines to a shade of gray
+                }
+            }, {
+                id: 'y-axis-3',
+                position: 'right',
+                ticks: {
+                    fontSize: 12, // Y-Axis tick font size
+                    fontColor: '#ffff00' // Sets the color of the y-axis ticks (labels)
+                },
+                gridLines: {
+                    color: '#eeeeee' // Sets the y-axis grid lines to a shade of gray
+                },
+            }]
+        },
     }
 };
 
