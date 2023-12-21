@@ -24,7 +24,7 @@ select:hover {
     border-radius: 5px;
     padding: 5px;
     font-size: 12px;
-    /*display: inline-block;*/
+    display: none; /*inline-block;*/
     /* Position each dropdown accordingly using top, right, bottom, left properties */
 }
 
