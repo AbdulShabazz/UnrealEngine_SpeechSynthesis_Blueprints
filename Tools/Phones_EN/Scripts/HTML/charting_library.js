@@ -1,54 +1,69 @@
 // Configuration For chart.js
-const labels = ['0', '15', '30', '45', '60', '75', '90', '105'];
+const value_pairs = [
+{ amplitude: -6.0, frequency: 50.0, frame: 0, time_step: 0 },
+{ amplitude: -4.5, frequency: 60.0, frame: 200, time_step: 15 },
+{ amplitude: -4.0, frequency: 65.0, frame: 265, time_step: 30 },
+{ amplitude: -5.5, frequency: 60.0, frame: 600, time_step: 45 },
+{ amplitude: -5.8, frequency: 50.0, frame: 880, time_step: 60 },
+{ amplitude: -6.0, frequency: 40.0, frame: 1040, time_step: 75 },
+{ amplitude: -7.0, frequency: 30.0, frame: 1300, time_step: 90 },
+{ amplitude: -11.0, frequency: 20.0, frame: 2050, time_step: 105 }
+];
 
-const data = {
-    labels: labels,
-    datasets: [{
-        type: 'line',
-        label: 'F0 Amplitude - dB',
-        yAxisID: 'y-axis-1',
-        data: [-6.0, -4.5, -4.0, -5.5, -5.8, -6.0, -7.0, -11.0],
-        fill: false,
-        borderWidth: 1,
-        borderColor: 'rgb(75, 192, 192)',
-        tension: 0.35,
-        backgroundColor: 'rgb(75, 192, 192)',
-        //datasets: [{ showLine: true }]
-    }, {
-        type: 'line',
-        label: 'F0 Frame Number',
-        yAxisID: 'y-axis-2',
-        data: [0, 200, 265, 600, 880, 1040, 1300, 2050],
-        fill: false,
-        borderWidth: 1,
-        borderColor: 'rgb(255, 255, 0)',
-        tension: 0.0,
-        backgroundColor: 'rgb(255, 255, 0)',
-        //datasets: [{ showLine: false /* disable for a single dataset*/ }]
-    }, {
-        type: 'line',
-        label: 'F0 Frequency - Hz',
-        yAxisID: 'y-axis-3',
-        data: [50, 60, 65, 60, 50, 40, 30, 20],
-        fill: false,
-        borderWidth: 1,
-        borderColor: 'rgb(75, 192, 75)',
-        tension: 0.0,
-        backgroundColor: 'rgb(75, 192, 75)',
-        //datasets: [{ showLine: true }]
-    }]
-};
+// Extracting time_steps, amplitudes, and frequencies
+const time_steps = value_pairs.map(pair => pair.time_step);
+const amplitudes = value_pairs.map(pair => pair.amplitude);
+const frequencies = value_pairs.map(pair => pair.frequency);
+const frames = value_pairs.map(pair => pair.frame);
+
 const config = {
     type: 'line',
-    data: data,
+    data: {
+      labels: frames,
+      datasets: [{
+        label: 'Amplitude (dB)',
+        data: amplitudes,
+        borderColor: 'blue',
+        backgroundColor: 'rgb(0, 0, 255)',
+        yAxisID: 'y-axis-amplitude'
+      }, {
+        label: 'Frequency (Hz)',
+        data: frequencies,
+        borderColor: 'green',
+        backgroundColor: 'rgb(0, 140, 0)',
+        yAxisID: 'y-axis-frequency'
+      }]
+    },
     options: {
-        plugins: {/*
-            beforeDraw: (chart) => {
-            //const ctx = chart.ctx;
-            //ctx.fillStyle = 'slategrey'; // Set to your desired background color
-            //ctx.fillRect(0, 0, chart.width, chart.height);
+        scales: {
+            'y-axis-amplitude': {
+            type: 'linear',
+            title: { 
+                text: 'dB',
+                display: true,
+                //color: 'blue',
+            },
+            display: true,
+            position: 'left',
+            grid: {
+                drawOnChartArea: true
+            },
+            },
+            'y-axis-frequency': {
+            type: 'linear',
+            title: { 
+                text: 'Hz',
+                display: true,
+                //color: 'blue',
+            },
+            display: true,
+            position: 'right',
+            grid: {
+                drawOnChartArea: false
+            },
             }
-        */
+        },
+        plugins: {
             title: {
                 display: true,
                 text: 'F0 Formant Editor',
@@ -63,42 +78,10 @@ const config = {
                 bodyFontSize: 12 // Tooltip font size
             }
         },
-        scales: {
-            yAxes: [{
-                id: 'y-axis-1',
-                position: 'left',
-                ticks: {
-                    fontSize: 12, // Y-Axis tick font size
-                    fontColor: '#eeeeee' // Sets the color of the y-axis ticks (labels)
-                },
-                gridLines: {
-                    color: '#eee' // Sets the y-axis grid lines to a shade of gray
-                }
-            }, {
-                id: 'y-axis-2',
-                position: 'top',
-                ticks: {
-                    fontSize: 12, // Y-Axis tick font size
-                    fontColor: '#eeeeee' // Sets the color of the y-axis ticks (labels)
-                },
-                gridLines: {
-                    color: '#eee' // Sets the y-axis grid lines to a shade of gray
-                }
-            }, {
-                id: 'y-axis-3',
-                position: 'right',
-                ticks: {
-                    fontSize: 12, // Y-Axis tick font size
-                    fontColor: '#ffff00' // Sets the color of the y-axis ticks (labels)
-                },
-                gridLines: {
-                    color: '#eeeeee' // Sets the y-axis grid lines to a shade of gray
-                },
-            }]
-        },
     }
-};
+  }; 
 
+Chart.defaults.borderColor = '#444'; // Sets the color of the chart border (default is '#323232')
 const ctx = document.getElementById('formant-graph').getContext('2d');
 const formantChart = new Chart(ctx, config);
 
