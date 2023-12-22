@@ -19,48 +19,62 @@ const frames = value_pairs.map(pair => pair.frame);
 const config = {
     type: 'line',
     data: {
-      labels: frames,
-      datasets: [{
-        label: 'Amplitude (dB)',
-        data: amplitudes,
-        borderColor: 'blue',
-        backgroundColor: 'rgb(0, 0, 255)',
-        yAxisID: 'y-axis-amplitude'
-      }, {
-        label: 'Frequency (Hz)',
-        data: frequencies,
-        borderColor: 'green',
-        backgroundColor: 'rgb(0, 140, 0)',
-        yAxisID: 'y-axis-frequency'
-      }]
+        labels: frames,
+        datasets: [{
+            label: 'Amplitude (dB)',
+            data: amplitudes,
+            borderColor: 'blue',
+            backgroundColor: 'rgb(0, 0, 255)',
+            yAxisID: 'y-axis-amplitude'
+        }, {
+            label: 'Frequency (Hz)',
+            data: frequencies,
+            borderColor: 'green',
+            backgroundColor: 'rgb(0, 140, 0)',
+            yAxisID: 'y-axis-frequency'
+        }]
     },
     options: {
         scales: {
             'y-axis-amplitude': {
-            type: 'linear',
-            title: { 
-                text: 'dB',
+                type: 'linear',
+                title: { 
+                    text: 'dB',
+                    display: true,
+                    //color: 'blue',
+                },
                 display: true,
-                //color: 'blue',
-            },
-            display: true,
-            position: 'left',
-            grid: {
-                drawOnChartArea: true
-            },
+                position: 'left',
+                grid: {
+                    drawOnChartArea: true
+                },
+                ticks: {
+                    // Include a dollar sign in the ticks
+                    callback: function(value, index, ticks) {
+                          // call the default formatter, forwarding `this`
+                          return Chart.Ticks.formatters.numeric.apply(this, [value, index, ticks]) + ' dB';
+                    }
+                }
             },
             'y-axis-frequency': {
-            type: 'linear',
-            title: { 
-                text: 'Hz',
+                type: 'linear',
+                title: { 
+                    text: 'Hz',
+                    display: true,
+                    //color: 'blue',
+                },
                 display: true,
-                //color: 'blue',
-            },
-            display: true,
-            position: 'right',
-            grid: {
-                drawOnChartArea: false
-            },
+                position: 'right',
+                grid: {
+                    drawOnChartArea: false
+                },
+                ticks: {
+                    // Include a dollar sign in the ticks
+                    callback: function(value, index, ticks) {
+                        // call the default formatter, forwarding `this`
+                        return Chart.Ticks.formatters.numeric.apply(this, [value, index, ticks]) + ' Hz';
+                    }
+                }
             }
         },
         plugins: {
@@ -69,13 +83,30 @@ const config = {
                 text: 'F0 Formant Editor',
                 fontSize: 20 // Title font size
             },
+            subtitle: {
+                display: true,
+                text: 'Custom Formant Editor'
+            },
             legend: {
                 labels: {
                     fontSize: 14 // Legend font size
                 }
             },
-            tooltips: {
-                bodyFontSize: 12 // Tooltip font size
+            tooltip: {
+                // Enable the on-canvas tooltip
+                enabled: true,
+                position: 'nearest',
+                bodyFontSize: 12, // Tooltip font size
+                callbacks: {
+                    title: function(tooltips, data) {
+                        // tooltipItems is an array of tooltip items
+                        let xLabel = tooltips[0].label;
+                        if (xLabel) {
+                            xLabel = 'Frame ' + xLabel;
+                        }
+                        return xLabel;
+                    }
+                }
             }
         },
     }
