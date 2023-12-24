@@ -116,31 +116,6 @@ Chart.defaults.borderColor = '#444'; // Sets the color of the chart border (defa
 const ctx = document.getElementById('formant-graph').getContext('2d');
 const formantChart = new Chart(ctx, config);
 
-// Event listeners for dropdowns
-document.getElementById('frequency-selector').addEventListener('change', function() {
-  // Update chart data
-});
-
-// Event listeners for dropdowns
-document.getElementById('amplitude-selector').addEventListener('change', function() {
-  // Update chart data
-});
-
-// Event listeners for dropdowns
-document.getElementById('motif-selector').addEventListener('change', function() {
-  // Update chart data
-});
-
-// Event listeners for dropdowns
-document.getElementById('samples-selector').addEventListener('change', function() {
-  // Update chart data
-});
-
-document.querySelector('select[id="amplitude-selector"]').value = '0';
-document.querySelector('select[id="frequency-selector"]').value = '1';
-document.querySelector('select[id="motif-selector"]').value = '3';
-document.querySelector('select[id="samples-selector"]').value = '2';
-
 /**
 
 Todo: Button(Assign Sine)
@@ -228,7 +203,7 @@ AudioBTN.addEventListener('click', function() {
 });
 
 Cpp20BTN.addEventListener('click', function() {
-    
+
 });
 
 CloseJsonBTN.addEventListener('click', function() {
