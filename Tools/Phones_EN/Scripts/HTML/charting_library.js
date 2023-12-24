@@ -140,3 +140,150 @@ document.querySelector('select[id="amplitude-selector"]').value = '0';
 document.querySelector('select[id="frequency-selector"]').value = '1';
 document.querySelector('select[id="motif-selector"]').value = '3';
 document.querySelector('select[id="samples-selector"]').value = '2';
+
+/**
+
+Todo: Button(Assign Sine)
+Todo: Button(Assign Square)
+Todo: Button(Assign Sawtooth)
+Todo: Button(Assign R.Sawtooth)
+Todo: Button(Assign Triangle)
+Todo: Button(Assign Noise)
+Todo: Button(Assign Silence)
+Todo: Button(Add Formant)
+Todo: Button(Remove Formant)
+Todo: Button(Add Data point)
+Todo: Button(Remove Data point)
+
+ */
+
+activeColor = 'green';
+
+// grab thw default color of the button
+const defaultColor = SineBTN.style.backgroundColor;
+
+// Event listeners for dropdowns
+
+/* Button Actions */
+
+SineBTN.addEventListener('click', function() {
+    SineBTN.flag = !SineBTN.flag;
+    SineBTN.style.backgroundColor = SineBTN.flag ? activeColor : defaultColor;
+});
+
+CosineBTN.addEventListener('click', function() {
+    CosineBTN.flag = !CosineBTN.flag;
+    CosineBTN.style.backgroundColor = CosineBTN.flag ? activeColor : defaultColor;
+});
+
+SquareBTN.addEventListener('click', function() {
+    SquareBTN.flag = !SquareBTN.flag;
+    SquareBTN.style.backgroundColor = SquareBTN.flag ? activeColor : defaultColor;
+});
+
+SawBTN.addEventListener('click', function() {
+    SawBTN.flag = !SawBTN.flag;
+    SawBTN.style.backgroundColor = SawBTN.flag ? activeColor : defaultColor;
+});
+
+RSawBTN.addEventListener('click', function() {
+    RSawBTN.flag = !RSawBTN.flag;
+    RSawBTN.style.backgroundColor = RSawBTN.flag ? activeColor : defaultColor;
+});
+
+TriangleBTN.addEventListener('click', function() {
+    TriangleBTN.flag = !TriangleBTN.flag;
+    TriangleBTN.style.backgroundColor = TriangleBTN.flag ? activeColor : defaultColor;
+});
+
+PinkBTN.addEventListener('click', function() {
+    PinkBTN.flag = !PinkBTN.flag;
+    PinkBTN.style.backgroundColor = PinkBTN.flag ? activeColor : defaultColor;
+});
+
+PurpleBTN.addEventListener('click', function() {
+    PurpleBTN.flag = !PurpleBTN.flag;
+    PurpleBTN.style.backgroundColor = PurpleBTN.flag ? activeColor : defaultColor;
+});
+
+BrownBTN.addEventListener('click', function() {
+    BrownBTN.flag = !BrownBTN.flag;
+    BrownBTN.style.backgroundColor = BrownBTN.flag ? activeColor : defaultColor;
+});
+
+BlueBTN.addEventListener('click', function() {
+    BlueBTN.flag = !BlueBTN.flag;
+    BlueBTN.style.backgroundColor = BlueBTN.flag ? activeColor : defaultColor;
+});
+
+GaussBTN.addEventListener('click', function() {
+    GaussBTN.flag = !GaussBTN.flag;
+    GaussBTN.style.backgroundColor = GaussBTN.flag ? activeColor : defaultColor;
+});
+
+/** popup window actions  */
+
+AudioBTN.addEventListener('click', function() {
+    
+});
+
+Cpp20BTN.addEventListener('click', function() {
+    
+});
+
+CloseJsonBTN.addEventListener('click', function() {
+    if(popupContainer.style.display != 'none'
+    || popupContainer.style.display != '')
+    {
+        popupContainer.style.display = 'none';
+    }
+});
+
+InJsonBTN.addEventListener('click', function() {
+    if(popupContainer.style.display == 'none'
+    || popupContainer.style.display == '')
+    {
+        popupContainer.style.display = 'flex';
+        InJsonFORM.style.display = 'inline-block';
+    } else {
+        popupContainer.style.display = 
+        InJsonFORM.style.display = 'none';
+    }
+});
+
+OutJsonBTN.addEventListener('click', function() {
+    if(popupContainer.style.display == 'none'
+    || popupContainer.style.display == '')
+    {
+        popupContainer.style.display = 'flex';
+        OutJsonFORM.style.display = 'inline-block';
+    } else {
+        popupContainer.style.display = 
+        OutJsonFORM.style.display = 'none';
+    }
+});
+
+InOkBTN.addEventListener('click', function(e) {
+    e.preventDefault();
+    try {
+        //ctx.data.datasets = JSON.parse(JsonTA.value);
+        InJsonBTN.click();
+    } catch (err) {
+        alert(err);
+    }
+});
+
+InCancelBTN.addEventListener('click', function(e) {
+    InJsonBTN.click();
+});
+
+OutOkBTN.addEventListener('click', function(e) {
+    e.preventDefault();
+    let json = JSON.stringify(2, ' ', formantChart.data)
+    JsonTA.value = json;
+    OutJsonBTN.click();
+});
+
+OutCancelBTN.addEventListener('click', function(e) {
+    OutJsonBTN.click();
+});
