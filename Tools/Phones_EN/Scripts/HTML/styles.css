@@ -1,3 +1,7 @@
+body {
+    background-color: #333;
+}
+
 div {
     background-color: #333;
     color: #fff;
@@ -28,18 +32,104 @@ select:hover {
     /* Position each dropdown accordingly using top, right, bottom, left properties */
 }
 
+.btn_class {
+    width: 107px;
+    color: white;/*#888;*/
+    padding: 4px;
+    padding-bottom: 5px;
+    /*border-color: #444;*/
+    border: 0px;
+    background-color: #444;
+}
+
+.btn_class:hover {
+    /*color: #aaa;*/
+    background-color: #666;
+}
+
+.btn_class:active {
+    background-color: #0000ae; /*#4488ff;*/
+}
+
+.btn_class::selection {
+    background-color: #0000ae;
+}
+
+.btn_class_selection {
+    background-color: #0000ae;
+}
+
+.btn_align_right_class {
+    display: inline;
+    float: right;
+}
+
+.json_form_class {
+    font-family: 'Courier New', Courier, monospace;
+    margin: 5px;
+}
+
+.json_textarea_class {
+    font-family: 'Courier New', Courier, monospace;
+    font-size: 10pt;
+    display: block;
+}
+
+/* Color-coding for dropdowns */
+
+#formant-graph {
+    background-color: rgb(50, 50, 50); /* Set your desired color */
+}
+
+  /* Container style */
+.popup-container {
+    display: none; /* Hidden by default */
+    position: fixed; /* Stay in place */
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    overflow: auto; /* Enable scroll if needed */
+    /*color: #333*/;
+    background-color: rgba(0,0,0,0.6); /* Black w/ opacity */
+    justify-content: center;
+    align-items: center;
+}
+
+/* Popup content style */
+.popup-content {
+    background-color: #fefefe; /*#333;*/
+    margin: auto;
+    padding: 20px;
+    border: 1px solid #888;
+    width: 80%; /* Could be adjustable */
+    justify-content: center;
+    display: contents;
+}
+
+/* Close button style */
+.close-btn {
+    color: #aaa;
+    float: right;
+    font-size: 28px;
+    font-weight: bold;
+    display: grid;
+    padding-bottom: 256px; /* floating close button */
+}
+
+.close-btn:hover,
+.close-btn:focus {
+    color: black;
+    text-decoration: none;
+    cursor: pointer;
+}
+
 /*
 #frequency-selector {
     //background-color: blue;
 }
 */
 
-/* Color-coding for dropdowns */
-
-#formant-graph {
-    background-color: rgb(50, 50, 50); /* Set your desired color */
-    max-height: 800px;
-}
 /*
 #north-select {
   top: 0;
