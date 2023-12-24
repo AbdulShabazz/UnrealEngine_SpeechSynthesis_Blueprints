@@ -22,14 +22,14 @@ select:hover {
 }
 
 .corner-dropdown {
-    background-color: #333;
     color: #888;
+    background-color: #333;
     border: 1px solid #666;
     border-radius: 5px;
     padding: 5px;
+    padding-top: 1px;
     font-size: 12px;
-    display: none; /*inline-block;*/
-    /* Position each dropdown accordingly using top, right, bottom, left properties */
+    display: inline-block;
 }
 
 .btn_class {
