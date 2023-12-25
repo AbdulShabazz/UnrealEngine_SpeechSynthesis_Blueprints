@@ -51,6 +51,9 @@ To use the Artificial Speech Formant Editor:
 3. Observe the changes in the graph as you adjust the formants.
 4. Utilize the visual feedback to understand the relationship between formants and speech sounds.
 
+## Compatibility
+- **Desktop**: Firefox 121.0+ (64-bit), Chrome 93.0.4577.82+(64-bit), Edge 93.0.961.52+(64-bit)
+
 ## Contribution
 
 Contributors are welcome to enhance the features of the Artificial Speech Formant Editor. Please read `CONTRIBUTING.md` for guidelines on how to propose changes.
