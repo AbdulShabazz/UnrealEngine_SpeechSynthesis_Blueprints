@@ -77,7 +77,7 @@ const config = {
                 }
             }
         },
-        plugins: {
+        plugins: {/*
             title: {
                 display: true,
                 text: 'F0 Formant Editor',
@@ -86,7 +86,7 @@ const config = {
             subtitle: {
                 display: true,
                 text: 'Custom Formant Editor'
-            },
+            },*/
             legend: {
                 labels: {
                     fontSize: 14 // Legend font size
@@ -110,7 +110,7 @@ const config = {
             }
         },
     }
-  }; 
+};
 
 Chart.defaults.borderColor = '#444'; // Sets the color of the chart border (default is '#323232')
 const ctx = document.getElementById('formant-graph').getContext('2d');
