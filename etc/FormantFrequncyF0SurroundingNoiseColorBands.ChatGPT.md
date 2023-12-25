@@ -1,6 +1,6 @@
 ### Surrounding F0 Noise Color Bands Recommendations
 
-Q: If I developed a spectral filter which permitted Pink and Brown noise above the formant frequency, and Purple and Blue noise below ? Would this achieve the desired spectral components and amplitude slope decay characteristics ?
+Q: If I developed a spectral filter for each formant frequency which permitted (amplitude adjusted) Pink and Brown noise above the formant frequency, and Purple and Blue noise below ? Would this achieve the desired spectral components and amplitude slope decay characteristics ?
 
 ![Formant F0 surrounded by Noise Color Bands](../IMG/F0_v2.png)
 
