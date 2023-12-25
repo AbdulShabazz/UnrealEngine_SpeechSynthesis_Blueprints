@@ -11,12 +11,22 @@
 </head>
 <body>
 
+<div class="x_axis_class">
+<span>F0 Formant Editor <br> Custom Formant Editor </span>
+<br><br>
+    <select id="a_frames_selector" class="corner-dropdown">
+        <option value="0"> F0 </option>
+        <option value="1"> Add New Formant </option>
+        <option value="2"> Remove (Current) Formant </option>
+    </select> 
+</div>
+
 <div id="editor-container">
     
     <canvas id="formant-graph"></canvas>
 
 </div>
-
+<div class="x_axis_class"> Sample ( Frames )</div>
 <div>
     | <button id="SineBTN" class="btn_class">Sine</button>
     | <button id="CosineBTN" class="btn_class">Cosine</button>
@@ -55,7 +65,7 @@
         <option value="11"> 11_025 </option>
         <option value="12"> 22_050 </option>
         <option value="13"> 48_000 </option>
-    </select> Frames.
+    </select> Frames
     | <button id="RemoveFramesBTN" class="btn_class"> Remove </button> 
 
     <select id="r_frames_selector" class="corner-dropdown">
@@ -98,21 +108,7 @@
         <span id="CloseJsonBTN" class="close-btn">×</span><!-- close popup window button -->
     </div>
 </div>
-    
 
-    <!--
-<div style="json_form_class">
-    <textarea id="json-textarea" rows="10" cols="100" placeholder="Paste into text area" class="json_textarea_class" spellcheck="false"></textarea>
-    <div id="JsonFORM">
-    <div>| <button id="InOkBTN" class="btn_class"> OK </button> 
-        | <button id="InCancelBTN" class="btn_class"> CANCEL </button> | </div>
-    </div>
-    <div id="OutJsonFORM">
-    <div>| <button id="OutOkBTN" class="btn_class"> OK </button> 
-        | <button id="OutCancelBTN" class="btn_class"> CANCEL </button> | </div>
-    </div>
-</div>
--->
 <footer>
     <script src="charting_library.js"></script>
 </footer>
