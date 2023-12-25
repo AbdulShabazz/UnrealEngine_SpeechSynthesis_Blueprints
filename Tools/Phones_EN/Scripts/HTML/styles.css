@@ -75,6 +75,13 @@ select:hover {
     display: block;
 }
 
+.x_axis_class {
+    color:#888;
+    width:100%;
+    text-align:center;
+    margin-bottom: 10px;
+}
+
 /* Color-coding for dropdowns */
 
 #formant-graph {
