@@ -1,3 +1,5 @@
+Formants = [];
+
 // Configuration For chart.js
 const value_pairs = [
 { amplitude: -6.0, frequency: 50.0, frame: 0, time_step: 0 },
@@ -25,13 +27,13 @@ const config = {
             data: amplitudes,
             borderColor: 'blue',
             backgroundColor: 'rgb(0, 0, 255)',
-            yAxisID: 'y-axis-amplitude'
+            yAxisID: 'y-axis-amplitude',
         }, {
             label: 'Frequency (Hz)',
             data: frequencies,
             borderColor: 'green',
             backgroundColor: 'rgb(0, 140, 0)',
-            yAxisID: 'y-axis-frequency'
+            yAxisID: 'y-axis-frequency',
         }]
     },
     options: {
@@ -77,16 +79,7 @@ const config = {
                 }
             }
         },
-        plugins: {/*
-            title: {
-                display: true,
-                text: 'F0 Formant Editor',
-                fontSize: 20 // Title font size
-            },
-            subtitle: {
-                display: true,
-                text: 'Custom Formant Editor'
-            },*/
+        plugins: {
             legend: {
                 labels: {
                     fontSize: 14 // Legend font size
@@ -107,7 +100,7 @@ const config = {
                         return xLabel;
                     }
                 }
-            }
+            },
         },
     }
 };
@@ -115,22 +108,6 @@ const config = {
 Chart.defaults.borderColor = '#444'; // Sets the color of the chart border (default is '#323232')
 const ctx = document.getElementById('formant-graph').getContext('2d');
 const formantChart = new Chart(ctx, config);
-
-/**
-
-Todo: Button(Assign Sine)
-Todo: Button(Assign Square)
-Todo: Button(Assign Sawtooth)
-Todo: Button(Assign R.Sawtooth)
-Todo: Button(Assign Triangle)
-Todo: Button(Assign Noise)
-Todo: Button(Assign Silence)
-Todo: Button(Add Formant)
-Todo: Button(Remove Formant)
-Todo: Button(Add Data point)
-Todo: Button(Remove Data point)
-
- */
 
 activeColor = 'green';
 
