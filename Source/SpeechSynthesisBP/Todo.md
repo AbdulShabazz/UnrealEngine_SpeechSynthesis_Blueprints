@@ -31,6 +31,7 @@
    - Because Humans are so sensitive to speech, synthetic speech cannot be flat. One proposed solution is that
 every segment of generated speech requires a parenthetical caption (ie. a wryly) preceeding which describes the tone of speech generated.
 The system must also be capable of producing the tone of speech required in the caption.
+   - Lock the noise color band bandwidths to faithfully follow the contours of the formant frequencies.
 
 ### Machine Learning and Data Analysis
 1. **GAN Training for Spectrogram Generation**:
