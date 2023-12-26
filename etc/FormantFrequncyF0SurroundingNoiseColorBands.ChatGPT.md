@@ -29,7 +29,7 @@ For musical applications, the harmonic content above F0 might blend well with pi
 In audio engineering, such specific noise shaping could be used to create a desired ambient effect or to mask certain frequencies while highlighting others, contributing to the overall timbral quality of the audio. The effectiveness of this filter design would ultimately need to be tested in the context of its intended use and refined based on empirical listening tests and acoustic measurements.
 
 Q: If I create a filter to AND each formant signal with the Gaussian white noise band, this should create a more textured and realistic sound ? 
-By AND I mean: if a sample exists (has spectral energy) in both the formant and the noise band, it is allowed into the final signal.
+By AND I mean: if a sample exists (has spectral energy) in both the formant and the noise band, it (Gaussian Noise) is allowed into the final signal, in place of the formant signal.
 
 ChatGPT-4:
 
