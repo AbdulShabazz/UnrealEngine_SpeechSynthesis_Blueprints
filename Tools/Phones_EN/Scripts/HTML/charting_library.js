@@ -95,7 +95,7 @@ const config = {
                         // tooltipItems is an array of tooltip items
                         let xLabel = tooltips[0].label;
                         if (xLabel) {
-                            xLabel = 'Frame ' + xLabel;
+                            xLabel = 'Frame: ' + xLabel;
                         }
                         return xLabel;
                     }
@@ -114,63 +114,65 @@ activeColor = 'green';
 // grab thw default color of the button
 const defaultColor = SineBTN.style.backgroundColor;
 
+function updateActiveRadioButton(rButton) {
+    document.querySelectorAll('.radio_button_class').forEach(bttn => {
+        if (!bttn) return;
+        if (bttn != rButton) {
+            bttn.flag = false;
+            bttn.style.backgroundColor = defaultColor;
+        } else {
+            bttn.flag = true;
+            bttn.style.backgroundColor = activeColor;
+        }
+    });
+}
+
 // Event listeners for dropdowns
 
 /* Button Actions */
 
 SineBTN.addEventListener('click', function() {
-    SineBTN.flag = !SineBTN.flag;
-    SineBTN.style.backgroundColor = SineBTN.flag ? activeColor : defaultColor;
+    updateActiveRadioButton(this);
 });
 
 CosineBTN.addEventListener('click', function() {
-    CosineBTN.flag = !CosineBTN.flag;
-    CosineBTN.style.backgroundColor = CosineBTN.flag ? activeColor : defaultColor;
+    updateActiveRadioButton(this);
 });
 
 SquareBTN.addEventListener('click', function() {
-    SquareBTN.flag = !SquareBTN.flag;
-    SquareBTN.style.backgroundColor = SquareBTN.flag ? activeColor : defaultColor;
+    updateActiveRadioButton(this);
 });
 
 SawBTN.addEventListener('click', function() {
-    SawBTN.flag = !SawBTN.flag;
-    SawBTN.style.backgroundColor = SawBTN.flag ? activeColor : defaultColor;
+    updateActiveRadioButton(this);
 });
 
 RSawBTN.addEventListener('click', function() {
-    RSawBTN.flag = !RSawBTN.flag;
-    RSawBTN.style.backgroundColor = RSawBTN.flag ? activeColor : defaultColor;
+    updateActiveRadioButton(this);
 });
 
 TriangleBTN.addEventListener('click', function() {
-    TriangleBTN.flag = !TriangleBTN.flag;
-    TriangleBTN.style.backgroundColor = TriangleBTN.flag ? activeColor : defaultColor;
+    updateActiveRadioButton(this);
 });
 
 PinkBTN.addEventListener('click', function() {
-    PinkBTN.flag = !PinkBTN.flag;
-    PinkBTN.style.backgroundColor = PinkBTN.flag ? activeColor : defaultColor;
+    updateActiveRadioButton(this);
 });
 
 PurpleBTN.addEventListener('click', function() {
-    PurpleBTN.flag = !PurpleBTN.flag;
-    PurpleBTN.style.backgroundColor = PurpleBTN.flag ? activeColor : defaultColor;
+    updateActiveRadioButton(this);
 });
 
 BrownBTN.addEventListener('click', function() {
-    BrownBTN.flag = !BrownBTN.flag;
-    BrownBTN.style.backgroundColor = BrownBTN.flag ? activeColor : defaultColor;
+    updateActiveRadioButton(this);
 });
 
 BlueBTN.addEventListener('click', function() {
-    BlueBTN.flag = !BlueBTN.flag;
-    BlueBTN.style.backgroundColor = BlueBTN.flag ? activeColor : defaultColor;
+    updateActiveRadioButton(this);
 });
 
 GaussBTN.addEventListener('click', function() {
-    GaussBTN.flag = !GaussBTN.flag;
-    GaussBTN.style.backgroundColor = GaussBTN.flag ? activeColor : defaultColor;
+    updateActiveRadioButton(this);
 });
 
 /** popup window actions  */
