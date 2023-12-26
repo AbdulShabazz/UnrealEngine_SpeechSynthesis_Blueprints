@@ -82,6 +82,10 @@ select:hover {
     margin-bottom: 10px;
 }
 
+.radio_button_class {
+    text-decoration: none;
+};
+
 /* Color-coding for dropdowns */
 
 #formant-graph {
