@@ -16,13 +16,11 @@
 <br><br>
     <select id="a_frames_selector" class="corner-dropdown">
         <option value="0"> F0 </option>
-        <option value="1"> Add New Formant </option>
-        <option value="2"> Remove (Current) Formant </option>
-    </select> 
+    </select> Formant
 </div>
 
 <div id="editor-container">
-    
+
     <canvas id="formant-graph"></canvas>
 
 </div>
@@ -40,15 +38,15 @@
     | <button id="BlueBTN" class="btn_class">Blue Noise</button>
     | <button id="GaussBTN" class="btn_class"> White Gaussian Noise </button>
     | <div class="btn_align_right_class">
-         | <button id="AudioBTN" class="btn_class"> )) Generate Audio ((</button> 
-         | <button id="Cpp20BTN" class="btn_class"> Generate C++20 </button> 
-         | 
+         | <button id="AudioBTN" class="btn_class"> )) Audition Audio ((</button>
+         | <button id="Cpp20BTN" class="btn_class"> Generate C++20 </button>
+         |
         </div>
 </div>
 <div>&nbsp;</div>
-<div> | <button id="InJsonBTN" class="btn_class"> Load JSON </button> 
+<div> | <button id="InJsonBTN" class="btn_class"> Load JSON </button>
     | <button id="OutJsonBTN" class="btn_class"> Generate JSON </button>
-    | <button id="AddFramesBTN" class="btn_class"> Add </button> 
+    | <button id="AddFramesBTN" class="btn_class"> Insert </button>
 
     <select id="a_frames_selector" class="corner-dropdown">
         <option value="0"> 1 </option>
@@ -66,7 +64,7 @@
         <option value="12"> 22_050 </option>
         <option value="13"> 48_000 </option>
     </select> Frames
-    | <button id="RemoveFramesBTN" class="btn_class"> Remove </button> 
+    | <button id="RemoveFramesBTN" class="btn_class"> Remove </button>
 
     <select id="r_frames_selector" class="corner-dropdown">
         <option value="0"> 1 </option>
@@ -85,9 +83,9 @@
         <option value="13"> 48_000 </option>
     </select> Frames |
     <div class="btn_align_right_class">
-        | <button id="UndoBTN" class="btn_class"> UNDO ACTION </button> 
-        | <button id="RedoBTN" class="btn_class"> REDO ACTION </button> 
-        | 
+        | <button id="UndoBTN" class="btn_class"> UNDO ACTION </button>
+        | <button id="RedoBTN" class="btn_class"> REDO ACTION </button>
+        |
     </div>
 </div>
 
@@ -97,11 +95,11 @@
         <div class="json_form_class">
             <textarea id="JsonTA" rows="10" cols="100" placeholder="Paste into textarea" class="json_textarea_class" spellcheck="false"></textarea>
             <div id="InJsonFORM" style="display: none;">
-            <div>| <button id="InOkBTN" class="btn_class"> OK </button> 
+            <div>| <button id="InOkBTN" class="btn_class"> OK </button>
                 | <button id="InCancelBTN" class="btn_class"> CANCEL </button> | </div>
             </div>
             <div id="OutJsonFORM" style="display: none;">
-            <div>| <button id="OutOkBTN" class="btn_class"> OK </button> 
+            <div>| <button id="OutOkBTN" class="btn_class"> OK </button>
                 | <button id="OutCancelBTN" class="btn_class"> CANCEL </button> | </div>
             </div>
         </div>
