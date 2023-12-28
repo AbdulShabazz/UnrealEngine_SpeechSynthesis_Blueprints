@@ -84,7 +84,12 @@ select:hover {
 
 .radio_button_class {
     text-decoration: none;
-};
+}
+
+.insert_formant_class,
+.remove_current_formant_class { 
+    text-decoration: none;
+}
 
 /* Color-coding for dropdowns */
 
@@ -130,7 +135,7 @@ select:hover {
 
 .close-btn:hover,
 .close-btn:focus {
-    color: black;
+    color: #880000;
     text-decoration: none;
     cursor: pointer;
 }
