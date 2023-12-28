@@ -1,36 +1,63 @@
-Formants = [];
+
+class OSC_INTERVAL extends Object {
+    constructor({ amplitude = -6.0, frequency = 250, frame = 0, time_step = 0 } = {}) {
+        super();
+        this.amplitude = amplitude;
+        this.frequency = frequency;
+        this.frame = frame;
+        this.time_step = time_step;
+    }
+}
+
+class FORMANTS extends Array {
+    constructor({ motif = "Sine" } = {}) {
+        super(); // Calls the Array constructor
+        this.motif = motif; // Adds the motif property
+    }
+}
+
+/*
+// Creating an instance
+const myArray = new ArrayWithMotif('myMotif');
+
+// Example usage
+console.log(myArray.motif); // Outputs: 'myMotif'
+myArray.push(1, 2, 3); // Works like an array
+console.log(myArray.length); // Outputs: 3
+*/
+
+Formants = [new FORMANTS({ motif: 'Sine'})];
+Formants[0].push(
+    new OSC_INTERVAL ({ amplitude: -6.0, frequency: 50.0, frame: 0, time_step: 0 }),
+    new OSC_INTERVAL ({ amplitude: -4.5, frequency: 60.0, frame: 200, time_step: 15 }),
+    new OSC_INTERVAL ({ amplitude: -4.0, frequency: 65.0, frame: 265, time_step: 30 }),
+    new OSC_INTERVAL ({ amplitude: -5.5, frequency: 60.0, frame: 600, time_step: 45 }),
+    new OSC_INTERVAL ({ amplitude: -5.8, frequency: 50.0, frame: 880, time_step: 60 }),
+    new OSC_INTERVAL ({ amplitude: -6.0, frequency: 40.0, frame: 1040, time_step: 75 }),
+    new OSC_INTERVAL ({ amplitude: -7.0, frequency: 30.0, frame: 1300, time_step: 90 }),
+    new OSC_INTERVAL ({ amplitude: -11.0, frequency: 20.0, frame: 2050, time_step: 105 })
+);
 
 // Configuration For chart.js
-const value_pairs = [
-{ amplitude: -6.0, frequency: 50.0, frame: 0, time_step: 0 },
-{ amplitude: -4.5, frequency: 60.0, frame: 200, time_step: 15 },
-{ amplitude: -4.0, frequency: 65.0, frame: 265, time_step: 30 },
-{ amplitude: -5.5, frequency: 60.0, frame: 600, time_step: 45 },
-{ amplitude: -5.8, frequency: 50.0, frame: 880, time_step: 60 },
-{ amplitude: -6.0, frequency: 40.0, frame: 1040, time_step: 75 },
-{ amplitude: -7.0, frequency: 30.0, frame: 1300, time_step: 90 },
-{ amplitude: -11.0, frequency: 20.0, frame: 2050, time_step: 105 }
-];
-
 // Extracting time_steps, amplitudes, and frequencies
-const time_steps = value_pairs.map(pair => pair.time_step);
-const amplitudes = value_pairs.map(pair => pair.amplitude);
-const frequencies = value_pairs.map(pair => pair.frequency);
-const frames = value_pairs.map(pair => pair.frame);
+const g_time_steps = Formants[0].map(osc_interval => osc_interval.time_step);
+const g_amplitudes = Formants[0].map(osc_interval => osc_interval.amplitude);
+const g_frequencies = Formants[0].map(osc_interval => osc_interval.frequency);
+const g_frames = Formants[0].map(osc_interval => osc_interval.frame);
 
-const config = {
+g_config = {
     type: 'line',
     data: {
-        labels: frames,
+        labels: g_frames,
         datasets: [{
             label: 'Amplitude (dB)',
-            data: amplitudes,
+            data: g_amplitudes,
             borderColor: 'blue',
             backgroundColor: 'rgb(0, 0, 255)',
             yAxisID: 'y-axis-amplitude',
         }, {
             label: 'Frequency (Hz)',
-            data: frequencies,
+            data: g_frequencies,
             borderColor: 'green',
             backgroundColor: 'rgb(0, 140, 0)',
             yAxisID: 'y-axis-frequency',
@@ -106,28 +133,183 @@ const config = {
 };
 
 Chart.defaults.borderColor = '#444'; // Sets the color of the chart border (default is '#323232')
+
 const ctx = document.getElementById('formant-graph').getContext('2d');
-const formantChart = new Chart(ctx, config);
+g_formantChart = new Chart(ctx, g_config);
 
 activeColor = 'green';
 
-// grab thw default color of the button
+// grab the default color of the button
 const defaultColor = SineBTN.style.backgroundColor;
 
 function updateActiveRadioButton(rButton) {
     document.querySelectorAll('.radio_button_class').forEach(bttn => {
         if (!bttn) return;
         if (bttn != rButton) {
-            bttn.flag = false;
+            bttn.activeFlag = false;
             bttn.style.backgroundColor = defaultColor;
         } else {
-            bttn.flag = true;
+            bttn.activeFlag = true;
             bttn.style.backgroundColor = activeColor;
+            if (bttn.textContent != Formants[g_lastSelectedFormantIndex].motif) {
+                Formants[g_lastSelectedFormantIndex].motif = bttn.textContent;
+            }
         }
     });
 }
 
+/**
+ * Object Mapping for Button Identifiers.
+ * 
+ * This mapping links the waveform or noise type options to their corresponding
+ * button elements. Each key represents the text value of an option from an HTML
+ * select element, and the corresponding value is the identifier for the button
+ * element that should be activated for that option.
+ * 
+ * Usage: 
+ * The `buttonMappings` object is used in the `updateMotifBar` function to 
+ * determine which button should be made active based on the user's selection.
+ * 
+ * Structure:
+ * - Key: String - The name of the waveform or noise type.
+ * - Value: Object - The button element identifier associated with that type.
+ *
+ * Example:
+ * To add a new mapping, simply add a new key-value pair to this object.
+ * For instance, if you have a new type 'XYZ', and the corresponding button
+ * identifier is 'XYZBTN', add it as:
+ * 'XYZ': XYZBTN
+ *
+ * Note:
+ * Ensure that the keys in this object exactly match the option values in the
+ * HTML select element and that the button identifiers are correctly defined
+ * in the HTML or JavaScript.
+ */
+const MotifButtonMappings = {
+    'Sine': SineBTN,
+    'Cosine': CosineBTN,
+    'Square': SquareBTN,
+    'F. Sawtooth': SawBTN,
+    'R. Sawtooth': RSawBTN,
+    'Triangle': TriangleBTN,
+    'Pink Noise': PinkBTN,
+    'Purple Noise': PurpleBTN,
+    'Brown Noise': BrownBTN,
+    'Blue Noise': BlueBTN,
+    'White Gaussian Noise': GaussBTN,
+};
+
+// Called by the global Formants[].motif to convert its string input. The DOM calls updateActiveRadioButton directly.
+function updateMotifBar(u)
+{
+    if (u in MotifButtonMappings) {
+        let motifActiveButton = MotifButtonMappings[u];
+        updateActiveRadioButton(motifActiveButton);
+    }
+}
+
+minimum_allowed_formant_select_elements = 3;
+g_lastSelectedFormantIndex = 0;
+formant_selector.selectedIndex = 0;
+updateMotifBar(Formants[0].motif);
+
+function updateChart(formant) {
+    var tmpConfig = g_config;
+
+    tmpConfig.data.labels = formant.map(osc_interval => osc_interval.frame);
+    tmpConfig.data.datasets[0].data = formant.map(osc_interval => osc_interval.amplitude);
+    tmpConfig.data.datasets[1].data = formant.map(osc_interval => osc_interval.frequency);
+
+    if (tmpConfig != g_config) {
+        g_formantChart = new Chart(ctx, tmpConfig);
+        g_config = tmpConfig;
+    }
+
+}
+
+function updateFormantSelectElement(ii) {
+    const I = Formants.length;
+    formant_selector.innerHTML = '';
+
+    // Reconstruct the regular options
+    for (var i = 0; i < I; i++) {
+        let option = document.createElement('option');
+        option.value = i;
+        option.textContent = 'F' + i;
+        formant_selector.appendChild(option);
+    }
+
+    // Add the 'Insert New Formant' option
+    let insertOption = document.createElement('option');
+    insertOption.classList.add('insert_formant_class');
+    insertOption.value = I;
+    insertOption.textContent = 'Insert New Formant';
+    formant_selector.appendChild(insertOption);
+
+    // Add the 'Remove (Current) Formant' option
+    let removeOption = document.createElement('option');
+    removeOption.classList.add('remove_current_formant_class');
+    removeOption.value = I + 1;
+    removeOption.textContent = 'Remove (Current) Formant';
+    formant_selector.appendChild(removeOption);
+
+    try {
+        formant_selector.selectedIndex = ii;  /* ii = g_lastSelectedFormantIndex */
+    } catch (e) {
+        console.info(e);
+        formant_selector.selectedIndex = 0;
+        g_lastSelectedFormantIndex = 0;
+    }
+
+}
+
+function insertNewFormant(i) {
+    const formant = Formants[i];
+    var tmpFormant = new FORMANTS({ motif: formant.motif });
+    formant.map(osc_interval => { 
+        tmpFormant.push(new OSC_INTERVAL({ amplitude: osc_interval.amplitude
+            , frequency: osc_interval.frequency
+            , frame: osc_interval.frame
+            , time_step: osc_interval.time_step }) );
+        return osc_interval;
+    });
+    g_lastSelectedFormantIndex = i = Formants.push(tmpFormant) - 1;
+    updateFormantSelectElement(i);
+    updateMotifBar(tmpFormant.motif);
+    updateChart(tmpFormant);
+}
+
+function removeFormantAt(i) {
+    Formants.splice(i-1, 1);
+    g_lastSelectedFormantIndex = i = (i - 1 > -1) ? --i : 0;
+    updateFormantSelectElement(i);
+    const formant = Formants[i];
+    updateMotifBar(formant.motif);
+    updateChart(formant);
+}
+
 // Event listeners for dropdowns
+
+formant_selector.addEventListener('change', function() {
+
+    const selectedIndex = this.selectedIndex;
+    const current_formant_count = this.options.length;
+    const selectedOptionClassList = this.options[this.selectedIndex].classList;
+
+    if (selectedOptionClassList.contains('insert_formant_class')) {
+        insertNewFormant(g_lastSelectedFormantIndex);
+    } else if (
+        selectedOptionClassList.contains('remove_current_formant_class') 
+        && current_formant_count > minimum_allowed_formant_select_elements) {
+        removeFormantAt(g_lastSelectedFormantIndex);
+    } else {
+        g_lastSelectedFormantIndex = selectedIndex;
+        const formant = Formants[g_lastSelectedFormantIndex];
+        updateChart(formant);
+        updateMotifBar(formant.motif);
+    }
+
+});
 
 /* Button Actions */
 
@@ -185,59 +367,67 @@ Cpp20BTN.addEventListener('click', function() {
 
 });
 
+// Show/Hide JSON Text Area
+function showTAElement({ jsonINDIR = 'out' }={})
+{
+    popupContainer.style.display = 'flex';
+    jsonFORM.style.display = 'inline-block';
+    jsonFORM.jsonIndirection = jsonINDIR;
+}
+
+// Show/Hide JSON Text Area
+function hideTAElement()
+{
+    popupContainer.style.display = 'none';
+    jsonFORM.style.display = 'none';
+    jsonFORM.jsonIndirection = 'none';
+}
+
 CloseJsonBTN.addEventListener('click', function() {
-    if(popupContainer.style.display != 'none'
-    || popupContainer.style.display != '')
-    {
-        popupContainer.style.display = 'none';
-    }
+    hideTAElement();
 });
 
 InJsonBTN.addEventListener('click', function() {
-    if(popupContainer.style.display == 'none'
-    || popupContainer.style.display == '')
-    {
-        popupContainer.style.display = 'flex';
-        InJsonFORM.style.display = 'inline-block';
-    } else {
-        popupContainer.style.display = 
-        InJsonFORM.style.display = 'none';
-    }
+    JsonTA.value = '';
+    showTAElement({ jsonINDIR: 'in' });
 });
 
 OutJsonBTN.addEventListener('click', function() {
-    if(popupContainer.style.display == 'none'
-    || popupContainer.style.display == '')
-    {
-        popupContainer.style.display = 'flex';
-        OutJsonFORM.style.display = 'inline-block';
-    } else {
-        popupContainer.style.display = 
-        OutJsonFORM.style.display = 'none';
-    }
+    let json = JSON.stringify(g_formantChart.data, ' ', 2)
+    JsonTA.value = json;
+    showTAElement({ jsonINDIR: 'out' });
 });
 
-InOkBTN.addEventListener('click', function(e) {
+okBTN.addEventListener('click', function(e) {
     e.preventDefault();
     try {
-        //ctx.data.datasets = JSON.parse(JsonTA.value);
-        InJsonBTN.click();
+        hideTAElement();
+        switch(jsonFORM.jsonIndirection) {
+            case 'in':
+                //ctx.data.datasets = JSON.parse(JsonTA.value);
+                break;
+            case 'out':
+            case 'none':
+            default:
+                break;
+        }
     } catch (err) {
-        alert(err);
+        console.info(err);
     }
 });
 
-InCancelBTN.addEventListener('click', function(e) {
-    InJsonBTN.click();
-});
-
-OutOkBTN.addEventListener('click', function(e) {
+cancelBTN.addEventListener('click', function(e) {
     e.preventDefault();
-    let json = JSON.stringify(2, ' ', formantChart.data)
-    JsonTA.value = json;
-    OutJsonBTN.click();
-});
-
-OutCancelBTN.addEventListener('click', function(e) {
-    OutJsonBTN.click();
+    try {
+        hideTAElement();
+        switch(jsonFORM.jsonIndirection) {
+            case 'in':
+            case 'out':
+            case 'none':
+            default:
+                break;
+        }
+    } catch (err) {
+        console.info(err);
+    }
 });
