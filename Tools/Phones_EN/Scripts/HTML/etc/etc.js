@@ -1,4 +1,36 @@
 
+
+    /*
+    let formantSelectElement = document.getElementById('formant-select');
+    let formantSelectElementOptions = formantSelectElement.options;
+    let formantSelectElementOptionsLength = formantSelectElementOptions.length;
+    let formantSelectElementOptionsLastIndex = formantSelectElementOptionsLength - 1;
+    let lastOption = formantSelectElementOptions[formantSelectElementOptionsLastIndex];
+    let lastOptionText = lastOption.text;
+    let lastOptionValue = lastOption.value;
+    let lastOptionClass = lastOption.classList;
+
+    if (lastOptionText == 'Insert Formant') {
+        formantSelectElement.remove(formantSelectElementOptionsLastIndex);
+    } else {
+        formantSelectElementOptions[formantSelectElementOptionsLastIndex].text = 'Insert Formant';
+        formantSelectElementOptions[formantSelectElementOptionsLastIndex].value = 'insert_formant';
+        formantSelectElementOptions[formantSelectElementOptionsLastIndex].classList.add('insert_formant_class');
+    }
+    */
+   
+// out
+okBTN.addEventListener('click', function(e) {
+    e.preventDefault();
+    let json = JSON.stringify(2, ' ', g_formantChart.data)
+    JsonTA.value = json;
+    OutJsonBTN.click();
+});
+
+cancelBTN.addEventListener('click', function(e) {
+    OutJsonBTN.click();
+});
+
 plugins: {/*
     title: {
         display: true,
