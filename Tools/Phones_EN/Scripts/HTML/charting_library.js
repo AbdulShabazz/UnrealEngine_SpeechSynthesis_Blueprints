@@ -393,7 +393,11 @@ InJsonBTN.addEventListener('click', function() {
 });
 
 OutJsonBTN.addEventListener('click', function() {
-    let json = JSON.stringify(g_formantChart.data, ' ', 2)
+    let jsonData = g_formantChart.data;
+    if ( !('phoneme' in jsonData) ) {
+        jsonData.phoneme = '-';
+    }
+    let json = JSON.stringify(jsonData, ' ', 2)
     JsonTA.value = json;
     showTAElement({ jsonINDIR: 'out' });
 });
@@ -404,7 +408,8 @@ okBTN.addEventListener('click', function(e) {
         hideTAElement();
         switch(jsonFORM.jsonIndirection) {
             case 'in':
-                //ctx.data.datasets = JSON.parse(JsonTA.value);
+                const tmpData = JSON.parse(JsonTA.value);
+                //g_formantChart.data/*.datasets*/ = tmpData;
                 break;
             case 'out':
             case 'none':
