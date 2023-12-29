@@ -1,3 +1,51 @@
+Q:Is there any way to simplify this .js pseudo-code call stack,
+```
+after selecting an option in formant_selector
+    const formant_selector.selectedIndex << the current option's value is cached to 
+    an onchange handler is then called
+        const current_formant_count = this.options.length;
+        const selectedOptionClassList = formant_selector.options[formant_selector.selectedIndex].classList;
+        const selectedIndex = formant_selector.selectedIndex;
+        if selectedOptionClassList.contains('insert_formant_class')
+            insertNewFormant(g_lastSelectedFormantIndex);
+                const formant = Formant[g_lastSelectedFormantIndex];
+                var tmpFormant = new FORMANTS({ motif: formant.motif });
+                formant.map(osc_interval => { 
+                    tmpFormant.push(new OSC_INTERVAL({ amplitude: osc_interval.amplitude
+                        , frequency: osc_interval.frequency
+                        , frame: osc_interval.frame
+                        , time_step: osc_interval.time_step }) );
+                    return osc_interval;
+                });
+                g_lastSelectedFormantIndex = Formant.push(tmpFormant) - 1;
+                updateFormantSelectElement(i);
+                updateMotifBar(tmpFormant.motif);
+                updateChart(tmpFormant);
+                    config.data.labels = formant.map(osc_interval => osc_interval.frame);
+                    config.data.datasets[0].data = formant.map(osc_interval => osc_interval.amplitude);
+                    config.data.datasets[1].data = formant.map(osc_interval => osc_interval.frequency);
+                    g_formantChart = new Chart(ctx, config);
+        else if selectedOptionClassList.contains('remove_current_formant_class') && current_formant_count > minimum_allowed_select_element_count
+            removeFormantAt(g_lastSelectedFormantIndex);
+                Formants.splice(i-1, 1);
+                g_lastSelectedFormantIndex = i = (i - 1 > -1) ? --i : 0;
+                updateFormantSelectElement(i);
+                const formant = Formants[i];
+                updateMotifBar(formant.motif);
+                updateChart(formant);
+                    config.data.labels = formant.map(osc_interval => osc_interval.frame);
+                    config.data.datasets[0].data = formant.map(osc_interval => osc_interval.amplitude);
+                    config.data.datasets[1].data = formant.map(osc_interval => osc_interval.frequency);
+                    g_formantChart = new Chart(ctx, config);
+        else
+            g_lastSelectedFormantIndex = selectedIndex;
+            const formant = Formant[g_lastSelectedFormantIndex];
+            updateChart(formant);
+                config.data.labels = formant.map(osc_interval => osc_interval.frame);
+                config.data.datasets[0].data = formant.map(osc_interval => osc_interval.amplitude);
+                config.data.datasets[1].data = formant.map(osc_interval => osc_interval.frequency);
+                g_formantChart = new Chart(ctx, config);
+``` ?
 
 
     /*
