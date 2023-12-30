@@ -436,3 +436,16 @@ cancelBTN.addEventListener('click', function(e) {
         console.info(err);
     }
 });
+
+function updateProgress(progress) {
+    progressBar.style.width = progress.toString() + '%';
+
+    if (progress == 100) {
+        setTimeout(function() {
+            progressBar.style.display = 'none';
+        }, 500); // 500 milliseconds = 0.5 seconds
+    } else if (progress > 0 
+        && progressBar.style.display != 'block') {
+            progressBar.style.display = 'block';
+    }
+}
