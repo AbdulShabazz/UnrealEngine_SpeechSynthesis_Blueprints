@@ -149,6 +149,7 @@ select:hover {
     width: 0%;
     height: 2px;
     display: none;
+    border-radius:10px;
     background-color: #00aa00;
     transition: width 0.25s ease-in-out;
 }
