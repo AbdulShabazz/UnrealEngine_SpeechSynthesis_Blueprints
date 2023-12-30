@@ -140,42 +140,20 @@ select:hover {
     cursor: pointer;
 }
 
-/*
-#frequency-selector {
-    //background-color: blue;
-}
-*/
-
-/*
-#north-select {
-  top: 0;
-  left: 50%;
-  transform: translateX(-50%);
+.transition_container_class {
+    padding-left: 5px;
+    padding-bottom: 10px;
 }
 
-#east-select {
-  top: 50%;
-  right: 0;
-  transform: translateY(-50%);
+.transition_class {
+    width: 0%;
+    height: 2px;
+    display: none;
+    background-color: #00aa00;
+    transition: width 0.25s ease-in-out;
 }
 
-#south-select {
-  bottom: 0;
-  left: 50%;
-  transform: translateX(-50%);
+.transition_class:hover {
+    background-color: #00ee00;
 }
 
-#west-select {
-  top: 50%;
-  left: 0;
-  transform: translateY(-50%);
-}
-
-canvas {
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-}
-*/
-  /* Repeat for other dropdowns with different colors */
