@@ -11,13 +11,56 @@
 <body>
 
 <div class="x_axis_class">
-<span>F0 Formant Editor <br> Custom Formant Editor </span>
-<br><br>
+<span>Custom Formant Editor <br><br> Formant Curve</span>
+<br>
     <select id="formant_selector" class="corner-dropdown">
         <option value="0"> F0 </option>
-        <option value="1" class="insert_formant_class"> Insert New Formant </option>
+        <option value="1" class="insert_formant_class"> Insert New Formant Layer </option>
         <option value="2" class="remove_current_formant_class"> Remove (Current) Formant </option>
     </select>
+</div>
+
+<div id="confirmBox" class="confirm-box">
+    <div class="confirm-content">
+        <div class="confirm-message">Re-sample the audio signal ?</div>
+        <button id="confirmYes" class="confirm-button">Yes</button>
+        <button id="confirmNo" class="confirm-button">No</button>
+    </div>
+</div>
+
+<div class="x_axis_class">
+    <div class="x_axis_class"> PCM Encoding: <br>
+        <select id="resolution_selector" class="corner-dropdown">
+            <option value="0">PCM16-44_100 Hz</option>
+            <option value="1">PCM16-48_000 Hz</option>
+            <option value="2">PCM16-88_200 Hz</option>
+            <option value="3">PCM16-96_000 Hz</option>
+            <option value="4">PCM16-192_000 Hz</option>
+            <option value="5">PCM16-384_000 Hz</option>
+            <option value="6">PCM16-768_000 Hz</option>
+            <option value="7">PCM24-44_100 Hz</option>
+            <option value="8">PCM24-48_000 Hz</option>
+            <option value="9">PCM24-88_200 Hz</option>
+            <option value="10">PCM24-96_000 Hz</option>
+            <option value="11">PCM24-192_000 Hz</option>
+            <option value="12">PCM24-384_000 Hz</option>
+            <option value="13">PCM24-768_000 Hz</option>
+            <option value="14">PCM32-44_100 Hz</option>
+            <option value="15">PCM32-48_000 Hz</option>
+            <option value="16">PCM32-88_200 Hz</option>
+            <option value="17">PCM32-96_000 Hz</option>
+            <option value="18">PCM32-192_000 Hz</option>
+            <option value="19">PCM32-384_000 Hz</option>
+            <option value="20">PCM32-768_000 Hz</option>
+            <option value="21">PCM64-44_100 Hz</option>
+            <option value="22">PCM64-48_000 Hz</option>
+            <option value="23">PCM64-88_200 Hz</option>
+            <option value="24">PCM64-96_000 Hz</option>
+            <option value="25">PCM64-192_000 Hz</option>
+            <option value="26">PCM64-384_000 Hz</option>
+            <option value="27">PCM64-768_000 Hz</option>
+        </select>
+    </div>
 </div>
 
 <div id="editor-container">
@@ -25,7 +68,6 @@
     <canvas id="formant-graph"></canvas>
 
 </div>
-<!--<div class="x_axis_class"> Audio ( Frame )</div>-->
 
 <div id="progressBarContainer" class="transition_container_class">
     <div id="progressBar" class="transition_class"></div>
