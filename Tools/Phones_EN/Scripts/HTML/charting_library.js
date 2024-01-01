@@ -510,8 +510,8 @@ function serializeCustomObject(obj) {
 
 OutJsonBTN.addEventListener('click', function() {
     let jsonData = Formants; /*g_formantChart.data;*/
-    if ( !('phoneme' in jsonData) ) {
-        jsonData.phoneme_name = '-';
+    if ( !('phoneme_name' in jsonData) ) {
+        jsonData.phoneme_name = 'untitled';
     }
     let json = serializeCustomObject(jsonData); //JSON.stringify(jsonData, ' ', 2)
     JsonTA.value = json;
