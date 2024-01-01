@@ -1,5 +1,8 @@
 
 
+settings_button.addEventListener("click", function() {
+    settingsBox.style.display = "block";
+});
 
 g_config = {
     type: 'line',
