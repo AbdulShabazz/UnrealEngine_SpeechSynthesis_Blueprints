@@ -45,24 +45,44 @@ const g_amplitudes = Formants[0].map(osc_interval => osc_interval.amplitude);
 const g_frequencies = Formants[0].map(osc_interval => osc_interval.frequency);
 const g_frames = Formants[0].map(osc_interval => osc_interval.frame);
 
+/*
+// Combine your data into a single array
+const combinedData = Formants[0].map(osc_interval => ({
+    frame: osc_interval.frame,
+    timeStep: osc_interval.time_step,
+    amplitude: osc_interval.amplitude,
+    frequency: osc_interval.frequency
+}));
+*/
+
+/*
+function getFormantData(formant) {
+    const time_steps = formant.map(osc_interval => osc_interval.time_step);
+    const amplitudes = formant.map(osc_interval => osc_interval.amplitude);
+    const frequencies = formant.map(osc_interval => osc_interval.frequency);
+    const frames = formant.map(osc_interval => osc_interval.frame);
+    return { time_steps, amplitudes, frequencies, frames };
+}
+*/
+
 g_config = {
     type: 'line',
     data: {
         /*labels: g_frames,*/
         datasets: [{
-            label: 'Amplitude (dB)',
-            data: g_amplitudes.map((amplitude, idx) => ({y:amplitude, x:g_time_steps[idx]})),
+            label: 'Amplitude (dBFS)',
+            data: Formants[0].map(osc_interval => ({y:osc_interval.amplitude, x:osc_interval.frame})),
             borderColor: 'blue',
             backgroundColor: 'rgb(0, 0, 255)',
             yAxisID: 'y-axis-amplitude',
-            xAxisID: 'x-axis-timestep',
+            xAxisID: 'x-axis-frame',
         }, {
             label: 'Frequency (Hz)',
-            data: g_frequencies.map((frequency, idx) => ({y:frequency, x:g_frames[idx]})),
+            data: Formants[0].map(osc_interval => ({y:osc_interval.frequency, x:osc_interval.frame})),
             borderColor: 'green',
             backgroundColor: 'rgb(0, 140, 0)',
             yAxisID: 'y-axis-frequency',
-            xAxisID: 'x-axis-frames',
+            xAxisID: 'x-axis-frame-dupl',
         }]
     },
     options: {
@@ -70,7 +90,7 @@ g_config = {
             'y-axis-amplitude': {
                 type: 'linear',
                 title: { 
-                    text: 'dB',
+                    text: 'dBFS ( Decibels relative to Full Scale )',
                     display: true,
                 },
                 display: true,
@@ -82,7 +102,7 @@ g_config = {
                     // Include a dollar sign in the ticks
                     callback: function(value, index, ticks) {
                           // call the default formatter, forwarding `this`
-                          return Chart.Ticks.formatters.numeric.apply(this, [value, index, ticks]) + ' dB';
+                          return Chart.Ticks.formatters.numeric.apply(this, [value, index, ticks]) + ' dBFS';
                     }
                 }
             },
@@ -105,10 +125,10 @@ g_config = {
                     }
                 }
             },
-            'x-axis-frames': {
+            'x-axis-frame': {
                 type: 'linear',
                 title: { 
-                    text: 'Audio ( Frame ) ',
+                    text: 'Audio Sample ( Frame ) ',
                     display: true,
                 },
                 display: true,
@@ -124,10 +144,10 @@ g_config = {
                     }
                 }
             },
-            'x-axis-timestep': {
+            'x-axis-frame-dupl': {
                 type: 'linear',
                 title: { 
-                    text: 'Timestep ( milliseconds ) ',
+                    text: 'Audio Sample ( Frame ) ',
                     display: true,
                 },
                 display: true,
@@ -142,7 +162,7 @@ g_config = {
                         return Chart.Ticks.formatters.numeric.apply(this, [value, index, ticks]);
                     }
                 }
-            },
+            }
         },
         plugins: {
             legend: {
@@ -159,31 +179,28 @@ g_config = {
                 callbacks: {
                     title: function(tooltips, data) {
                         // Assuming the first dataset is for amplitude and has complete frame and time_step data
-                        /*
-                        tooltips.map(tt => {
-                            return tt;
-                        });*/
-                        const tt = tooltips[0];
+                        //const tt = tooltips[0];
                         const tt2 = tooltips[1];
-                        const tmpTimeStep = tt.label;
+                        //const tmpTimeStep = tt.label;
                         const tmpFrame = tt2.label;
                         /*
                         const tmpAmplitude = tt.formattedValue;
                         const tmpfrequency = tt2.formattedValue;
                         */
-                        return `Frame: ${tmpFrame}\nTimestep: ${tmpTimeStep} ms`;
+                        return `Frame: ${tmpFrame}`;
                     },
                     label: function(tooltipItem, data) {
                         // tooltipItem is an object containing properties of the tooltip
                         // data is an object containing all data passed to the chart
                         let yLabel = tooltipItem.formattedValue;
-                        if (tooltipItem.dataset.label == 'Amplitude (dB)') {
-                            yLabel = 'Amplitude: ' + yLabel + ' dB';
-                        } else if (tooltipItem.dataset.label == 'Frequency (Hz)') {
-                            yLabel = 'Frequency: ' + yLabel + ' Hz';
+                        const xLabel = tooltipItem.dataset.label;
+                        if (xLabel.match(/^Amplitude/)) {
+                            yLabel = `Amplitude: ${yLabel} dBFS`;
+                        } else if (xLabel.match(/^Frequency/)) {
+                            yLabel = `Frequency: ${yLabel} Hz`;
                         }
                         return yLabel;
-                    }
+                    },
                 }
             },
         },
