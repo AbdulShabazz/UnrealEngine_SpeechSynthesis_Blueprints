@@ -484,12 +484,36 @@ InJsonBTN.addEventListener('click', function() {
     showTAElement({ jsonINDIR: 'in' });
 });
 
+function serializeCustomObject(obj) {
+    let result = "{";
+    let properties = [];
+
+    for (let property in obj) {
+        if (obj.hasOwnProperty(property)) {
+            let value = obj[property];
+
+            // Handling non-primitive types (like another object)
+            if (typeof value === 'object' && value !== null) {
+                value = serializeCustomObject(value); // Recursive call
+            } else if (typeof value === 'string') {
+                value = `"${value}"`; // Add quotes for strings
+            }
+
+            properties.push(`"${property}": ${value}`);
+        }
+    }
+
+    result += properties.join(", ");
+    result += "}";
+    return result;
+}
+
 OutJsonBTN.addEventListener('click', function() {
     let jsonData = Formants; /*g_formantChart.data;*/
     if ( !('phoneme' in jsonData) ) {
         jsonData.phoneme_name = '-';
     }
-    let json = JSON.stringify(jsonData, ' ', 2)
+    let json = serializeCustomObject(jsonData); //JSON.stringify(jsonData, ' ', 2)
     JsonTA.value = json;
     showTAElement({ jsonINDIR: 'out' });
 });
