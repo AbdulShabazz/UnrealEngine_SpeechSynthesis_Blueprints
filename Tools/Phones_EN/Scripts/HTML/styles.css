@@ -209,3 +209,7 @@ select:hover {
     text-decoration: none;
     cursor: pointer;
 }
+
+.resolution_selector_class {
+    width: 180px;
+}
