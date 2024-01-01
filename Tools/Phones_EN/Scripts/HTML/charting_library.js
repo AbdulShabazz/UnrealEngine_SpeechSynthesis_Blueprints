@@ -48,19 +48,21 @@ const g_frames = Formants[0].map(osc_interval => osc_interval.frame);
 g_config = {
     type: 'line',
     data: {
-        labels: g_frames,
+        /*labels: g_frames,*/
         datasets: [{
             label: 'Amplitude (dB)',
-            data: g_amplitudes,
+            data: g_amplitudes.map((amplitude, idx) => ({y:amplitude, x:g_time_steps[idx]})),
             borderColor: 'blue',
             backgroundColor: 'rgb(0, 0, 255)',
             yAxisID: 'y-axis-amplitude',
+            xAxisID: 'x-axis-timestep',
         }, {
             label: 'Frequency (Hz)',
-            data: g_frequencies,
+            data: g_frequencies.map((frequency, idx) => ({y:frequency, x:g_frames[idx]})),
             borderColor: 'green',
             backgroundColor: 'rgb(0, 140, 0)',
             yAxisID: 'y-axis-frequency',
+            xAxisID: 'x-axis-frames',
         }]
     },
     options: {
@@ -70,7 +72,6 @@ g_config = {
                 title: { 
                     text: 'dB',
                     display: true,
-                    //color: 'blue',
                 },
                 display: true,
                 position: 'left',
@@ -90,7 +91,6 @@ g_config = {
                 title: { 
                     text: 'Hz',
                     display: true,
-                    //color: 'blue',
                 },
                 display: true,
                 position: 'right',
@@ -104,7 +104,45 @@ g_config = {
                         return Chart.Ticks.formatters.numeric.apply(this, [value, index, ticks]) + ' Hz';
                     }
                 }
-            }
+            },
+            'x-axis-frames': {
+                type: 'linear',
+                title: { 
+                    text: 'Audio ( Frame ) ',
+                    display: true,
+                },
+                display: true,
+                position: 'bottom',
+                grid: {
+                    drawOnChartArea: false
+                },
+                ticks: {
+                    // Include a dollar sign in the ticks
+                    callback: function(value, index, ticks) {
+                        // call the default formatter, forwarding `this`
+                        return Chart.Ticks.formatters.numeric.apply(this, [value, index, ticks]);
+                    }
+                }
+            },
+            'x-axis-timestep': {
+                type: 'linear',
+                title: { 
+                    text: 'Timestep ( milliseconds ) ',
+                    display: true,
+                },
+                display: true,
+                position: 'top',
+                grid: {
+                    drawOnChartArea: false
+                },
+                ticks: {
+                    // Include a dollar sign in the ticks
+                    callback: function(value, index, ticks) {
+                        // call the default formatter, forwarding `this`
+                        return Chart.Ticks.formatters.numeric.apply(this, [value, index, ticks]);
+                    }
+                }
+            },
         },
         plugins: {
             legend: {
@@ -113,18 +151,38 @@ g_config = {
                 }
             },
             tooltip: {
-                // Enable the on-canvas tooltip
+                // Enable custom tooltips
                 enabled: true,
+                mode: 'index',
                 position: 'nearest',
                 bodyFontSize: 12, // Tooltip font size
                 callbacks: {
                     title: function(tooltips, data) {
-                        // tooltipItems is an array of tooltip items
-                        let xLabel = tooltips[0].label;
-                        if (xLabel) {
-                            xLabel = 'Frame: ' + xLabel;
+                        // Assuming the first dataset is for amplitude and has complete frame and time_step data
+                        /*
+                        tooltips.map(tt => {
+                            return tt;
+                        });*/
+                        const tt = tooltips[0];
+                        const tt2 = tooltips[1];
+                        const tmpTimeStep = tt.label;
+                        const tmpFrame = tt2.label;
+                        /*
+                        const tmpAmplitude = tt.formattedValue;
+                        const tmpfrequency = tt2.formattedValue;
+                        */
+                        return `Frame: ${tmpFrame}\nTimestep: ${tmpTimeStep} ms`;
+                    },
+                    label: function(tooltipItem, data) {
+                        // tooltipItem is an object containing properties of the tooltip
+                        // data is an object containing all data passed to the chart
+                        let yLabel = tooltipItem.formattedValue;
+                        if (tooltipItem.dataset.label == 'Amplitude (dB)') {
+                            yLabel = 'Amplitude: ' + yLabel + ' dB';
+                        } else if (tooltipItem.dataset.label == 'Frequency (Hz)') {
+                            yLabel = 'Frequency: ' + yLabel + ' Hz';
                         }
-                        return xLabel;
+                        return yLabel;
                     }
                 }
             },
