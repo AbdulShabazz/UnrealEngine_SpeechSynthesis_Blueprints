@@ -286,6 +286,7 @@ function updateMotifBar(u)
 minimum_allowed_formant_select_elements = 3;
 g_lastSelectedFormantIndex = 0;
 formant_selector.selectedIndex = 0;
+resolution_selector.selectedIndex = 0;
 updateMotifBar(Formants[0].motif);
 
 function updateChart(formant) {
@@ -358,12 +359,28 @@ function removeFormantAt(i) {
     Formants.splice(i-1, 1);
     g_lastSelectedFormantIndex = i = (i - 1 > -1) ? --i : 0;
     updateFormantSelectElement(i);
-    const formant = Formants[i];
+    var formant = Formants[i];
     updateMotifBar(formant.motif);
     updateChart(formant);
 }
 
 // Event listeners for dropdowns
+
+// script.js
+
+confirmYes.addEventListener("click", function() {
+    document.getElementById("confirmBox").style.display = "none";
+    let formant = Formants[g_lastSelectedFormantIndex];
+    formant.pcm_encoding = resolution_selector.selectedIndex;
+});
+
+confirmNo.addEventListener("click", function() {
+    document.getElementById("confirmBox").style.display = "none";
+});
+
+resolution_selector.addEventListener('change', function() {
+    confirmBox.style.display = "block";
+});
 
 formant_selector.addEventListener('change', function() {
 
@@ -468,9 +485,9 @@ InJsonBTN.addEventListener('click', function() {
 });
 
 OutJsonBTN.addEventListener('click', function() {
-    let jsonData = g_formantChart.data;
+    let jsonData = Formants; /*g_formantChart.data;*/
     if ( !('phoneme' in jsonData) ) {
-        jsonData.phoneme = '-';
+        jsonData.phoneme_name = '-';
     }
     let json = JSON.stringify(jsonData, ' ', 2)
     JsonTA.value = json;
