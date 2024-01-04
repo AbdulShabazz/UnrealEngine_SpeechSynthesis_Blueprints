@@ -1,5 +1,48 @@
 
 
+
+confirmYes.addEventListener("click", function() {
+    showHideConfirmBox();
+});
+
+confirmNo.addEventListener("click", function() {
+    showHideConfirmBox();
+});
+
+addFramesBTN.addEventListener('click', function() {
+    var formant = Formants[g_lastSelectedFormantIndex];
+    const I = audioFrame_sizes[a_frames_selector.selectedIndex];
+    const lastOSCInterval = formant[formant.length - 1];
+    const lastFrame = lastOSCInterval.frame;
+    const lastTimestep = lastOSCInterval.time_step;
+    for (var i = 0; i < I; i++) {
+        formant.push( new OSC_INTERVAL ({ amplitude: -6.0
+            , frequency: 50.0
+            , frame: lastFrame + i + 1
+            , time_step: lastTimestep }) );
+    }
+});
+
+/*
+// Combine your data into a single array
+const combinedData = Formants[0].map(osc_interval => ({
+    frame: osc_interval.frame,
+    timeStep: osc_interval.time_step,
+    amplitude: osc_interval.amplitude,
+    frequency: osc_interval.frequency
+}));
+*/
+
+/*
+function getFormantData(formant) {
+    const time_steps = formant.map(osc_interval => osc_interval.time_step);
+    const amplitudes = formant.map(osc_interval => osc_interval.amplitude);
+    const frequencies = formant.map(osc_interval => osc_interval.frequency);
+    const frames = formant.map(osc_interval => osc_interval.frame);
+    return { time_steps, amplitudes, frequencies, frames };
+}
+*/
+
 settings_button.addEventListener("click", function() {
     settingsBox.style.display = "block";
 });
