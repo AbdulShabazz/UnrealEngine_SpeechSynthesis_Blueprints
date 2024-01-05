@@ -1,4 +1,37 @@
 
+const crossHairPlugin = {
+    id: "crossHairPlugin",
+    afterDatasetsDraw: function(chart, args, opts) {
+        if (chart.tooltip._active && chart.tooltip._active.length) {
+            let ctx = chart.ctx;
+            let x = chart.tooltip._active[0].element.x;
+            let y = chart.tooltip._active[0].element.y;
+            const topY = chart.scales['y-axis-amplitude'].top;
+            const bottomY = chart.scales['y-axis-amplitude'].bottom;
+            const leftX = chart.scales['x-axis-frame'].top;
+            const rightX = chart.scales['x-axis-frame'].bottom;
+
+            ctx.save();
+            ctx.beginPath();
+
+            // Draw vertical line
+            ctx.moveTo(x, topY);
+            ctx.lineTo(x, bottomY);
+            ctx.lineWidth = 1;
+            ctx.strokeStyle = 'rgba(140,140,140,0.5)';
+            ctx.stroke();
+
+            // Draw horizontal line
+            ctx.moveTo(x, leftX);
+            ctx.lineTo(x, rightX);
+            ctx.lineWidth = 1;
+            ctx.strokeStyle = 'rgba(140,140,140,0.5)';
+            ctx.stroke();
+
+            ctx.restore();
+        }
+    },
+};
 
 // Extracting time_steps, amplitudes, and frequencies
 const g_time_steps = Formants[0].map(osc_interval => osc_interval.time_step);
