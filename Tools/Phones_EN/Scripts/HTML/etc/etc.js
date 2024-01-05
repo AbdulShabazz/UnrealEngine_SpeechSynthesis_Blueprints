@@ -1,6 +1,22 @@
 
 
 
+// reafactor pcm_encoding_docstring_options to include resolution and sample_rate
+for (const [key, value] of Object.entries(pcm_encoding_docstring_options)) {
+    if (typeof value === 'string') {
+        // Extract resolution and sample rate from the string
+        const [resolution, sampleRate] = value.match(/\d+.?\d*/)[0].split(/\//);
+        const pcmString = `PCM ${resolution}/${sampleRate}`;
+
+        // Update the dictionary entry
+        pcm_encoding_docstring_options[key] = {
+            pcm_string: pcmString,
+            resolution: resolution,
+            sample_rate: sampleRate
+        };
+    }
+}
+
 confirmYes.addEventListener("click", function() {
     showHideConfirmBox();
 });
