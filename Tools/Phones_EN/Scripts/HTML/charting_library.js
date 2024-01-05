@@ -1,4 +1,54 @@
 
+// Configuration For chart.js plugins
+
+const crossHairPlugin = {
+    id: "crossHairPlugin",
+    afterDatasetsDraw: function(chart, args, opts) {
+        if (chart.tooltip._active && chart.tooltip._active.length) {
+            let ctx = chart.ctx;
+            let x = chart.crosshair.x; //chart.tooltip._active[0].element.x;
+            let y = chart.crosshair.y; //chart.tooltip._active[0].element.y;
+            const topY = chart.scales['y-axis-amplitude'].top;
+            const bottomY = chart.scales['y-axis-amplitude'].bottom;
+            const leftX = chart.scales['x-axis-frame'].top;
+            const rightX = chart.scales['x-axis-frame'].bottom;
+
+            ctx.save();
+            ctx.beginPath();
+
+            // Draw vertical line
+            ctx.moveTo(x, topY);
+            ctx.lineTo(x, bottomY);
+            ctx.lineWidth = 1;
+            ctx.strokeStyle = 'rgba(140,140,140,0.5)';
+            ctx.stroke();
+
+            ctx.restore();
+        }
+    },
+};
+
+Chart.register(crossHairPlugin);
+
+Chart.defaults.borderColor = '#444'; // Sets the color of the chart border (default is '#323232')
+
+function updateCrossHair(e) {
+    let rect = document.getElementById('formant-graph').getBoundingClientRect();
+    let mouseX = e.clientX - rect.left;
+    let mouseY = e.clientY - rect.top;
+
+    // Store the mouse position in a variable accessible by the Chart.js plugin
+    g_formantChart.crosshair = { x: mouseX, y: mouseY };
+
+    //crossHairPlugin.afterDatasetsDraw(g_formantChart);
+
+    // Redraw the chart
+    g_formantChart.clearRect(0, 0, g_formantChart.width, g_formantChart.height);
+    g_formantChart.update();
+
+    //requestAnimationFrame(updateCrossHair);
+}
+
 class OSC_INTERVAL extends Object {
     constructor({ amplitude = -6.0, frequency = 250, frame = 0, time_step = 0 } = {}) {
         super();
@@ -38,37 +88,9 @@ Formants[0].push(
     new OSC_INTERVAL ({ amplitude: -11.0, frequency: 20.0, frame: 2050, time_step: 105 })
 );
 
-// Configuration For chart.js
-// Extracting time_steps, amplitudes, and frequencies
-const g_time_steps = Formants[0].map(osc_interval => osc_interval.time_step);
-const g_amplitudes = Formants[0].map(osc_interval => osc_interval.amplitude);
-const g_frequencies = Formants[0].map(osc_interval => osc_interval.frequency);
-const g_frames = Formants[0].map(osc_interval => osc_interval.frame);
-
-/*
-// Combine your data into a single array
-const combinedData = Formants[0].map(osc_interval => ({
-    frame: osc_interval.frame,
-    timeStep: osc_interval.time_step,
-    amplitude: osc_interval.amplitude,
-    frequency: osc_interval.frequency
-}));
-*/
-
-/*
-function getFormantData(formant) {
-    const time_steps = formant.map(osc_interval => osc_interval.time_step);
-    const amplitudes = formant.map(osc_interval => osc_interval.amplitude);
-    const frequencies = formant.map(osc_interval => osc_interval.frequency);
-    const frames = formant.map(osc_interval => osc_interval.frame);
-    return { time_steps, amplitudes, frequencies, frames };
-}
-*/
-
 g_config = {
     type: 'line',
     data: {
-        /*labels: g_frames,*/
         datasets: [{
             label: 'Amplitude (dBFS)',
             data: Formants[0].map(osc_interval => ({y:osc_interval.amplitude, x:osc_interval.frame})),
@@ -200,14 +222,14 @@ g_config = {
                             yLabel = `Frequency: ${yLabel} Hz`;
                         }
                         return yLabel;
-                    },
+                    }
                 }
             },
         },
     }
 };
 
-Chart.defaults.borderColor = '#444'; // Sets the color of the chart border (default is '#323232')
+document.getElementById('formant-graph').addEventListener('mousemove', updateCrossHair);
 
 const ctx = document.getElementById('formant-graph').getContext('2d');
 g_formantChart = new Chart(ctx, g_config);
@@ -283,10 +305,13 @@ function updateMotifBar(u)
     }
 }
 
+const defaultPCMEncoding = 11; // PCM 24/192 kHz
+
 minimum_allowed_formant_select_elements = 3;
 g_lastSelectedFormantIndex = 0;
 formant_selector.selectedIndex = 0;
-resolution_selector.selectedIndex = 0;
+Formants.pcm_encoding = defaultPCMEncoding;
+resolution_selector.selectedIndex = defaultPCMEncoding; 
 updateMotifBar(Formants[0].motif);
 
 function updateChart(formant) {
@@ -366,20 +391,39 @@ function removeFormantAt(i) {
 
 // Event listeners for dropdowns
 
-// script.js
+function removeButtonEventListeners() {
+    confirmYes.onclick = null; // Remove the event listener itself
+    confirmNo.onclick = null; // Remove the event listener itself
+}
 
-confirmYes.addEventListener("click", function() {
-    document.getElementById("confirmBox").style.display = "none";
-    let formant = Formants[g_lastSelectedFormantIndex];
-    formant.pcm_encoding = resolution_selector.selectedIndex;
-});
+function showConfirmBox({ message="" }={}) {
+    return new Promise((resolve, reject) => {
 
-confirmNo.addEventListener("click", function() {
-    document.getElementById("confirmBox").style.display = "none";
-});
+            // Event handler for OK
+            confirmYes.onclick = () => {
+                confirmBox.style.display = 'none';
+                removeButtonEventListeners();
+                resolve(true); // Resolve the promise when OK is clicked
+            };
+
+            // Event handler for CANCEL
+            confirmNo.onclick = () => {
+                confirmBox.style.display = 'none';
+                removeButtonEventListeners();
+                reject(false); // Reject the promise when CANCEL is clicked
+            };
+
+            if (message != "") {
+                messageCaption.textContent = message;
+            }
+
+            confirmBox.style.display = 'block';
+
+        });
+}
 
 resolution_selector.addEventListener('change', function() {
-    confirmBox.style.display = "block";
+    Formants.pcm_encoding = resolution_selector.selectedIndex;
 });
 
 formant_selector.addEventListener('change', function() {
@@ -449,6 +493,75 @@ GaussBTN.addEventListener('click', function() {
     updateActiveRadioButton(this);
 });
 
+/** Audio Frame options */
+
+const audioFrame_sizes = {
+    "0":1,
+    "1":2,
+    "2":5,
+    "3":10,
+    "4":25,
+    "5":100,
+    "6":200,
+    "7":400,
+    "8":1000,
+    "9":2500,
+    "10":5000,
+    "11":11025,
+    "12":22050,
+    "13":48000,
+    "14":92025,
+    "15":96000,
+    "16":192000,
+    "17":384000,
+    "18":768000
+};
+
+a_frames_selector.addEventListener('change', function() {
+
+});
+
+r_frames_selector.addEventListener('change', function() {
+
+});
+
+AddFramesBTN.addEventListener('click', function() {
+    var formant = Formants[g_lastSelectedFormantIndex];
+    const dx = audioFrame_sizes[a_frames_selector.selectedIndex];
+    const I = formant.length;
+    var lastOSCInterval = formant[I - 1];
+    showConfirmBox({ message: "Would you like to re-sample the audio?" })
+    .then(res => {
+        res;
+        lastOSCInterval.frame += dx;
+        lastOSCInterval.time_step = 15;
+        // updateChart(formant);
+    })
+    .catch(err => {
+        err;
+        lastOSCInterval.frame += dx;
+        lastOSCInterval.time_step = 15;
+    });
+});
+
+RemoveFramesBTN.addEventListener('click', function() {
+    const dx = audioFrame_sizes[a_frames_selector.selectedIndex];
+    try {
+        var formant = Formants[g_lastSelectedFormantIndex];
+        const I = formant.length;
+        var lastOSCInterval = formant[I - 1];
+        if (lastOSCInterval.frame > dx) {
+            lastOSCInterval.frame -= dx;
+            lastOSCInterval.time_step = 15;
+            // updateChart(formant);
+        } else {
+            throw 'Not enough frames to remove.';
+        }
+    } catch (e) {
+        console.info('Frame deletion error: Not enough-, or no frames-, to remove.');
+    }
+});
+
 /** popup window actions  */
 
 AudioBTN.addEventListener('click', function() {
@@ -508,12 +621,129 @@ function serializeCustomObject(obj) {
     return result;
 }
 
+const pcm_encoding_docstring_options = 
+{
+    "0": {
+        "pcm_encoding_docstring": "PCM 16/44",
+        "bit_depth": 16,
+        "sample_rate": 44.1 },
+    "1": {
+        "pcm_encoding_docstring": "PCM 16/48",
+        "bit_depth": 16,
+        "sample_rate": 48 },
+    "2": {
+        "pcm_encoding_docstring": "PCM 16/88",
+        "bit_depth": 16,
+        "sample_rate": 88.2 },
+    "3": {
+        "pcm_encoding_docstring": "PCM 16/96",
+        "bit_depth": 16,
+        "sample_rate": 96 },
+    "4": {
+        "pcm_encoding_docstring": "PCM 16/192",
+        "bit_depth": 16,
+        "sample_rate": 192 },
+    "5": {
+        "pcm_encoding_docstring": "PCM 16/384",
+        "bit_depth": 16,
+        "sample_rate": 384 },
+    "6": {
+        "pcm_encoding_docstring": "PCM 16/768",
+        "bit_depth": 16,
+        "sample_rate": 768 },
+    "7": {
+        "pcm_encoding_docstring": "PCM 24/44",
+        "bit_depth": 24,
+        "sample_rate": 44.1 },
+    "8": {
+        "pcm_encoding_docstring": "PCM 24/48",
+        "bit_depth": 24,
+        "sample_rate": 48 },
+    "9": {
+        "pcm_encoding_docstring": "PCM 24/88",
+        "bit_depth": 24,
+        "sample_rate": 88.2 },
+    "10": {
+        "pcm_encoding_docstring": "PCM 24/96",
+        "bit_depth": 24,
+        "sample_rate": 96 },
+    "11": {
+        "pcm_encoding_docstring": "PCM 24/192",
+        "bit_depth": 24,
+        "sample_rate": 192 },
+    "12": {
+        "pcm_encoding_docstring": "PCM 24/384",
+        "bit_depth": 24,
+        "sample_rate": 384 },
+    "13": {
+        "pcm_encoding_docstring": "PCM 24/768",
+        "bit_depth": 24,
+        "sample_rate": 768 },
+    "14": {
+        "pcm_encoding_docstring": "PCM 32/44",
+        "bit_depth": 32,
+        "sample_rate": 44.1 },
+    "15": {
+        "pcm_encoding_docstring": "PCM 32/48",
+        "bit_depth": 32,
+        "sample_rate": 48 },
+    "16": {
+        "pcm_encoding_docstring": "PCM 32/88",
+        "bit_depth": 32,
+        "sample_rate": 88.2 },
+    "17": {
+        "pcm_encoding_docstring": "PCM 32/96",
+        "bit_depth": 32,
+        "sample_rate": 96 },
+    "18": {
+        "pcm_encoding_docstring": "PCM 32/192",
+        "bit_depth": 32,
+        "sample_rate": 192 },
+    "19": {
+        "pcm_encoding_docstring": "PCM 32/384",
+        "bit_depth": 32,
+        "sample_rate": 384 },
+    "20": {
+        "pcm_encoding_docstring": "PCM 32/768",
+        "bit_depth": 32,
+        "sample_rate": 768 },
+    "21": {
+        "pcm_encoding_docstring": "PCM 64/44",
+        "bit_depth": 64,
+        "sample_rate": 44.1 },
+    "22": {
+        "pcm_encoding_docstring": "PCM 64/48",
+        "bit_depth": 64,
+        "sample_rate": 48 },
+    "23": {
+        "pcm_encoding_docstring": "PCM 64/88",
+        "bit_depth": 64,
+        "sample_rate": 88.2 },
+    "24": {
+        "pcm_encoding_docstring": "PCM 64/96",
+        "bit_depth": 64,
+        "sample_rate": 96 },
+    "25": {
+        "pcm_encoding_docstring": "PCM 64/192",
+        "bit_depth": 64,
+        "sample_rate": 192 },
+    "26": {
+        "pcm_encoding_docstring": "PCM 64/384",
+        "bit_depth": 64,
+        "sample_rate": 384 },
+    "27": {
+        "pcm_encoding_docstring": "PCM 64/768",
+        "bit_depth": 64,
+        "sample_rate": 768 }
+};
+
 OutJsonBTN.addEventListener('click', function() {
     let jsonData = Formants; /*g_formantChart.data;*/
     if ( !('phoneme_name' in jsonData) ) {
         jsonData.phoneme_name = 'untitled';
     }
-    let json = serializeCustomObject(jsonData); //JSON.stringify(jsonData, ' ', 2)
+    jsonData.pcm_encoding_docstring = pcm_encoding_docstring_options[jsonData.pcm_encoding].pcm_encoding_docstring;
+    let json = serializeCustomObject(jsonData);
     JsonTA.value = json;
     showTAElement({ jsonINDIR: 'out' });
 });
