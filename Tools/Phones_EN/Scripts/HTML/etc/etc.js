@@ -1,5 +1,29 @@
 
 
+// Extracting time_steps, amplitudes, and frequencies
+const g_time_steps = Formants[0].map(osc_interval => osc_interval.time_step);
+const g_amplitudes = Formants[0].map(osc_interval => osc_interval.amplitude);
+const g_frequencies = Formants[0].map(osc_interval => osc_interval.frequency);
+const g_frames = Formants[0].map(osc_interval => osc_interval.frame);
+
+data: {
+    /*labels: g_frames,*/
+    datasets: [{
+        label: 'Amplitude (dBFS)',
+        data: Formants[0].map(osc_interval => ({y:osc_interval.amplitude, x:osc_interval.frame})),
+        borderColor: 'blue',
+        backgroundColor: 'rgb(0, 0, 255)',
+        yAxisID: 'y-axis-amplitude',
+        xAxisID: 'x-axis-frame',
+    }, {
+        label: 'Frequency (Hz)',
+        data: Formants[0].map(osc_interval => ({y:osc_interval.frequency, x:osc_interval.frame})),
+        borderColor: 'green',
+        backgroundColor: 'rgb(0, 140, 0)',
+        yAxisID: 'y-axis-frequency',
+        xAxisID: 'x-axis-frame-dupl',
+    }]
+},
 
 // reafactor pcm_encoding_docstring_options to include resolution and sample_rate
 for (const [key, value] of Object.entries(pcm_encoding_docstring_options)) {
