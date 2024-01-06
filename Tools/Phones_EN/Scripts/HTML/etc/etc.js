@@ -1,4 +1,10 @@
 
+
+
+            // Text alignment and position adjustments as needed
+            ctx.fillText(`Frame #${xValue.toFixed(0)}`, x - 50, 64); // top-most x-axis
+            ctx.fillText(`Frame #${xValue.toFixed(0)}`, x - 50, bottomY + 18); // bottom-most x-axis
+
 const yAxisAmplitude = chart.scales['y-axis-amplitude'];
 const yAxisAmplitudeVisibleFlag = (yAxisAmplitude && yAxisAmplitude.options.display);
 
