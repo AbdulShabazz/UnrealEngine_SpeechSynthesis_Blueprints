@@ -1,4 +1,61 @@
 
+
+
+function updateCrossHair(e) {
+    let rect = document.getElementById('formant-graph').getBoundingClientRect();
+    let mouseX = e.clientX - rect.left;
+    let mouseY = e.clientY - rect.top;
+    /*
+    // cache the previous mouse coordinates
+    if (g_formantChart.crosshair) {
+        g_formantChart.old_crosshair.x = g_formantChart.crosshair.x;
+        g_formantChart.old_crosshair.y = g_formantChart.crosshair.y;
+    }
+    */
+    // Store the mouse position in a variable accessible by the Chart.js plugin
+    g_formantChart.crosshair = { x: mouseX, y: mouseY };
+
+    //g_formantChart.update();
+
+    //crossHairPlugin.afterDatasetsDraw(g_formantChart);
+
+    g_formantChart.update();
+
+    //requestAnimationFrame(updateCrossHair);
+}
+
+const crossHairPlugin = {
+    id: "crossHairPlugin",
+    afterDatasetsDraw: function(chart, args, opts) {
+        if (chart.crosshair) {
+        //if (chart.tooltip._active && chart.tooltip._active.length) {
+            let ctx = chart.ctx;
+            let x = chart.crosshair.x; //chart.tooltip._active[0].element.x;
+            let y = chart.crosshair.y; //chart.tooltip._active[0].element.y;
+            const topY = chart.scales['y-axis-amplitude'].top;
+            const bottomY = chart.scales['y-axis-amplitude'].bottom;
+            const leftX = chart.scales['x-axis-frame'].top;
+            const rightX = chart.scales['x-axis-frame'].bottom;
+
+            ctx.save();
+            ctx.beginPath();
+
+            // Draw new vertical line
+            ctx.moveTo(x, topY);
+            ctx.lineTo(x, bottomY);
+            ctx.lineWidth = 1;
+            ctx.strokeStyle = 'rgba(140,140,140,0.5)';
+            ctx.stroke();
+
+            ctx.restore();
+
+            chart.old_crosshair = chart.crosshair;
+            chart.old_crosshair.topY = topY;
+            chart.old_crosshair.bottomY = bottomY;
+        }
+    },
+};
+
 const crossHairPlugin = {
     id: "crossHairPlugin",
     afterDatasetsDraw: function(chart, args, opts) {
