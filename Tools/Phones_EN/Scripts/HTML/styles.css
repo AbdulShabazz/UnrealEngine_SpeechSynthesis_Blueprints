@@ -213,3 +213,33 @@ select:hover {
 .resolution_selector_class {
     width: 180px;
 }
+
+.selector {
+    display: inline-block;
+    background: #444;
+    border: 1px solid #555;
+    border-radius: 20px;
+    overflow: hidden;
+    font-family: roboto condensed;
+    text-align: center;
+    margin-bottom: 10px;
+}
+
+.selector button {
+    background: none;
+    border: none;
+    color: #fff;
+    padding: 10px 20px;
+    cursor: pointer;
+    outline: none;
+    font-size: 12px;
+  }
+
+.selector button.selected {
+    background: #333;
+    font-weight: bold;
+}
+
+.selector button:not(.selected):hover {
+    background: #444;
+}
