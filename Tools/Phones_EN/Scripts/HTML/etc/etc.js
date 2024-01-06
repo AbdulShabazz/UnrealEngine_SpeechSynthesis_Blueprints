@@ -1,5 +1,10 @@
 
+const yAxisAmplitude = chart.scales['y-axis-amplitude'];
+const yAxisAmplitudeVisibleFlag = (yAxisAmplitude && yAxisAmplitude.options.display);
 
+            //const leftXDupl = chart.scales['x-axis-frame-dupl'].left;
+            //const rightXDupl = chart.scales['x-axis-frame-dupl'].right;
+            //const xValueDupl = chart.scales['x-axis-frame-dupl'].getValueForPixel(x);
 
 function updateCrossHair(e) {
     let rect = document.getElementById('formant-graph').getBoundingClientRect();
