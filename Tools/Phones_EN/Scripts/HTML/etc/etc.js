@@ -1,6 +1,26 @@
 
 
 
+if (chart.yAxisAmplitudeVisibleFlag){
+    ctx.fillText(`${yValue.toFixed(2)} dBFS`, 19, y);
+    // Draw a point at the amplitude intersection
+    const amplitudeXPixel = chart.scales['x-axis-frame'].getPixelForValue(xValue);
+    const amplitudeYPixel = chart.scales['y-axis-amplitude'].getPixelForValue(yValue);
+    ctx.beginPath();
+    ctx.arc(x, y, 5, 0, 2 * Math.PI); // Draw a 5px radius point
+    ctx.fillStyle = 'rgba(0,0,255,0.7)';
+    ctx.fill();
+} else {
+    ctx.fillText(`${yValue.toFixed(2)} Hz`, rightX + 10, y);
+    // Draw a point at the frequency intersection
+    const amplitudeXPixel = chart.scales['x-axis-frame'].getPixelForValue(xValue);
+    const amplitudeYPixel = chart.scales['y-axis-frequency'].getPixelForValue(yValue);
+    ctx.beginPath();
+    ctx.arc(x, y, 5, 0, 2 * Math.PI); // Draw a 5px radius point
+    ctx.fillStyle = 'rgba(0,255,0,0.7)';
+    ctx.fill();
+}
+
             // Text alignment and position adjustments as needed
             ctx.fillText(`Frame #${xValue.toFixed(0)}`, x - 50, 64); // top-most x-axis
             ctx.fillText(`Frame #${xValue.toFixed(0)}`, x - 50, bottomY + 18); // bottom-most x-axis
