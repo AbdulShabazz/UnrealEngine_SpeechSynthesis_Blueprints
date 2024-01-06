@@ -50,13 +50,23 @@ const crossHairPlugin = {
             ctx.font = '12px roboto'; // Text font and size
 
             // Text alignment and position adjustments as needed
-            ctx.fillText(`${xValue.toFixed(0)}`, x - 10, 64); // top-most x-axis
-            ctx.fillText(`${xValue.toFixed(0)}`, x - 10, bottomY + 18); // bottom-most x-axis
+            ctx.fillText(`#${xValue.toFixed(0)}`, x - 18, 64); // top-most x-axis
+            ctx.fillText(`#${xValue.toFixed(0)}`, x - 18, bottomY + 18); // bottom-most x-axis
 
             if (chart.yAxisAmplitudeVisibleFlag){
                 ctx.fillText(`${yValue.toFixed(2)} dBFS`, 19, y);
+                // Draw a point at the amplitude intersection
+                ctx.beginPath();
+                ctx.arc(x, y, 5, 0, 2 * Math.PI); // Draw a 5px radius point
+                ctx.fillStyle = 'rgba(0,0,255,0.7)';
+                ctx.fill();
             } else {
                 ctx.fillText(`${yValue.toFixed(2)} Hz`, rightX + 10, y);
+                // Draw a point at the frequency intersection
+                ctx.beginPath();
+                ctx.arc(x, y, 5, 0, 2 * Math.PI); // Draw a 5px radius point
+                ctx.fillStyle = 'rgba(0,255,0,0.7)';
+                ctx.fill();
             }
 
             ctx.restore();
@@ -649,115 +659,115 @@ function serializeCustomObject(obj) {
 const pcm_encoding_docstring_options = 
 {
     "0": {
-        "pcm_encoding_docstring": "PCM 16/44",
+        "pcm_encoding_docstring": "PCM 16-bit/44 KHz",
         "bit_depth": 16,
         "sample_rate": 44.1 },
     "1": {
-        "pcm_encoding_docstring": "PCM 16/48",
+        "pcm_encoding_docstring": "PCM 16-bit/48 KHz",
         "bit_depth": 16,
         "sample_rate": 48 },
     "2": {
-        "pcm_encoding_docstring": "PCM 16/88",
+        "pcm_encoding_docstring": "PCM 16-bit/88 KHz",
         "bit_depth": 16,
         "sample_rate": 88.2 },
     "3": {
-        "pcm_encoding_docstring": "PCM 16/96",
+        "pcm_encoding_docstring": "PCM 16-bit/96 KHz",
         "bit_depth": 16,
         "sample_rate": 96 },
     "4": {
-        "pcm_encoding_docstring": "PCM 16/192",
+        "pcm_encoding_docstring": "PCM 16-bit/192 KHz",
         "bit_depth": 16,
         "sample_rate": 192 },
     "5": {
-        "pcm_encoding_docstring": "PCM 16/384",
+        "pcm_encoding_docstring": "PCM 16-bit/384 KHz",
         "bit_depth": 16,
         "sample_rate": 384 },
     "6": {
-        "pcm_encoding_docstring": "PCM 16/768",
+        "pcm_encoding_docstring": "PCM 16-bit/768 KHz",
         "bit_depth": 16,
         "sample_rate": 768 },
     "7": {
-        "pcm_encoding_docstring": "PCM 24/44",
+        "pcm_encoding_docstring": "PCM 24-bit/44 KHz",
         "bit_depth": 24,
         "sample_rate": 44.1 },
     "8": {
-        "pcm_encoding_docstring": "PCM 24/48",
+        "pcm_encoding_docstring": "PCM 24-bit/48 KHz",
         "bit_depth": 24,
         "sample_rate": 48 },
     "9": {
-        "pcm_encoding_docstring": "PCM 24/88",
+        "pcm_encoding_docstring": "PCM 24-bit/88 KHz",
         "bit_depth": 24,
         "sample_rate": 88.2 },
     "10": {
-        "pcm_encoding_docstring": "PCM 24/96",
+        "pcm_encoding_docstring": "PCM 24-bit/96 KHz",
         "bit_depth": 24,
         "sample_rate": 96 },
     "11": {
-        "pcm_encoding_docstring": "PCM 24/192",
+        "pcm_encoding_docstring": "PCM 24-bit/192 KHz",
         "bit_depth": 24,
         "sample_rate": 192 },
     "12": {
-        "pcm_encoding_docstring": "PCM 24/384",
+        "pcm_encoding_docstring": "PCM 24-bit/384 KHz",
         "bit_depth": 24,
         "sample_rate": 384 },
     "13": {
-        "pcm_encoding_docstring": "PCM 24/768",
+        "pcm_encoding_docstring": "PCM 24-bit/768 KHz",
         "bit_depth": 24,
         "sample_rate": 768 },
     "14": {
-        "pcm_encoding_docstring": "PCM 32/44",
+        "pcm_encoding_docstring": "PCM 32-bit/44 KHz",
         "bit_depth": 32,
         "sample_rate": 44.1 },
     "15": {
-        "pcm_encoding_docstring": "PCM 32/48",
+        "pcm_encoding_docstring": "PCM 32-bit/48 KHz",
         "bit_depth": 32,
         "sample_rate": 48 },
     "16": {
-        "pcm_encoding_docstring": "PCM 32/88",
+        "pcm_encoding_docstring": "PCM 32-bit/88 KHz",
         "bit_depth": 32,
         "sample_rate": 88.2 },
     "17": {
-        "pcm_encoding_docstring": "PCM 32/96",
+        "pcm_encoding_docstring": "PCM 32-bit/96 KHz",
         "bit_depth": 32,
         "sample_rate": 96 },
     "18": {
-        "pcm_encoding_docstring": "PCM 32/192",
+        "pcm_encoding_docstring": "PCM 32-bit/192 KHz",
         "bit_depth": 32,
         "sample_rate": 192 },
     "19": {
-        "pcm_encoding_docstring": "PCM 32/384",
+        "pcm_encoding_docstring": "PCM 32-bit/384 KHz",
         "bit_depth": 32,
         "sample_rate": 384 },
     "20": {
-        "pcm_encoding_docstring": "PCM 32/768",
+        "pcm_encoding_docstring": "PCM 32-bit/768 KHz",
         "bit_depth": 32,
         "sample_rate": 768 },
     "21": {
-        "pcm_encoding_docstring": "PCM 64/44",
+        "pcm_encoding_docstring": "PCM 64-bit/44 KHz",
         "bit_depth": 64,
         "sample_rate": 44.1 },
     "22": {
-        "pcm_encoding_docstring": "PCM 64/48",
+        "pcm_encoding_docstring": "PCM 64-bit/48 KHz",
         "bit_depth": 64,
         "sample_rate": 48 },
     "23": {
-        "pcm_encoding_docstring": "PCM 64/88",
+        "pcm_encoding_docstring": "PCM 64-bit/88 KHz",
         "bit_depth": 64,
         "sample_rate": 88.2 },
     "24": {
-        "pcm_encoding_docstring": "PCM 64/96",
+        "pcm_encoding_docstring": "PCM 64-bit/96 KHz",
         "bit_depth": 64,
         "sample_rate": 96 },
     "25": {
-        "pcm_encoding_docstring": "PCM 64/192",
+        "pcm_encoding_docstring": "PCM 64-bit/192 KHz",
         "bit_depth": 64,
         "sample_rate": 192 },
     "26": {
-        "pcm_encoding_docstring": "PCM 64/384",
+        "pcm_encoding_docstring": "PCM 64-bit/384 KHz",
         "bit_depth": 64,
         "sample_rate": 384 },
     "27": {
-        "pcm_encoding_docstring": "PCM 64/768",
+        "pcm_encoding_docstring": "PCM 64-bit/768 KHz",
         "bit_depth": 64,
         "sample_rate": 768 }
 };
