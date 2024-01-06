@@ -1,17 +1,29 @@
 
+function clamp(value, min, max) {
+    return Math.min(Math.max(value, min), max);
+  }
+
 // Configuration For chart.js plugins
 
 const crossHairPlugin = {
     id: "crossHairPlugin",
     afterDatasetsDraw: function(chart, args, opts) {
         if (chart.crosshair) {
+            // Prevent the crosshair from being drawn outside the plot area
+            const chartArea = chart.chartArea;
+            const minX = chartArea.left;
+            const maxX = chartArea.right;
+            const minY = chartArea.top;
+            const maxY = chartArea.bottom;
+
             let ctx = chart.ctx;
-            let x = chart.crosshair.x;
-            let y = chart.crosshair.y;
+            let x = clamp(chart.crosshair.x, minX, maxX);
+            let y = clamp(chart.crosshair.y, minY, maxY);
+
+            const leftX = chart.scales['x-axis-frame'].left;
+            const rightX = chart.scales['x-axis-frame'].right;
             const topY = chart.scales['y-axis-amplitude'].top;
             const bottomY = chart.scales['y-axis-amplitude'].bottom;
-            const leftX = chart.scales['x-axis-frame'].top;
-            const rightX = chart.scales['x-axis-frame'].bottom;
 
             ctx.save();
             ctx.beginPath();
@@ -22,6 +34,30 @@ const crossHairPlugin = {
             ctx.lineWidth = 1;
             ctx.strokeStyle = 'rgba(140,140,140,0.5)';
             ctx.stroke();
+
+            // Draw new horizontal line
+            ctx.moveTo(leftX, y);
+            ctx.lineTo(rightX, y);
+            ctx.lineWidth = 1;
+            ctx.strokeStyle = 'rgba(140,140,140,0.5)';
+            ctx.stroke();
+
+            // Draw text for X and Y values at the axes
+            const xValue = chart.scales['x-axis-frame'].getValueForPixel(x);
+            const yValue = chart.scales[(chart.yAxisAmplitudeVisibleFlag) ? 'y-axis-amplitude' : 'y-axis-frequency'].getValueForPixel(y);
+
+            ctx.fillStyle = '#aaa'; // Text color
+            ctx.font = '12px roboto'; // Text font and size
+
+            // Text alignment and position adjustments as needed
+            ctx.fillText(`${xValue.toFixed(0)}`, x - 10, 64); // top-most x-axis
+            ctx.fillText(`${xValue.toFixed(0)}`, x - 10, bottomY + 18); // bottom-most x-axis
+
+            if (chart.yAxisAmplitudeVisibleFlag){
+                ctx.fillText(`${yValue.toFixed(2)} dBFS`, 19, y);
+            } else {
+                ctx.fillText(`${yValue.toFixed(2)} Hz`, rightX + 10, y);
+            }
 
             ctx.restore();
         }
@@ -221,6 +257,7 @@ document.getElementById('formant-graph').addEventListener('mousemove', updateCro
 
 const ctx = document.getElementById('formant-graph').getContext('2d');
 g_formantChart = new Chart(ctx, g_config);
+g_formantChart.yAxisAmplitudeVisibleFlag = true;
 
 activeColor = 'green';
 
@@ -783,3 +820,15 @@ function updateProgress(progress) {
             progressBar.style.display = 'block';
     }
 }
+
+amplitudeBtn.addEventListener('click', function() {
+    this.classList.add('selected');
+    frequencyBtn.classList.remove('selected');
+    g_formantChart.yAxisAmplitudeVisibleFlag = true;
+});
+
+frequencyBtn.addEventListener('click', function() {
+    this.classList.add('selected');
+    amplitudeBtn.classList.remove('selected');
+    g_formantChart.yAxisAmplitudeVisibleFlag = false;
+});
