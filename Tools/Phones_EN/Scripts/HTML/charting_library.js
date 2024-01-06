@@ -4,10 +4,10 @@
 const crossHairPlugin = {
     id: "crossHairPlugin",
     afterDatasetsDraw: function(chart, args, opts) {
-        if (chart.tooltip._active && chart.tooltip._active.length) {
+        if (chart.crosshair) {
             let ctx = chart.ctx;
-            let x = chart.crosshair.x; //chart.tooltip._active[0].element.x;
-            let y = chart.crosshair.y; //chart.tooltip._active[0].element.y;
+            let x = chart.crosshair.x;
+            let y = chart.crosshair.y;
             const topY = chart.scales['y-axis-amplitude'].top;
             const bottomY = chart.scales['y-axis-amplitude'].bottom;
             const leftX = chart.scales['x-axis-frame'].top;
@@ -16,7 +16,7 @@ const crossHairPlugin = {
             ctx.save();
             ctx.beginPath();
 
-            // Draw vertical line
+            // Draw new vertical line
             ctx.moveTo(x, topY);
             ctx.lineTo(x, bottomY);
             ctx.lineWidth = 1;
@@ -33,20 +33,18 @@ Chart.register(crossHairPlugin);
 Chart.defaults.borderColor = '#444'; // Sets the color of the chart border (default is '#323232')
 
 function updateCrossHair(e) {
-    let rect = document.getElementById('formant-graph').getBoundingClientRect();
-    let mouseX = e.clientX - rect.left;
-    let mouseY = e.clientY - rect.top;
+    const rect = document.getElementById('formant-graph').getBoundingClientRect();
+    const mouseX = e.clientX - rect.left;
+    const mouseY = e.clientY - rect.top;
 
-    // Store the mouse position in a variable accessible by the Chart.js plugin
+    // Store the mouse position in a variable accessible by Chart.js plugins
     g_formantChart.crosshair = { x: mouseX, y: mouseY };
 
-    //crossHairPlugin.afterDatasetsDraw(g_formantChart);
-
-    // Redraw the chart
-    g_formantChart.clearRect(0, 0, g_formantChart.width, g_formantChart.height);
-    g_formantChart.update();
-
-    //requestAnimationFrame(updateCrossHair);
+    /** 
+    @details: requestAnimationFrame() A method for telling the browser that you wish to perform a refresh-synced animation,
+    g_formantChart.update(): Calls the plugin's afterDatasetsDraw method; redraw the basic chart (removes old crosshairs, 
+    calls the plugin's afterDatasetsDraw method) */
+    requestAnimationFrame(() => g_formantChart.update());
 }
 
 class OSC_INTERVAL extends Object {
@@ -65,16 +63,6 @@ class FORMANTS extends Array {
         this.motif = motif; // Adds the motif property
     }
 }
-
-/*
-// Creating an instance
-const myArray = new ArrayWithMotif('myMotif');
-
-// Example usage
-console.log(myArray.motif); // Outputs: 'myMotif'
-myArray.push(1, 2, 3); // Works like an array
-console.log(myArray.length); // Outputs: 3
-*/
 
 Formants = [new FORMANTS({ motif: 'Sine'})];
 Formants[0].push(
