@@ -552,55 +552,73 @@ const audioFrame_sizes = {
     "18":768000
 };
 
-a_frames_selector.addEventListener('change', function() {
+add_frames_selector.addEventListener('change', function() {
 
 });
 
-r_frames_selector.addEventListener('change', function() {
+remove_frames_selector.addEventListener('change', function() {
 
 });
 
 AddFramesBTN.addEventListener('click', function() {
-    var formant = Formants[g_lastSelectedFormantIndex];
-    const dx = audioFrame_sizes[a_frames_selector.selectedIndex];
-    const I = formant.length;
-    var lastOSCInterval = formant[I - 1];
-    showConfirmBox({ message: "Would you like to re-sample the audio?" })
-    .then(res => {
-        res;
-        lastOSCInterval.frame += dx;
-        lastOSCInterval.time_step = 15;
-        // updateChart(formant);
-    })
-    .catch(err => {
-        err;
-        lastOSCInterval.frame += dx;
-        lastOSCInterval.time_step = 15;
-    });
+    try {
+        var formant = Formants[g_lastSelectedFormantIndex];
+        const dx = audioFrame_sizes[add_frames_selector.selectedIndex];
+        const I = formant.length;
+        var lastOSCInterval = formant[I - 1];
+
+        // TODO: Re-sample the audio (scale the frame property of each OSC_INTERVAL object by the new overall length)
+
+        const nextOSCINterval_frame = lastOSCInterval.frame + dx;
+        const nextOSCInterval_time_step = lastOSCInterval.time_step;
+        formant.push(new OSC_INTERVAL({ amplitude: -6.0
+            , frequency: 40
+            , frame: nextOSCINterval_frame
+            , time_step: nextOSCInterval_time_step }) );
+        updateChart(formant);
+    } catch (e) {
+        console.info(`Frame insertion error: ${e}`);
+    }
 });
 
 RemoveFramesBTN.addEventListener('click', function() {
-    const dx = audioFrame_sizes[a_frames_selector.selectedIndex];
     try {
         var formant = Formants[g_lastSelectedFormantIndex];
+        const dx = audioFrame_sizes[remove_frames_selector.selectedIndex];
         const I = formant.length;
         var lastOSCInterval = formant[I - 1];
-        if (lastOSCInterval.frame > dx) {
-            lastOSCInterval.frame -= dx;
-            lastOSCInterval.time_step = 15;
-            // updateChart(formant);
+
+        // TODO: Re-sample the audio (scale the frame property of each OSC_INTERVAL object by the new overall length)
+
+        const lastOSCInterval_frame = lastOSCInterval.frame - dx;
+
+        if (lastOSCInterval_frame < 0) {
+            console.info('Frame removal error: Invalid frame count.');
+            return;
         } else {
-            throw 'Not enough frames to remove.';
+            var i = 0;
+            var removeElementFlag = false;
+            while (i < I) {
+                if (!removeElementFlag && formant[i].frame > lastOSCInterval_frame) {
+                    formant[i].frame = lastOSCInterval_frame;
+                    removeElementFlag = true;
+                } else if (removeElementFlag) {
+                    formant.pop();
+                }
+                ++i;
+            }
+            updateChart(formant);
         }
     } catch (e) {
-        console.info('Frame deletion error: Not enough-, or no frames-, to remove.');
+        console.info('Frame removal error: Invalid frame count for removal.');
+        console.info(e);
     }
 });
 
 /** popup window actions  */
 
 AudioBTN.addEventListener('click', function() {
-    
+
 });
 
 Cpp20BTN.addEventListener('click', function() {
