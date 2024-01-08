@@ -1,5 +1,60 @@
 
+        /*
+        showConfirmBox({ message: "Would you like to re-sample the audio?" })
+        .then(res => {
+            res;
 
+            // TODO: Re-sample the audio (scale the frame property of each OSC_INTERVAL object by the new overall length)
+
+            const nextOSCINterval_frame = lastOSCInterval.frame + dx;
+            const nextOSCInterval_time_step = lastOSCInterval.time_step;
+            formant.push(new OSC_INTERVAL({ amplitude: lastOSCInterval.amplitude
+                , frequency: lastOSCInterval.frequency
+                , frame: nextOSCINterval_frame
+                , time_step: nextOSCInterval_time_step }) );
+            updateChart(formant);
+        })
+        .catch(err => {
+            err;
+            const nextOSCINterval_frame = lastOSCInterval.frame + dx;
+            const nextOSCInterval_time_step = lastOSCInterval.time_step;
+            formant.push(new OSC_INTERVAL({ amplitude: lastOSCInterval.amplitude
+                , frequency: lastOSCInterval.frequency
+                , frame: nextOSCINterval_frame
+                , time_step: nextOSCInterval_time_step }) );
+            updateChart(formant);
+        });
+        */
+
+        /*
+        showConfirmBox({ message: "Would you like to re-sample the audio?" })
+        .then(res => {
+            res;
+            // TODO: Reverse iterate through the OSC_INTERVAL objects and their frames, until the frame deltas all sum to == dx;
+            //  copy the rmaining OSC_INTERVAL objects, and then replace the original objects with the new one.
+            // TODO: Re-sample the audio (scale the frame property of each OSC_INTERVAL object by the new overall length)
+            
+            const nextOSCINterval_frame = lastOSCInterval.frame - dx;
+            const nextOSCInterval_time_step = lastOSCInterval.time_step;
+            formant.push(new OSC_INTERVAL({ amplitude: lastOSCInterval.amplitude
+                , frequency: lastOSCInterval.frequency
+                , frame: nextOSCINterval_frame
+                , time_step: nextOSCInterval_time_step }) );
+            updateChart(formant);
+        })
+        .catch(err => {
+            err;
+            
+            const nextOSCINterval_frame = lastOSCInterval.frame - dx;
+            const nextOSCInterval_time_step = lastOSCInterval.time_step;
+            formant.push(new OSC_INTERVAL({ amplitude: lastOSCInterval.amplitude
+                , frequency: lastOSCInterval.frequency
+                , frame: nextOSCINterval_frame
+                , time_step: nextOSCInterval_time_step }) );
+            updateChart(formant);
+            
+        });
+        */
 
 if (chart.yAxisAmplitudeVisibleFlag){
     ctx.fillText(`${yValue.toFixed(2)} dBFS`, 19, y);
