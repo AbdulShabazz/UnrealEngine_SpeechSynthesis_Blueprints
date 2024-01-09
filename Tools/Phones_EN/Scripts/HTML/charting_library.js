@@ -1,3 +1,5 @@
+g_default_frequency = 40.0;
+g_default_amplitude = -6.0;
 
 function clamp(value, min, max) {
     return Math.min(Math.max(value, min), max);
@@ -79,7 +81,7 @@ Chart.register(crossHairPlugin);
 Chart.defaults.borderColor = '#444'; // Sets the color of the chart border (default is '#323232')
 
 function updateCrossHair(e) {
-    const rect = document.getElementById('formant-graph').getBoundingClientRect();
+    const rect = formant_graph_canvas.getBoundingClientRect();
     const mouseX = e.clientX - rect.left;
     const mouseY = e.clientY - rect.top;
 
@@ -94,7 +96,7 @@ function updateCrossHair(e) {
 }
 
 class OSC_INTERVAL extends Object {
-    constructor({ amplitude = -6.0, frequency = 250, frame = 0, time_step = 0 } = {}) {
+    constructor({ amplitude = g_default_amplitude, frequency = g_default_frequency, frame = 0, time_step = 0 } = {}) {
         super();
         this.amplitude = amplitude;
         this.frequency = frequency;
@@ -119,7 +121,7 @@ Formants[0].push(
     new OSC_INTERVAL ({ amplitude: -5.8, frequency: 50.0, frame: 880, time_step: 60 }),
     new OSC_INTERVAL ({ amplitude: -6.0, frequency: 40.0, frame: 1040, time_step: 75 }),
     new OSC_INTERVAL ({ amplitude: -7.0, frequency: 30.0, frame: 1300, time_step: 90 }),
-    new OSC_INTERVAL ({ amplitude: -11.0, frequency: 20.0, frame: 2050, time_step: 105 })
+    new OSC_INTERVAL ({ amplitude: -11.0, frequency: 20.0, frame: 2000, time_step: 105 })
 );
 
 g_config = {
@@ -263,11 +265,71 @@ g_config = {
     }
 };
 
-document.getElementById('formant-graph').addEventListener('mousemove', updateCrossHair);
+formant_graph_canvas = document.getElementById('formant-graph');
 
-const ctx = document.getElementById('formant-graph').getContext('2d');
+formant_graph_canvas.addEventListener('mousemove', updateCrossHair);
+
+const ctx = formant_graph_canvas.getContext('2d');
 g_formantChart = new Chart(ctx, g_config);
 g_formantChart.yAxisAmplitudeVisibleFlag = true;
+
+formant_graph_canvas.addEventListener('click', function(e) {
+    // Add a point to the chart //
+    let chart = g_formantChart;
+    if (chart.crosshair) {
+        // Prevent the crosshair from inserting new points outside the plot area
+        const chartArea = chart.chartArea;
+        const minX = chartArea.left;
+        const maxX = chartArea.right;
+        const minY = chartArea.top;
+        const maxY = chartArea.bottom;
+
+        let x = clamp(chart.crosshair.x, minX, maxX);
+        let y = clamp(chart.crosshair.y, minY, maxY);
+
+        // Derive points for X and Y values at the crosshair axes
+        const xValue = chart.scales['x-axis-frame'].getValueForPixel(x);
+        const yValue = chart.scales[(chart.yAxisAmplitudeVisibleFlag) ? 'y-axis-amplitude' : 'y-axis-frequency'].getValueForPixel(y);
+
+        var formant = Formants[g_lastSelectedFormantIndex];
+        var nextOSCINterval = new OSC_INTERVAL({ amplitude: yValue, frequency: g_default_frequency, frame: xValue, time_step: 0 });
+
+        if (!chart.yAxisAmplitudeVisibleFlag) { /* Frequency */
+            nextOSCINterval.amplitude = g_default_amplitude;
+            nextOSCINterval.frequency = yValue;
+        }
+
+        const I = formant.length;
+        for (var i = 0; i < I; ++i) {
+            if (formant[i].frame > xValue) {
+                formant.splice(i, 0, nextOSCINterval);
+                break;
+            }
+        }
+
+        updateChart(formant);
+    } // end if (chart.crosshair)
+});
+
+formant_graph_canvas.addEventListener('mousedown', function(e) {
+    // Enable Update fr the selected (amplitude/frequency) data point //
+
+});
+
+formant_graph_canvas.addEventListener('mousemove', function(e) {
+    // Realtime-Update the selected (amplitude/frequency) data point //
+
+});
+
+formant_graph_canvas.addEventListener('mouseup', function(e) {
+    // No longer Update the selected (amplitude/frequency) point //
+
+});
+
+formant_graph_canvas.addEventListener('dblclick', function(e) {
+    // remove the selected data point //
+
+});
 
 activeColor = 'green';
 
@@ -571,8 +633,8 @@ AddFramesBTN.addEventListener('click', function() {
 
         const nextOSCINterval_frame = lastOSCInterval.frame + dx;
         const nextOSCInterval_time_step = lastOSCInterval.time_step;
-        formant.push(new OSC_INTERVAL({ amplitude: -6.0
-            , frequency: 40
+        formant.push(new OSC_INTERVAL({ amplitude: g_default_amplitude
+            , frequency: g_default_frequency
             , frame: nextOSCINterval_frame
             , time_step: nextOSCInterval_time_step }) );
         updateChart(formant);
