@@ -312,7 +312,7 @@ formant_graph_canvas.addEventListener('click', function(e) {
 });
 
 formant_graph_canvas.addEventListener('mousedown', function(e) {
-    // Enable Update fr the selected (amplitude/frequency) data point //
+    // Begin Update for the selected (amplitude/frequency) data point //
 
 });
 
@@ -322,7 +322,7 @@ formant_graph_canvas.addEventListener('mousemove', function(e) {
 });
 
 formant_graph_canvas.addEventListener('mouseup', function(e) {
-    // No longer Update the selected (amplitude/frequency) point //
+    // End Update the selected (amplitude/frequency) data point //
 
 });
 
