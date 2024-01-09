@@ -326,9 +326,56 @@ formant_graph_canvas.addEventListener('mouseup', function(e) {
 
 });
 
-formant_graph_canvas.addEventListener('dblclick', function(e) {
-    // remove the selected data point //
+// Function to find and remove the nearest element
+function removeNearest(audio_frame, remove_element) {
+    let nearestAudioFrameIndex  = 0;
+    let nearestValue = audio_frame[0];
+    let smallestDiff = Math.abs(audio_frame[0] - remove_element[0]);
 
+    // Find the nearest value
+    const I = audio_frame.length;
+    for (let i = 1; i < I; ++i) {
+        let currentDiff = Math.abs(audio_frame[i] - remove_element[0]);
+        if (currentDiff < smallestDiff) {
+            smallestDiff = currentDiff;
+            nearestAudioFrameIndex = i;
+        } else {
+            nearestValue = audio_frame[nearestAudioFrameIndex];
+            // Remove the nearest value from the array
+            let indexToRemove = audio_frame.indexOf(nearestValue);
+            if (indexToRemove !== -1) {
+                audio_frame.splice(indexToRemove, 1);
+            }
+            break;
+        }
+    }
+}
+
+formant_graph_canvas.addEventListener('dblclick', function(e) {
+    // Remove a point from the chart //
+    let chart = g_formantChart;
+    if (chart.crosshair) {
+        // Prevent the crosshair from inserting new points outside the plot area
+        const chartArea = chart.chartArea;
+        const minX = chartArea.left;
+        const maxX = chartArea.right;
+        const minY = chartArea.top;
+        const maxY = chartArea.bottom;
+
+        let x = clamp(chart.crosshair.x, minX, maxX);
+        let y = clamp(chart.crosshair.y, minY, maxY);
+
+        // Derive points for X and Y values at the crosshair axes
+        const xValue = chart.scales['x-axis-frame'].getValueForPixel(x);
+        const yValue = chart.scales[(chart.yAxisAmplitudeVisibleFlag) ? 'y-axis-amplitude' : 'y-axis-frequency'].getValueForPixel(y);
+
+        // Execute the function
+        const formant = Formants[g_lastSelectedFormantIndex];
+        const remove_element = [xValue, yValue];
+        removeNearest(formant, remove_element);
+
+        updateChart(formant);
+    } // end if (chart.crosshair)
 });
 
 activeColor = 'green';
