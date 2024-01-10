@@ -1,4 +1,32 @@
 
+/**
+ * Object Mapping for Button Identifiers.
+ * 
+ * This mapping links the waveform or noise type options to their corresponding
+ * button elements. Each key represents the text value of an option from an HTML
+ * select element, and the corresponding value is the identifier for the button
+ * element that should be activated for that option.
+ * 
+ * Usage: 
+ * The `buttonMappings` object is used in the `updateMotifBar` function to 
+ * determine which button should be made active based on the user's selection.
+ * 
+ * Structure:
+ * - Key: String - The name of the waveform or noise type.
+ * - Value: Object - The button element identifier associated with that type.
+ *
+ * Example:
+ * To add a new mapping, simply add a new key-value pair to this object.
+ * For instance, if you have a new type 'XYZ', and the corresponding button
+ * identifier is 'XYZBTN', add it as:
+ * 'XYZ': XYZBTN
+ *
+ * Note:
+ * Ensure that the keys in this object exactly match the option values in the
+ * HTML select element and that the button identifiers are correctly defined
+ * in the HTML or JavaScript.
+ */
+
         /*
         showConfirmBox({ message: "Would you like to re-sample the audio?" })
         .then(res => {
