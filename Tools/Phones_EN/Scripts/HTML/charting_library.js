@@ -281,17 +281,28 @@ function createSlider(id, label, value, min, max, step, callback) {
     sliderLabel.textContent = label + ': ';
     sliderContainer.appendChild(sliderLabel);
 
+    // Add min value spans
+    var minValueFrameSpan = document.createElement('span');
+    minValueFrameSpan.className = 'min-value';
+    minValueFrameSpan.textContent = min.toFixed(2);
+    sliderContainer.appendChild(minValueFrameSpan);
+
     var slider = document.createElement('input');
     slider.type = 'range';
     slider.id = id;
     slider.min = min;
     slider.max = max;
     slider.value = value;
-    slider.step = step || '0.01'; // Set step size if needed ['1', '0.01', ... , 'any']
+    slider.step = step || '0.01'; // Set step size, eg. '1', '0.01', ... , 'any'
     slider.oninput = function() {
         callback(this.value);
     };
     sliderContainer.appendChild(slider);
+
+    var maxValueFrameSpan = document.createElement('span');
+    maxValueFrameSpan.className = 'max-value';
+    maxValueFrameSpan.textContent = max.toFixed(2);
+    sliderContainer.appendChild(maxValueFrameSpan);
 
     var output = document.createElement('span');
     output.id = id + '-output';
@@ -388,7 +399,7 @@ function displaySliders(i, formant) {
 
     // Create a slider for the frame index
     var frameIndexSlider = createSlider('frameIndex'
-        , 'Frame Index'
+        , 'Adjust Frame Index'
         , formant[i].frame
         , minFrame
         , maxFrame
