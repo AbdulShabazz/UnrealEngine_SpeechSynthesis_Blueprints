@@ -273,6 +273,182 @@ const ctx = formant_graph_canvas.getContext('2d');
 g_formantChart = new Chart(ctx, g_config);
 g_formantChart.yAxisAmplitudeVisibleFlag = true;
 
+function createSlider(id, label, value, min, max, step, callback) {
+    var sliderContainer = document.createElement('div');
+
+    var sliderLabel = document.createElement('label');
+    sliderLabel.htmlFor = id;
+    sliderLabel.textContent = label + ': ';
+    sliderContainer.appendChild(sliderLabel);
+
+    var slider = document.createElement('input');
+    slider.type = 'range';
+    slider.id = id;
+    slider.min = min;
+    slider.max = max;
+    slider.value = value;
+    slider.step = step || '0.01'; // Set step size if needed ['1', '0.01', ... , 'any']
+    slider.oninput = function() {
+        callback(this.value);
+    };
+    sliderContainer.appendChild(slider);
+
+    var output = document.createElement('span');
+    output.id = id + '-output';
+    output.textContent = value;
+    sliderContainer.appendChild(output);
+
+    // Update the output text when the slider value changes
+    slider.addEventListener('input', function() {
+        output.textContent = slider.value;
+    });
+
+    return sliderContainer;
+}
+
+function getMaxFrame(i, formant) {
+    // Implement logic to determine the maximum frequency allowed based on adjacent points
+    // Placeholder return value
+    return formant[i + 1].frame;
+}
+
+function getMaxFrequency(i, formant) {
+    // Implement logic to determine the maximum frequency allowed based on adjacent points
+    // Placeholder return value
+    return 500.00;
+}
+
+function getMaxAmplitude(i, formant) {
+    // Implement logic to determine the maximum amplitude allowed based on adjacent points
+    // Placeholder return value
+    return 0.00;
+}
+
+// Function to find and remove the nearest element
+function removeNearest(audio_frame, remove_element) {
+    let nearestAudioFrameIndex  = 0;
+    let nearestValue = audio_frame[0];
+    let smallestDiff = Math.abs(audio_frame[0] - remove_element[0]);
+
+    // Find the nearest value
+    const I = audio_frame.length;
+    for (let i = 1; i < I; ++i) {
+        let currentDiff = Math.abs(audio_frame[i] - remove_element[0]);
+        if (currentDiff < smallestDiff) {
+            smallestDiff = currentDiff;
+            nearestAudioFrameIndex = i;
+        } else {
+            nearestValue = audio_frame[nearestAudioFrameIndex];
+            // Remove the nearest value from the array
+            let indexToRemove = audio_frame.indexOf(nearestValue);
+            if (indexToRemove !== -1) {
+                audio_frame.splice(indexToRemove, 1);
+            }
+            break;
+        }
+    }
+}
+
+function removeDatapoint(audio_frame, remove_element) {
+    // Remove the data point from the chart //
+    let chart = g_formantChart;
+    if (chart.crosshair) {
+        // Prevent the crosshair from inserting new points outside the plot area
+        const chartArea = chart.chartArea;
+        const minX = chartArea.left;
+        const maxX = chartArea.right;
+        const minY = chartArea.top;
+        const maxY = chartArea.bottom;
+
+        let x = clamp(chart.crosshair.x, minX, maxX);
+        let y = clamp(chart.crosshair.y, minY, maxY);
+
+        // Derive points for X and Y values at the crosshair axes
+        const xValue = chart.scales['x-axis-frame'].getValueForPixel(x);
+        const yValue = chart.scales[(chart.yAxisAmplitudeVisibleFlag) ? 'y-axis-amplitude' : 'y-axis-frequency'].getValueForPixel(y);
+
+        // Execute the function
+        const formant = Formants[g_lastSelectedFormantIndex];
+        const remove_element = [xValue, yValue];
+        removeNearest(formant, remove_element);
+
+        updateChart(formant);
+    } // end if (chart.crosshair)
+}
+
+function displaySliders(i, formant) {
+    // Reference to the container where sliders will be added
+    var container = slider_container;
+
+    // Clear previous sliders
+    container.innerHTML = '';
+
+    const minFrame = i - 1 in formant ? formant[i-1].frame : formant[i].frame;
+    const maxFrame = i + 1 in formant ? formant[i+1].frame : formant[i].frame;
+
+    // Create a slider for the frame index
+    var frameIndexSlider = createSlider('frameIndex'
+        , 'Frame Index'
+        , formant[i].frame
+        , minFrame
+        , maxFrame
+        , "1"
+        , function(value) {
+            // Update the chart data and re-render
+            let formant = Formants[g_lastSelectedFormantIndex];
+            formant[i].frame = value;
+            updateChart(formant);
+    });
+
+    // Create a slider for frequency
+    var frequencySlider = createSlider('frequency'
+        , 'Frequency (Hz)'
+        , formant[i].frequency
+        , 0.00
+        , 500.00
+        , "0.01"
+        , function(value) {
+            // Update the chart data and re-render
+            let formant = Formants[g_lastSelectedFormantIndex];
+            formant[i].frequency = value;
+            updateChart(formant);
+    });
+
+    // Create a slider for amplitude
+    var amplitudeSlider = createSlider('amplitude'
+        , 'Amplitude (dBFS)'
+        , formant[i].amplitude
+        ,-20.00
+        , 0.00
+        , "0.01"
+        , function(value) {
+            // Update the chart data and re-render
+            let formant = Formants[g_lastSelectedFormantIndex];
+            formant[i].amplitude = value;
+            updateChart(formant);
+    });
+
+    var deleterTextOption = document.createElement('span');
+    deleterTextOption.textContent = 'DELETE';
+    deleterTextOption.style.color = 'red';
+    deleterTextOption.style.cursor = 'pointer';
+    deleterTextOption.onclick = function(e) {
+        let formant = Formants[g_lastSelectedFormantIndex];
+        const remove_element = formant[i].frame;
+        removeNearest(formant, remove_element);
+        updateChart(formant);
+        hideTAElement();
+    };
+
+    // Append the sliders to the parent container
+    container.appendChild(frameIndexSlider);
+    container.appendChild(frequencySlider);
+    container.appendChild(amplitudeSlider);
+    container.appendChild(deleterTextOption);
+
+    showTAElement({ jsonINDIR: 'slider' });
+}
+
 formant_graph_canvas.addEventListener('click', function(e) {
     // Add a point to the chart //
     let chart = g_formantChart;
@@ -301,7 +477,10 @@ formant_graph_canvas.addEventListener('click', function(e) {
 
         const I = formant.length;
         for (var i = 0; i < I; ++i) {
-            if (formant[i].frame > xValue) {
+            if (Math.abs(formant[i].frame - xValue) < 10) {
+                displaySliders(i, formant);
+                break;
+            } else if (formant[i].frame > xValue) {
                 formant.splice(i, 0, nextOSCINterval);
                 break;
             }
@@ -326,56 +505,8 @@ formant_graph_canvas.addEventListener('mouseup', function(e) {
 
 });
 
-// Function to find and remove the nearest element
-function removeNearest(audio_frame, remove_element) {
-    let nearestAudioFrameIndex  = 0;
-    let nearestValue = audio_frame[0];
-    let smallestDiff = Math.abs(audio_frame[0] - remove_element[0]);
-
-    // Find the nearest value
-    const I = audio_frame.length;
-    for (let i = 1; i < I; ++i) {
-        let currentDiff = Math.abs(audio_frame[i] - remove_element[0]);
-        if (currentDiff < smallestDiff) {
-            smallestDiff = currentDiff;
-            nearestAudioFrameIndex = i;
-        } else {
-            nearestValue = audio_frame[nearestAudioFrameIndex];
-            // Remove the nearest value from the array
-            let indexToRemove = audio_frame.indexOf(nearestValue);
-            if (indexToRemove !== -1) {
-                audio_frame.splice(indexToRemove, 1);
-            }
-            break;
-        }
-    }
-}
-
 formant_graph_canvas.addEventListener('dblclick', function(e) {
-    // Remove a point from the chart //
-    let chart = g_formantChart;
-    if (chart.crosshair) {
-        // Prevent the crosshair from inserting new points outside the plot area
-        const chartArea = chart.chartArea;
-        const minX = chartArea.left;
-        const maxX = chartArea.right;
-        const minY = chartArea.top;
-        const maxY = chartArea.bottom;
 
-        let x = clamp(chart.crosshair.x, minX, maxX);
-        let y = clamp(chart.crosshair.y, minY, maxY);
-
-        // Derive points for X and Y values at the crosshair axes
-        const xValue = chart.scales['x-axis-frame'].getValueForPixel(x);
-        const yValue = chart.scales[(chart.yAxisAmplitudeVisibleFlag) ? 'y-axis-amplitude' : 'y-axis-frequency'].getValueForPixel(y);
-
-        // Execute the function
-        const formant = Formants[g_lastSelectedFormantIndex];
-        const remove_element = [xValue, yValue];
-        removeNearest(formant, remove_element);
-
-        updateChart(formant);
-    } // end if (chart.crosshair)
 });
 
 activeColor = 'green';
@@ -399,33 +530,6 @@ function updateActiveRadioButton(rButton) {
     });
 }
 
-/**
- * Object Mapping for Button Identifiers.
- * 
- * This mapping links the waveform or noise type options to their corresponding
- * button elements. Each key represents the text value of an option from an HTML
- * select element, and the corresponding value is the identifier for the button
- * element that should be activated for that option.
- * 
- * Usage: 
- * The `buttonMappings` object is used in the `updateMotifBar` function to 
- * determine which button should be made active based on the user's selection.
- * 
- * Structure:
- * - Key: String - The name of the waveform or noise type.
- * - Value: Object - The button element identifier associated with that type.
- *
- * Example:
- * To add a new mapping, simply add a new key-value pair to this object.
- * For instance, if you have a new type 'XYZ', and the corresponding button
- * identifier is 'XYZBTN', add it as:
- * 'XYZ': XYZBTN
- *
- * Note:
- * Ensure that the keys in this object exactly match the option values in the
- * HTML select element and that the button identifiers are correctly defined
- * in the HTML or JavaScript.
- */
 const MotifButtonMappings = {
     'Sine': SineBTN,
     'Cosine': CosineBTN,
@@ -738,16 +842,35 @@ Cpp20BTN.addEventListener('click', function() {
 function showTAElement({ jsonINDIR = 'out' }={})
 {
     popupContainer.style.display = 'flex';
-    jsonFORM.style.display = 'inline-block';
-    jsonFORM.jsonIndirection = jsonINDIR;
+    switch (jsonINDIR) {
+        case 'in':
+        JsonTA.style.display = 'block';
+        json_form_class.style.display = 'block';
+        jsonFORM.style.display = 'inline-block';
+        jsonFORM.jsonIndirection = jsonINDIR;
+        break;
+
+        case 'out':
+        json_form_class.style.display = 'block';
+        JsonTA.style.display = 'inline-block';
+        jsonFORM.jsonIndirection = jsonINDIR;
+        break;
+
+        case 'slider':
+        slider_container.style.display = 'inline-block';
+        break;
+    }
 }
 
 // Show/Hide JSON Text Area
 function hideTAElement()
 {
     popupContainer.style.display = 'none';
+    json_form_class.style.display = 'none';
     jsonFORM.style.display = 'none';
     jsonFORM.jsonIndirection = 'none';
+    JsonTA.style.display = 'none';
+    slider_container.style.display = 'none';
 }
 
 CloseJsonBTN.addEventListener('click', function() {
