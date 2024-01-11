@@ -1036,7 +1036,7 @@ const pcm_encoding_docstring_options =
 OutJsonBTN.addEventListener('click', function() {
     let jsonData = Formants; /*g_formantChart.data;*/
     if ( !('phoneme_name' in jsonData) ) {
-        jsonData.phoneme_name = 'untitled';
+        jsonData.phoneme_name = 'n/a';
     }
     jsonData.pcm_encoding_docstring = pcm_encoding_docstring_options[jsonData.pcm_encoding].pcm_encoding_docstring;
     let json = serializeCustomObject(jsonData);
