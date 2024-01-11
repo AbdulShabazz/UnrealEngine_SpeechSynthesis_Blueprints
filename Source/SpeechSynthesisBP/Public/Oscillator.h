@@ -1,5 +1,6 @@
 #pragma once
 
+#include <random>
 #include <cmath>
 #include <memory>
 #include <chrono>
@@ -118,6 +119,8 @@ public:
         YellowNoise_enum = 1 << 11,
         BlueNoise_enum = 1 << 12,
         GreyNoise_enum = 1 << 13,
+        whiteGaussianNoise_enum = 1 << 14,
+        purpleVioletNoise_enum = 1 << 15,
     };
 
     enum class ComplexWaveShape : uint32_t {};
@@ -145,7 +148,7 @@ public:
     }
 
     Oscillator() = default;
-    
+
     /**
     @brief Generates a Sine wave.
     @param amplitude_constDouble: The amplitude of the oscillator signal.
@@ -196,7 +199,7 @@ public:
     @param frequencyHz_double: The frequency of the oscillator signal.
     @param timeStep_constDouble: The time-step (t) at which the oscillator is to be evaluated.
     @param theta_constDouble: The phase of the oscillator signal.
-    @return double ( The oscillator signal at time-step (t).*/
+    @return double ( The oscillator signal at time-step t).*/
     double halfSine(const double amplitude_constDouble
         , const double frequencyHz_double
         , const double timeStep_constDouble
@@ -210,7 +213,7 @@ public:
     @param amplitude_constDouble: The amplitude of the oscillator signal.
     @param frequencyHz_double: The frequency of the oscillator signal.
     @param timeStep_constDouble: The time-step (t) at which the oscillator is to be evaluated.
-    @return double ( The oscillator signal at time-step (t).*/
+    @return double ( The oscillator signal at time-step t).*/
     double forwardSaw(const double amplitude_constDouble
         , const double frequencyHz_double
         , const double timeStep_constDouble) const {
@@ -222,7 +225,7 @@ public:
     @param amplitude_constDouble: The amplitude of the oscillator signal.
     @param frequencyHz_double: The frequency of the oscillator signal.
     @param timeStep_constDouble: The time-step (t) at which the oscillator is to be evaluated.
-    @return double ( The oscillator signal at time-step (t).*/
+    @return double ( The oscillator signal at time-step t).*/
     double ReverseSaw(const double amplitude_constDouble
         , const double frequencyHz_double
         , const double timeStep_constDouble) const {
@@ -255,10 +258,21 @@ public:
 
     /**
     @brief Generate a white noise signal.
-    @param timeStep_constDouble
+    @param amplitude_constDouble
     @return double */
     double whiteNoise(const double amplitude_constDouble) const {
         return amplitude_constDouble * (2.0 * ((double)rand() / (double)RAND_MAX) - 1.0);
+    }
+
+    /**
+    @brief Generate a white (Gaussian) noise signal.
+    @param amplitude_constDouble
+    @return double */
+    double whiteGaussianNoise(const double amplitude_constDouble) const {
+        static std::mt19937 generator; // Random number generator
+        std::normal_distribution<double> distribution(0.0, amplitude_constDouble); // Normal distribution with mean 0 and standard deviation amplitude
+
+        return distribution(generator);
     }
 
     /**
@@ -305,6 +319,21 @@ public:
 
         pinkNoiseValue_double = (pinkNoiseValue_double + pinkNoiseIncrement_double * (2.0 * ((double)rand() / (double)RAND_MAX) - 1.0)) * pinkNoiseDecay_double;
         return amplitude_constDouble * (pinkNoiseValue_double - lastPinkNoiseValue_double);
+    }
+
+    std::random_device rd; 
+    std::mt19937 eng{rd()};
+    std::uniform_real_distribution<> dist{-1.0, 1.0};
+    double lastWhite = 0.0; // Previous white noise value
+
+    /**
+    @brief Generate a purple (violet) noise signal.
+    @return double */
+    double purpleVioletNoise() {
+        double newWhite = dist(eng);  // Generate new white noise sample
+        double violet = newWhite - lastWhite; // Differentiate to get violet noise
+        lastWhite = newWhite; // Update the last white noise sample
+        return violet;
     }
 
     /**
@@ -482,6 +511,12 @@ public:
                         , shape_oscillatorParams.frequencyHz
                         , shape_oscillatorParams.timeStepStart);
                     break;
+                case WaveShape::whiteGaussianNoise_enum:
+                    outShape = whiteGaussianNoise (shape_oscillatorParams.amplitude_constDouble);
+                    break;
+                case WaveShape::purpleVioletNoise_enum:
+                    outShape = purpleVioletNoise ();
+                    break;
                 default:
                     throw std::invalid_argument("Unexpected or Unknown wave-shape.");
             }
@@ -600,6 +635,12 @@ public:
                         , shape_oscillatorParams.frequencyHz
                         , shape_oscillatorParams.timeStepStart);
                     [[fallthrough]]
+                case boolean_and(shape_oscillatorParams.shape, WaveShape::whiteGaussianNoise_enum):
+                    outShape += whiteGaussianNoise(shape_oscillatorParams.amplitude_constDouble);
+                    [[fallthrough]]
+                case boolean_and(shape_oscillatorParams.shape, WaveShape::purpleVioletNoise_enum):
+                    outShape += purpleVioletNoise();
+                    [[fallthrough]]
                 default:
                     throw std::invalid_argument("Unexpected or Unknown wave-shape.");
                 } // End of switch statement
@@ -613,7 +654,7 @@ public:
                 totalOutShape.push_back(outShape);
             }
         } // End of for loop
-        
+
         return totalOutShape;
     } // End of generateComplexSignal() function
 
@@ -627,7 +668,7 @@ public:
     requires (bitwise_ops_compatible<T, U>)
     bool hasShape(const T& shape_1, const U& shape_2) const {
         return ( static_cast<uint32_t>( shape_1 ) & static_cast<uint32_t>( shape_2 ) );
-	}
+    }
 
     /**
     @brief Updates the oscillator parameters at time-step (t).
@@ -669,6 +710,12 @@ public:
                 //theta_double = initialTheta + thetaSlope * t;
                 break;
             case WaveShape::GreyNoise_enum:
+                //theta_double = initialTheta + thetaSlope * t;
+                break;
+            case WaveShape::whiteGaussianNoise_enum:
+                //theta_double = initialTheta + thetaSlope * t;
+                break;
+            case WaveShape::purpleVioletNoise_enum:
                 //theta_double = initialTheta + thetaSlope * t;
                 break;
             default:
