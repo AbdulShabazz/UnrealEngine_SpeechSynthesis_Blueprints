@@ -488,7 +488,7 @@ formant_graph_canvas.addEventListener('click', function(e) {
 
         const I = formant.length;
         for (var i = 0; i < I; ++i) {
-            if (Math.abs(formant[i].frame - xValue) < 10) {
+            if (Math.abs(formant[i].frame - xValue) < 65) {
                 displaySliders(i, formant);
                 break;
             } else if (formant[i].frame > xValue) {
