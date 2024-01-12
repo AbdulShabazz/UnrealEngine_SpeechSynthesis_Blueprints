@@ -95,6 +95,33 @@ function updateCrossHair(e) {
     requestAnimationFrame(() => g_formantChart.update());
 }
 
+class WaveShape {
+    static Sine_enum = 1 << 0;
+    static Cosine_enum = 1 << 1;
+    static QuarterSine_enum = 1 << 2;
+    static HalfSine_enum = 1 << 3;
+    static Triangle_enum = 1 << 4;
+    static Square_enum = 1 << 5;
+    static ForwardSawtooth_enum = 1 << 6;
+    static ReverseSawtooth_enum  = 1 << 7;
+    static WhiteNoise_enum = 1 << 8;
+    static BrownNoise_enum = 1 << 9;
+    static PinkNoise_enum = 1 << 10;
+    static YellowNoise_enum = 1 << 11;
+    static BlueNoise_enum = 1 << 12;
+    static GreyNoise_enum = 1 << 13;
+    static whiteGaussianNoise_enum = 1 << 14;
+    static purpleVioletNoise_enum = 1 << 15;
+}
+
+class POINT extends Object {
+    constructor({ x = 0, y = 0 } = {}) {
+        super();
+        this.x = x;
+        this.y = y;
+    }
+}
+
 class OSC_INTERVAL extends Object {
     constructor({ amplitude = g_default_amplitude, frequency = g_default_frequency, frame = 0, time_step = 0 } = {}) {
         super();
@@ -106,13 +133,13 @@ class OSC_INTERVAL extends Object {
 }
 
 class FORMANTS extends Array {
-    constructor({ motif = "Sine" } = {}) {
+    constructor({ shape = "Sine" } = {}) {
         super(); // Calls the Array constructor
-        this.motif = motif; // Adds the motif property
+        this.shape = shape; // Adds the shape property
     }
 }
 
-Formants = [new FORMANTS({ motif: 'Sine'})];
+Formants = [new FORMANTS({ shape: 'Sine'})];
 Formants[0].push(
     new OSC_INTERVAL ({ amplitude: -6.0, frequency: 50.0, frame: 0, time_step: 0 }),
     new OSC_INTERVAL ({ amplitude: -4.5, frequency: 60.0, frame: 200, time_step: 15 }),
@@ -534,14 +561,14 @@ function updateActiveRadioButton(rButton) {
         } else {
             bttn.activeFlag = true;
             bttn.style.backgroundColor = activeColor;
-            if (bttn.textContent != Formants[g_lastSelectedFormantIndex].motif) {
-                Formants[g_lastSelectedFormantIndex].motif = bttn.textContent;
+            if (bttn.textContent != Formants[g_lastSelectedFormantIndex].shape) {
+                Formants[g_lastSelectedFormantIndex].shape = bttn.textContent;
             }
         }
     });
 }
 
-const MotifButtonMappings = {
+const ShapeButtonMappings = {
     'Sine': SineBTN,
     'Cosine': CosineBTN,
     'Square': SquareBTN,
@@ -555,12 +582,12 @@ const MotifButtonMappings = {
     'White Gaussian Noise': GaussBTN,
 };
 
-// Called by the global Formants[].motif to convert its string input. The DOM calls updateActiveRadioButton directly.
-function updateMotifBar(u)
+// Called by the global Formants[].shape to convert its string input. The DOM calls updateActiveRadioButton directly.
+function updateShapeBar(u)
 {
-    if (u in MotifButtonMappings) {
-        let motifActiveButton = MotifButtonMappings[u];
-        updateActiveRadioButton(motifActiveButton);
+    if (u in ShapeButtonMappings) {
+        let ShapeActiveButton = ShapeButtonMappings[u];
+        updateActiveRadioButton(ShapeActiveButton);
     }
 }
 
@@ -571,7 +598,7 @@ g_lastSelectedFormantIndex = 0;
 formant_selector.selectedIndex = 0;
 Formants.pcm_encoding = defaultPCMEncoding;
 resolution_selector.selectedIndex = defaultPCMEncoding; 
-updateMotifBar(Formants[0].motif);
+updateShapeBar(Formants[0].Shape);
 
 function updateChart(formant) {
     var tmpConfig = g_config;
@@ -625,7 +652,7 @@ function updateFormantSelectElement(ii) {
 
 function insertNewFormant(i) {
     const formant = Formants[i];
-    var tmpFormant = new FORMANTS({ motif: formant.motif });
+    var tmpFormant = new FORMANTS({ shape: formant.shape });
     formant.map(osc_interval => { 
         tmpFormant.push(new OSC_INTERVAL({ amplitude: osc_interval.amplitude
             , frequency: osc_interval.frequency
@@ -635,7 +662,7 @@ function insertNewFormant(i) {
     });
     g_lastSelectedFormantIndex = i = Formants.push(tmpFormant) - 1;
     updateFormantSelectElement(i);
-    updateMotifBar(tmpFormant.motif);
+    updateShapeBar(tmpFormant.shape);
     updateChart(tmpFormant);
 }
 
@@ -644,7 +671,7 @@ function removeFormantAt(i) {
     g_lastSelectedFormantIndex = i = (i - 1 > -1) ? --i : 0;
     updateFormantSelectElement(i);
     var formant = Formants[i];
-    updateMotifBar(formant.motif);
+    updateShapeBar(formant.shape);
     updateChart(formant);
 }
 
@@ -701,7 +728,7 @@ formant_selector.addEventListener('change', function() {
         g_lastSelectedFormantIndex = selectedIndex;
         const formant = Formants[g_lastSelectedFormantIndex];
         updateChart(formant);
-        updateMotifBar(formant.motif);
+        updateShapeBar(formant.shape);
     }
 
 });
@@ -792,6 +819,7 @@ AddFramesBTN.addEventListener('click', function() {
         var lastOSCInterval = formant[I - 1];
 
         // TODO: Re-sample the audio (scale the frame property of each OSC_INTERVAL object by the new overall length)
+        // TODO: Adjust te length for all formant curves
 
         const nextOSCINterval_frame = lastOSCInterval.frame + dx;
         const nextOSCInterval_time_step = lastOSCInterval.time_step;
@@ -813,6 +841,7 @@ RemoveFramesBTN.addEventListener('click', function() {
         var lastOSCInterval = formant[I - 1];
 
         // TODO: Re-sample the audio (scale the frame property of each OSC_INTERVAL object by the new overall length)
+        // TODO: Adjust te length for all formant curves
 
         const lastOSCInterval_frame = lastOSCInterval.frame - dx;
 
@@ -837,16 +866,6 @@ RemoveFramesBTN.addEventListener('click', function() {
         console.info('Frame removal error: Invalid frame count for removal.');
         console.info(e);
     }
-});
-
-/** popup window actions  */
-
-AudioBTN.addEventListener('click', function() {
-
-});
-
-Cpp20BTN.addEventListener('click', function() {
-
 });
 
 // Show/Hide JSON Text Area
@@ -1042,6 +1061,158 @@ OutJsonBTN.addEventListener('click', function() {
     let json = serializeCustomObject(jsonData);
     JsonTA.value = json;
     showTAElement({ jsonINDIR: 'out' });
+});
+
+/** popup window actions  */
+
+Object.prototype.add_point = function(b) {
+    return new POINT ({ x: this.x + b.x, y: this.y + b.y });
+};
+
+Object.prototype.mult_scalar = function(b) {
+    return new POINT ({ x: this.x * b, y: this.y * b });
+};
+
+function linear_interpolate (a,b)
+{
+
+}
+
+function bezier_interpolate (pts,dt)
+{
+    if (pts.length < 4 || dt > 1)
+        return pts;
+
+    const p0 = pts[0].mult_scalar(Math.pow(1 - dt, 3));
+    const p1 = pts[1].mult_scalar(3 * Math.pow(1 - dt, 2) * dt);
+    const p2 = pts[2].mult_scalar(3 * (1 - dt) * Math.pow(dt, 2));
+    const p3 = pts[3].mult_scalar(Math.pow(dt, 3));
+
+    return p0.add_point(p1.add_point(p2.add_point(p3)));
+}
+
+function boolean_and(a,b)
+{
+    return (a & b) !== 0;
+}
+
+AudioBTN.addEventListener('click', function() {
+
+    /**
+    @brief Generates complex signal based on specific wave-shape parameters.
+    @details Generates complex signal based on specific wave-shape parameters.
+    @param shapes_oscilatorParamsVec: The complex wave-shapes to develop.
+    @param customUpdateCallback: A lambda function that can be used to update the oscillator parameters.
+    @return The oscillator signal at frame N).*/
+    function generateComplexSignal(shapes_oscilatorParamsVec
+        , customUpdateCallback) {
+
+        let frame_idx = 0;
+        let totalOutShape = [];
+
+        for (const shape_oscillatorParams of shapes_oscilatorParamsVec) {
+            var outShape = 0;
+
+            // Custom updates using the lambda function
+            if (customUpdateCallback) {
+                outShape = customUpdateCallback(
+                    this,
+                    shape_oscillatorParams,
+                    outShape);
+            } else {
+                while(frame_idx < shape_oscillatorParams.frame)
+                {
+                    //const dt = bezier_interpolate(frame_idx, shape_oscillatorParams.frame, 1);
+                    //const dt = linear_interpolate(frame_idx, shape_oscillatorParams.frame, 1);
+                    //switch (shape_oscillatorParams.shape) {
+                    switch (true) {
+                    case boolean_and(shape_oscillatorParams.shape, WaveShape.Sine_enum):
+                        outShape += sine(shape_oscillatorParams.amplitude
+                            , shape_oscillatorParams.frequencyHz
+                            , shape_oscillatorParams.timeStepStart
+                            , shape_oscillatorParams.theta); // [[fallthrough]]
+                    case boolean_and(shape_oscillatorParams.shape, WaveShape.Cosine_enum):
+                        outShape += cosine(shape_oscillatorParams.amplitude
+                            , shape_oscillatorParams.frequencyHz
+                            , shape_oscillatorParams.timeStepStart
+                            , shape_oscillatorParams.theta); // [[fallthrough]]
+                    case boolean_and(shape_oscillatorParams.shape, WaveShape.QuarterSine_enum):
+                        outShape += quarterSine(shape_oscillatorParams.amplitude
+                            , shape_oscillatorParams.frequencyHz
+                            , shape_oscillatorParams.timeStepStart
+                            , shape_oscillatorParams.theta); // [[fallthrough]]
+                    case boolean_and(shape_oscillatorParams.shape, WaveShape.HalfSine_enum):
+                        outShape += halfSine(shape_oscillatorParams.amplitude
+                            , shape_oscillatorParams.frequencyHz
+                            , shape_oscillatorParams.timeStepStart
+                            , shape_oscillatorParams.theta); // [[fallthrough]]
+                    case boolean_and(shape_oscillatorParams.shape, WaveShape.Triangle_enum):
+                        outShape += Triangle(shape_oscillatorParams.amplitude
+                            , shape_oscillatorParams.frequencyHz
+                            , shape_oscillatorParams.timeStepStart); // [[fallthrough]]
+                    case boolean_and(shape_oscillatorParams.shape, WaveShape.Square_enum):
+                        outShape += Square(shape_oscillatorParams.amplitude
+                            , shape_oscillatorParams.frequencyHz
+                            , shape_oscillatorParams.timeStepStart); // [[fallthrough]]
+                    case boolean_and(shape_oscillatorParams.shape, WaveShape.ForwardSawtooth_enum):
+                        outShape += forwardSaw(shape_oscillatorParams.amplitude
+                            , shape_oscillatorParams.frequencyHz
+                            , shape_oscillatorParams.timeStepStart); // [[fallthrough]]
+                    case boolean_and(shape_oscillatorParams.shape, WaveShape.ReverseSawtooth_enum):
+                        outShape += ReverseSaw(shape_oscillatorParams.amplitude
+                            , shape_oscillatorParams.frequencyHz
+                            , shape_oscillatorParams.timeStepStart); // [[fallthrough]]
+                    case boolean_and(shape_oscillatorParams.shape, WaveShape.WhiteNoise_enum):
+                        outShape += whiteNoise(shape_oscillatorParams.amplitude_constDouble); // [[fallthrough]]
+                    case boolean_and(shape_oscillatorParams.shape, WaveShape.BrownNoise_enum):
+                        outShape += brownNoise(shape_oscillatorParams.amplitude
+                            , shape_oscillatorParams.frequencyHz
+                            , shape_oscillatorParams.timeStepStart); // [[fallthrough]]
+                    case boolean_and(shape_oscillatorParams.shape, WaveShape.PinkNoise_enum):
+                        outShape += pinkNoise(shape_oscillatorParams.amplitude
+                            , shape_oscillatorParams.frequencyHz
+                            , shape_oscillatorParams.timeStepStart); // [[fallthrough]]
+                    case boolean_and(shape_oscillatorParams.shape, WaveShape.YellowNoise_enum):
+                        outShape += yellowNoise(shape_oscillatorParams.amplitude
+                            , shape_oscillatorParams.frequencyHz
+                            , shape_oscillatorParams.timeStepStart); // [[fallthrough]]
+                    case boolean_and(shape_oscillatorParams.shape, WaveShape.BlueNoise_enum):
+                        outShape += blueNoise(shape_oscillatorParams.amplitude
+                            , shape_oscillatorParams.frequencyHz
+                            , shape_oscillatorParams.timeStepStart); // [[fallthrough]]
+                    case boolean_and(shape_oscillatorParams.shape, WaveShape.GreyNoise_enum):
+                        outShape += greyNoise(shape_oscillatorParams.amplitude
+                            , shape_oscillatorParams.frequencyHz
+                            , shape_oscillatorParams.timeStepStart); // [[fallthrough]]
+                    case boolean_and(shape_oscillatorParams.shape, WaveShape.whiteGaussianNoise_enum):
+                        outShape += whiteGaussianNoise(shape_oscillatorParams.amplitude_constDouble); // [[fallthrough]]
+                    case boolean_and(shape_oscillatorParams.shape, WaveShape.purpleVioletNoise_enum):
+                        outShape += purpleVioletNoise(); // [[fallthrough]]
+                    default:
+                        console.error(`Frame ${frame_idx} - Unexpected or Unknown wave-shape: ${shape_oscillatorParams.shape}`);
+                        //throw std::invalid_argument("Unexpected or Unknown wave-shape.");
+                    } // End of switch statement
+                    ++frame_idx;
+                } // end of while (frame_idx < ... .frame)
+            } // End of else statement
+
+            /* 
+            Each sample may have multiple formants, 
+            so only advance the sample when the 
+            advanceSample_flag is set to true.*/
+            if ( shape_oscillatorParams.advanceSample_flag ) {
+                totalOutShape.push_back(outShape);
+            }
+        } // End of for loop
+
+        return totalOutShape;
+    }; // End of generateComplexSignal() function
+
+    const const_audio_frames = generateComplexSignal(Formants);
+});
+
+Cpp20BTN.addEventListener('click', function() {
+    OutJsonBTN.click();
 });
 
 okBTN.addEventListener('click', function(e) {
