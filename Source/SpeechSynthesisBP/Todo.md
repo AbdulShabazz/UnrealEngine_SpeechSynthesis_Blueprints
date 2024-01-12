@@ -21,6 +21,7 @@
    - Provide a sine wave generator with a 10s decay envelope to simulate human lung capacity.
    - Include an ARPABETPhone::breath UE Audio blueprint activated after 5s of speech for realistic breathing simulation.
    - Integrate noise generators to mimic a speaker's breath.
+   - The UE Formant Curve Editor should support (temporary) Session Saves and (directlibrary) SaveAs functionality (eg. Sara-0001).
 
 2. **Signal Processing**:
    - Carve the F0 waveforms out of Gaussian noise mask filter.
