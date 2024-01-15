@@ -1,4 +1,14 @@
 
+
+
+            /* 
+            Each sample may have multiple formants, 
+            so only advance the sample when the 
+            advanceSample_flag is set to true.*/
+            if (shape_oscillatorParams.advanceSample_flag ) {
+                audioFrames_float64Vec.push_back(outShape);
+            }
+
 /**
  * Object Mapping for Button Identifiers.
  * 
