@@ -132,8 +132,19 @@ public:
     @param b The enum class WaveShape or ComplexWaveShape.*/
     template<typename T, typename U>
     requires(bitwise_ops_compatible<T, U>)
-    ComplexWaveShape boolean_and (const T& a, const U& b) {
-        return static_cast<ComplexWaveShape>(static_cast<uint32_t>(a) & static_cast<uint32_t>(b));
+    bool shape_has_shape (const T& a, const U& b) {
+        return (static_cast<bool>(static_cast<uint32_t>(a) & static_cast<uint32_t>(b))) != 0;
+    }
+
+    /**
+    @brief Overloaded bitwise AND operator for the WaveShape enum class and ComplexWaveShape enum class.
+    @details Overloaded bitwise AND operator for the WaveShape enum class and ComplexWaveShape enum class.
+    @param a The enum class WaveShape or ComplexWaveShape.
+    @param b The enum class WaveShape or ComplexWaveShape.*/
+    template<typename T, typename U>
+    requires(bitwise_ops_compatible<T, U>)
+    bool boolean_and (const T& a, const U& b) {
+        return (static_cast<bool>(static_cast<uint32_t>(a) & static_cast<uint32_t>(b))) != 0;
     }
 
     /**
@@ -143,8 +154,8 @@ public:
     @param b The enum class WaveShape or ComplexWaveShape.*/
     template<typename T, typename U>
     requires(bitwise_ops_compatible<T, U>)
-    ComplexWaveShape boolean_or (const T& a, const U& b) {
-        return static_cast<ComplexWaveShape>(static_cast<uint32_t>(a) | static_cast<uint32_t>(b));
+    bool boolean_or (const T& a, const U& b) {
+        return (static_cast<bool>(static_cast<uint32_t>(a) | static_cast<uint32_t>(b))) != 0;
     }
 
     Oscillator() = default;
@@ -562,88 +573,86 @@ public:
                     shape_oscillatorParams,
                     outShape);
             } else {
-                switch (shape_oscillatorParams.shape) {
-                case boolean_and(shape_oscillatorParams.shape, WaveShape::Sine_enum):
+                if (signal_has_shape(shape_oscillatorParams.shape, WaveShape::Sine_enum))
                     outShape += sine(shape_oscillatorParams.amplitude
                         , shape_oscillatorParams.frequencyHz
                         , shape_oscillatorParams.timeStepStart
                         , shape_oscillatorParams.theta);
-                    [[fallthrough]]
-                case boolean_and(shape_oscillatorParams.shape, WaveShape::Cosine_enum):
+
+                if (signal_has_shape(shape_oscillatorParams.shape, WaveShape::Cosine_enum))
                     outShape += cosine(shape_oscillatorParams.amplitude
                         , shape_oscillatorParams.frequencyHz
                         , shape_oscillatorParams.timeStepStart
                         , shape_oscillatorParams.theta);
-                    [[fallthrough]]
-                case boolean_and(shape_oscillatorParams.shape, WaveShape::QuarterSine_enum):
+
+                if (signal_has_shape(shape_oscillatorParams.shape, WaveShape::QuarterSine_enum))
                     outShape += quarterSine(shape_oscillatorParams.amplitude
                         , shape_oscillatorParams.frequencyHz
                         , shape_oscillatorParams.timeStepStart
                         , shape_oscillatorParams.theta);
-                    [[fallthrough]]
-                case boolean_and(shape_oscillatorParams.shape, WaveShape::HalfSine_enum):
+
+                if (signal_has_shape(shape_oscillatorParams.shape, WaveShape::HalfSine_enum))
                     outShape += halfSine(shape_oscillatorParams.amplitude
                         , shape_oscillatorParams.frequencyHz
                         , shape_oscillatorParams.timeStepStart
                         , shape_oscillatorParams.theta);
-                    [[fallthrough]]
-                case boolean_and(shape_oscillatorParams.shape, WaveShape::Triangle_enum):
+
+                if (signal_has_shape(shape_oscillatorParams.shape, WaveShape::Triangle_enum))
                     outShape += Triangle(shape_oscillatorParams.amplitude
                         , shape_oscillatorParams.frequencyHz
                         , shape_oscillatorParams.timeStepStart);
-                    [[fallthrough]]
-                case boolean_and(shape_oscillatorParams.shape, WaveShape::Square_enum):
+
+                if (signal_has_shape(shape_oscillatorParams.shape, WaveShape::Square_enum))
                     outShape += Square(shape_oscillatorParams.amplitude
                         , shape_oscillatorParams.frequencyHz
                         , shape_oscillatorParams.timeStepStart);
-                    [[fallthrough]]
-                case boolean_and(shape_oscillatorParams.shape, WaveShape::ForwardSawtooth_enum):
+
+                if (signal_has_shape(shape_oscillatorParams.shape, WaveShape::ForwardSawtooth_enum))
                     outShape += forwardSaw(shape_oscillatorParams.amplitude
                         , shape_oscillatorParams.frequencyHz
                         , shape_oscillatorParams.timeStepStart);
-                    [[fallthrough]]
-                case boolean_and(shape_oscillatorParams.shape, WaveShape::ReverseSawtooth_enum):
+
+                if (signal_has_shape(shape_oscillatorParams.shape, WaveShape::ReverseSawtooth_enum))
                     outShape += ReverseSaw(shape_oscillatorParams.amplitude
                         , shape_oscillatorParams.frequencyHz
                         , shape_oscillatorParams.timeStepStart);
-                    [[fallthrough]]
-                case boolean_and(shape_oscillatorParams.shape, WaveShape::WhiteNoise_enum):
+
+                if (signal_has_shape(shape_oscillatorParams.shape, WaveShape::WhiteNoise_enum))
                     outShape += whiteNoise(shape_oscillatorParams.amplitude_constDouble);
-                    [[fallthrough]]
-                case boolean_and(shape_oscillatorParams.shape, WaveShape::BrownNoise_enum):
+
+                if (signal_has_shape(shape_oscillatorParams.shape, WaveShape::BrownNoise_enum))
                     outShape += brownNoise(shape_oscillatorParams.amplitude
                         , shape_oscillatorParams.frequencyHz
                         , shape_oscillatorParams.timeStepStart);
-                    [[fallthrough]]
-                case boolean_and(shape_oscillatorParams.shape, WaveShape::PinkNoise_enum):
+
+                if (signal_has_shape(shape_oscillatorParams.shape, WaveShape::PinkNoise_enum))
                     outShape += pinkNoise(shape_oscillatorParams.amplitude
                         , shape_oscillatorParams.frequencyHz
                         , shape_oscillatorParams.timeStepStart);
-                    [[fallthrough]]
-                case boolean_and(shape_oscillatorParams.shape, WaveShape::YellowNoise_enum):
+
+                if (signal_has_shape(shape_oscillatorParams.shape, WaveShape::YellowNoise_enum))
                     outShape += yellowNoise(shape_oscillatorParams.amplitude
                         , shape_oscillatorParams.frequencyHz
                         , shape_oscillatorParams.timeStepStart);
-                    [[fallthrough]]
-                case boolean_and(shape_oscillatorParams.shape, WaveShape::BlueNoise_enum):
+
+                if (signal_has_shape(shape_oscillatorParams.shape, WaveShape::BlueNoise_enum))
                     outShape += blueNoise(shape_oscillatorParams.amplitude
                         , shape_oscillatorParams.frequencyHz
                         , shape_oscillatorParams.timeStepStart);
-                    [[fallthrough]]
-                case boolean_and(shape_oscillatorParams.shape, WaveShape::GreyNoise_enum):
+
+                if (signal_has_shape(shape_oscillatorParams.shape, WaveShape::GreyNoise_enum))
                     outShape += greyNoise(shape_oscillatorParams.amplitude
                         , shape_oscillatorParams.frequencyHz
                         , shape_oscillatorParams.timeStepStart);
-                    [[fallthrough]]
-                case boolean_and(shape_oscillatorParams.shape, WaveShape::whiteGaussianNoise_enum):
+
+                if (signal_has_shape(shape_oscillatorParams.shape, WaveShape::whiteGaussianNoise_enum))
                     outShape += whiteGaussianNoise(shape_oscillatorParams.amplitude_constDouble);
-                    [[fallthrough]]
-                case boolean_and(shape_oscillatorParams.shape, WaveShape::purpleVioletNoise_enum):
+
+                if (signal_has_shape(shape_oscillatorParams.shape, WaveShape::purpleVioletNoise_enum))
                     outShape += purpleVioletNoise();
-                    [[fallthrough]]
-                default:
+
+                if (outShape == 0)
                     throw std::invalid_argument("Unexpected or Unknown wave-shape.");
-                } // End of switch statement
             } // End of else statement
 
             /* 
