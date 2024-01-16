@@ -1,3 +1,4 @@
+
 g_default_frequency = 40.0;
 g_default_amplitude = -6.0;
 
@@ -110,8 +111,8 @@ class WaveShape {
     static YellowNoise_enum = 1 << 11;
     static BlueNoise_enum = 1 << 12;
     static GreyNoise_enum = 1 << 13;
-    static whiteGaussianNoise_enum = 1 << 14;
-    static purpleVioletNoise_enum = 1 << 15;
+    static WhiteGaussianNoise_enum = 1 << 14;
+    static PurpleVioletNoise_enum = 1 << 15;
 }
 
 class POINT extends Object {
@@ -1073,142 +1074,259 @@ Object.prototype.mult_scalar = function(b) {
     return new POINT ({ x: this.x * b, y: this.y * b });
 };
 
-function linear_interpolate (a,b)
+function linear_interpolation (formant,the_interpolation_frame,audio_component)
 {
+    if (formant.length == 0 )
+        throw ("runtime_error: Not enough frames for linear interpolation within the specified oscillator interval.");
 
+    // Find the interval [x_i, x_i+1] that contains x
+    const I = formant.length-1;
+    const II = formant.length-2;
+    for (let i = 0; i < II; ++i) {
+        const frame_1 = formant[i].frame;
+        const frame_2 = formant[i+1].frame;
+        const audio_component_1 = audio_component === "amplitude" ? formant[i].amplitude : formant[i].frequency ;
+        const audio_component_2 = audio_component === "amplitude" ? formant[i+1].amplitude : formant[i+1].frequency ;
+        if (the_interpolation_frame > frame_1 && the_interpolation_frame < frame_2) {
+            const dt = (the_interpolation_frame - audio_component_1) / (audio_component_1 - frame_2);
+            return (1 - dt) * audio_component_1 + dt * audio_component_2;
+        }
+    }
+
+    // Handle extrapolation cases
+    const frame_1 = formant[0].frame;
+    const frame_2 = formant[I].frame;
+    const audio_component_1 = audio_component === "amplitude" ? formant[0].amplitude : formant[0].frequency ;
+    const audio_component_2 = audio_component === "amplitude" ? formant[I].amplitude : formant[I].frequency ;
+    if (the_interpolation_frame <= frame_1) {
+        return  audio_component_1;
+    } else if (the_interpolation_frame >= frame_2) {
+        return  audio_component_2;
+    }
+
+    throw ("runtime_error: unspecfied interpolation error.");
 }
 
-function bezier_interpolate (pts,dt)
+function bezier_interpolation (formant,the_interpolation_frame,audio_component)
 {
-    if (pts.length < 4 || dt > 1)
+    if (formant.length < 4 || the_interpolation_frame > 1)
         return pts;
 
-    const p0 = pts[0].mult_scalar(Math.pow(1 - dt, 3));
-    const p1 = pts[1].mult_scalar(3 * Math.pow(1 - dt, 2) * dt);
-    const p2 = pts[2].mult_scalar(3 * (1 - dt) * Math.pow(dt, 2));
-    const p3 = pts[3].mult_scalar(Math.pow(dt, 3));
+    const p0 = pts[0].mult_scalar(Math.pow(1 - the_interpolation_frame, 3));
+    const p1 = pts[1].mult_scalar(3 * Math.pow(1 - the_interpolation_frame, 2) * the_interpolation_frame);
+    const p2 = pts[2].mult_scalar(3 * (1 - the_interpolation_frame) * Math.pow(the_interpolation_frame, 2));
+    const p3 = pts[3].mult_scalar(Math.pow(the_interpolation_frame, 3));
 
     return p0.add_point(p1.add_point(p2.add_point(p3)));
 }
 
-function boolean_and(a,b)
+function has_shape(a,b)
 {
     return (a & b) !== 0;
 }
 
+/**
+@brief Generates complex signal based on specific wave-shape parameters.
+@details Generates complex signal based on specific wave-shape parameters.
+@param shapes_oscilatorParamsVec: The complex wave-shapes to develop (ie. Formants[]).
+@param customUpdateCallback: An (optional) lambda that can be used to update the oscillator parameters, instead.
+@return The oscillator signal at frame N).*/
+function generateComplexSignal(shapes_oscilatorParamsVec
+    , customUpdateCallback) {
+
+    let frame_idx = 0;
+    let audioFrames_float64Vec = [];
+
+    for (const shape_oscillatorParams of shapes_oscilatorParamsVec) {
+        var outShape = 0;
+
+        // Custom updates using the lambda function
+        if (customUpdateCallback) {
+            outShape = customUpdateCallback(
+                this,
+                shape_oscillatorParams,
+                outShape);
+        } else {
+            const FRAME_IDX = shape_oscillatorParams.frame + 1;
+            while(frame_idx < FRAME_IDX)
+            {
+                const startingShape = outShape;
+                /*
+                const hz = bezier_interpolation(shape_oscillatorParams, frame_idx, "frequency");
+                const db = bezier_interpolation(shape_oscillatorParams, frame_idx, "amplitude");*/
+                const hz = linear_interpolation(shape_oscillatorParams, frame_idx, "frequency");
+                const db = linear_interpolation(shape_oscillatorParams, frame_idx, "amplitude");
+                
+                if (has_shape(shape_oscillatorParams.shape
+                    , WaveShape.Sine_enum))
+                    outShape += sine(db
+                        , hz
+                        , frame_idx
+                        , shape_oscillatorParams.theta); 
+
+                if (has_shape(shape_oscillatorParams.shape
+                    , WaveShape.Cosine_enum))
+                    outShape += cosine(db
+                        , hz
+                        , frame_idx
+                        , shape_oscillatorParams.theta);
+
+                if (has_shape(shape_oscillatorParams.shape
+                    , WaveShape.QuarterSine_enum))
+                    outShape += quarterSine(db
+                        , hz
+                        , frame_idx
+                        , shape_oscillatorParams.theta);
+
+                if (has_shape(shape_oscillatorParams.shape
+                    , WaveShape.HalfSine_enum))
+                    outShape += halfSine(db
+                        , hz
+                        , frame_idx
+                        , shape_oscillatorParams.theta);
+
+                if (has_shape(shape_oscillatorParams.shape
+                    , WaveShape.Triangle_enum))
+                    outShape += Triangle(db
+                        , hz
+                        , frame_idx);
+
+                if (has_shape(shape_oscillatorParams.shape
+                    , WaveShape.Square_enum))
+                    outShape += Square(db
+                        , hz
+                        , frame_idx);
+
+                if (has_shape(shape_oscillatorParams.shape
+                    , WaveShape.ForwardSawtooth_enum))
+                    outShape += forwardSaw(db
+                        , hz
+                        , frame_idx);
+
+                if (has_shape(shape_oscillatorParams.shape
+                    , WaveShape.ReverseSawtooth_enum))
+                    outShape += ReverseSaw(db
+                        , hz
+                        , frame_idx);
+
+                if (has_shape(shape_oscillatorParams.shape
+                    , WaveShape.WhiteNoise_enum))
+                    outShape += whiteNoise(db);
+
+                if (has_shape(shape_oscillatorParams.shape
+                    , WaveShape.BrownNoise_enum))
+                    outShape += brownNoise(db
+                        , hz
+                        , frame_idx);
+
+                if (has_shape(shape_oscillatorParams.shape
+                    , WaveShape.PinkNoise_enum))
+                    outShape += pinkNoise(db
+                        , hz
+                        , frame_idx);
+
+                if (has_shape(shape_oscillatorParams.shape
+                    , WaveShape.YellowNoise_enum))
+                    outShape += yellowNoise(db
+                        , hz
+                        , frame_idx);
+
+                if (has_shape(shape_oscillatorParams.shape
+                    , WaveShape.BlueNoise_enum))
+                    outShape += blueNoise(db
+                        , hz
+                        , frame_idx);
+
+                if (has_shape(shape_oscillatorParams.shape
+                    , WaveShape.GreyNoise_enum))
+                    outShape += greyNoise(db
+                        , hz
+                        , frame_idx);
+
+                if (has_shape(shape_oscillatorParams.shape
+                    , WaveShape.WhiteGaussianNoise_enum))
+                    outShape += whiteGaussianNoise(db);
+
+                if (has_shape(shape_oscillatorParams.shape
+                    , WaveShape.PurpleVioletNoise_enum))
+                    outShape += purpleVioletNoise();
+
+                if (outShape == startingShape)
+                    throw ("invalid_argument to WaveShape generator - Unexpected or Unknown WaveShape type.");
+                    //console.error(`Error at audio frame ${frame_idx} - Unknown or Unexpected wave-shape: ${shape_oscillatorParams.shape}`);
+                    //throw std::invalid_argument("Unexpected or Unknown wave-shape.");
+                ++frame_idx;
+            } // end of while statement
+        } // End of else statement
+
+        audioFrames_float64Vec.push(outShape);
+    } // End of for loop
+
+    return audioFrames_float64Vec;
+}; // End of generateComplexSignal()
+
+audioContext = new AudioContext();
+gainNode = audioContext.createGain();
+gainNode.gain.value = 1.00; //  range [0,2] step size 0.01
+
 AudioBTN.addEventListener('click', function() {
 
-    /**
-    @brief Generates complex signal based on specific wave-shape parameters.
-    @details Generates complex signal based on specific wave-shape parameters.
-    @param shapes_oscilatorParamsVec: The complex wave-shapes to develop.
-    @param customUpdateCallback: A lambda function that can be used to update the oscillator parameters.
-    @return The oscillator signal at frame N).*/
-    function generateComplexSignal(shapes_oscilatorParamsVec
-        , customUpdateCallback) {
+    // Bard: Here's the JavaScript code to generate a sinusoidal audio of 1s duration at PCM 24 bit/48 kHz sampling:
 
-        let frame_idx = 0;
-        let totalOutShape = [];
+    // Define desired wave parameters
+    const sampleRate = 48000; // 48 kHz
+    const duration = 1; // 1 second
+    const frequency = 440; // Hz (e.g., 440 Hz for A4)
+    const amplitude = 0.4; // 0.5 for a comfortable volume
+    const bitsPerSample = 24; // 24-bit audio
 
-        for (const shape_oscillatorParams of shapes_oscilatorParamsVec) {
-            var outShape = 0;
+    // Create an audio buffer with appropriate settings
+    const audioBuffer = audioContext.createBuffer(2, duration * sampleRate, sampleRate);
+    let channelData = audioBuffer.getChannelData(0);
 
-            // Custom updates using the lambda function
-            if (customUpdateCallback) {
-                outShape = customUpdateCallback(
-                    this,
-                    shape_oscillatorParams,
-                    outShape);
-            } else {
-                while(frame_idx < shape_oscillatorParams.frame)
-                {
-                    //const dt = bezier_interpolate(frame_idx, shape_oscillatorParams.frame, 1);
-                    //const dt = linear_interpolate(frame_idx, shape_oscillatorParams.frame, 1);
-                    //switch (shape_oscillatorParams.shape) {
-                    switch (true) {
-                    case boolean_and(shape_oscillatorParams.shape, WaveShape.Sine_enum):
-                        outShape += sine(shape_oscillatorParams.amplitude
-                            , shape_oscillatorParams.frequencyHz
-                            , shape_oscillatorParams.timeStepStart
-                            , shape_oscillatorParams.theta); // [[fallthrough]]
-                    case boolean_and(shape_oscillatorParams.shape, WaveShape.Cosine_enum):
-                        outShape += cosine(shape_oscillatorParams.amplitude
-                            , shape_oscillatorParams.frequencyHz
-                            , shape_oscillatorParams.timeStepStart
-                            , shape_oscillatorParams.theta); // [[fallthrough]]
-                    case boolean_and(shape_oscillatorParams.shape, WaveShape.QuarterSine_enum):
-                        outShape += quarterSine(shape_oscillatorParams.amplitude
-                            , shape_oscillatorParams.frequencyHz
-                            , shape_oscillatorParams.timeStepStart
-                            , shape_oscillatorParams.theta); // [[fallthrough]]
-                    case boolean_and(shape_oscillatorParams.shape, WaveShape.HalfSine_enum):
-                        outShape += halfSine(shape_oscillatorParams.amplitude
-                            , shape_oscillatorParams.frequencyHz
-                            , shape_oscillatorParams.timeStepStart
-                            , shape_oscillatorParams.theta); // [[fallthrough]]
-                    case boolean_and(shape_oscillatorParams.shape, WaveShape.Triangle_enum):
-                        outShape += Triangle(shape_oscillatorParams.amplitude
-                            , shape_oscillatorParams.frequencyHz
-                            , shape_oscillatorParams.timeStepStart); // [[fallthrough]]
-                    case boolean_and(shape_oscillatorParams.shape, WaveShape.Square_enum):
-                        outShape += Square(shape_oscillatorParams.amplitude
-                            , shape_oscillatorParams.frequencyHz
-                            , shape_oscillatorParams.timeStepStart); // [[fallthrough]]
-                    case boolean_and(shape_oscillatorParams.shape, WaveShape.ForwardSawtooth_enum):
-                        outShape += forwardSaw(shape_oscillatorParams.amplitude
-                            , shape_oscillatorParams.frequencyHz
-                            , shape_oscillatorParams.timeStepStart); // [[fallthrough]]
-                    case boolean_and(shape_oscillatorParams.shape, WaveShape.ReverseSawtooth_enum):
-                        outShape += ReverseSaw(shape_oscillatorParams.amplitude
-                            , shape_oscillatorParams.frequencyHz
-                            , shape_oscillatorParams.timeStepStart); // [[fallthrough]]
-                    case boolean_and(shape_oscillatorParams.shape, WaveShape.WhiteNoise_enum):
-                        outShape += whiteNoise(shape_oscillatorParams.amplitude_constDouble); // [[fallthrough]]
-                    case boolean_and(shape_oscillatorParams.shape, WaveShape.BrownNoise_enum):
-                        outShape += brownNoise(shape_oscillatorParams.amplitude
-                            , shape_oscillatorParams.frequencyHz
-                            , shape_oscillatorParams.timeStepStart); // [[fallthrough]]
-                    case boolean_and(shape_oscillatorParams.shape, WaveShape.PinkNoise_enum):
-                        outShape += pinkNoise(shape_oscillatorParams.amplitude
-                            , shape_oscillatorParams.frequencyHz
-                            , shape_oscillatorParams.timeStepStart); // [[fallthrough]]
-                    case boolean_and(shape_oscillatorParams.shape, WaveShape.YellowNoise_enum):
-                        outShape += yellowNoise(shape_oscillatorParams.amplitude
-                            , shape_oscillatorParams.frequencyHz
-                            , shape_oscillatorParams.timeStepStart); // [[fallthrough]]
-                    case boolean_and(shape_oscillatorParams.shape, WaveShape.BlueNoise_enum):
-                        outShape += blueNoise(shape_oscillatorParams.amplitude
-                            , shape_oscillatorParams.frequencyHz
-                            , shape_oscillatorParams.timeStepStart); // [[fallthrough]]
-                    case boolean_and(shape_oscillatorParams.shape, WaveShape.GreyNoise_enum):
-                        outShape += greyNoise(shape_oscillatorParams.amplitude
-                            , shape_oscillatorParams.frequencyHz
-                            , shape_oscillatorParams.timeStepStart); // [[fallthrough]]
-                    case boolean_and(shape_oscillatorParams.shape, WaveShape.whiteGaussianNoise_enum):
-                        outShape += whiteGaussianNoise(shape_oscillatorParams.amplitude_constDouble); // [[fallthrough]]
-                    case boolean_and(shape_oscillatorParams.shape, WaveShape.purpleVioletNoise_enum):
-                        outShape += purpleVioletNoise(); // [[fallthrough]]
-                    default:
-                        console.error(`Frame ${frame_idx} - Unexpected or Unknown wave-shape: ${shape_oscillatorParams.shape}`);
-                        //throw std::invalid_argument("Unexpected or Unknown wave-shape.");
-                    } // End of switch statement
-                    ++frame_idx;
-                } // end of while (frame_idx < ... .frame)
-            } // End of else statement
+    // Generate the sine wave data
+    const I = channelData.length;
+    for (let i = 0; i < I; ++i) {
+        const time = i / sampleRate;
+        const value = Math.sin(2 * Math.PI * frequency * time) * amplitude;
 
-            /* 
-            Each sample may have multiple formants, 
-            so only advance the sample when the 
-            advanceSample_flag is set to true.*/
-            if ( shape_oscillatorParams.advanceSample_flag ) {
-                totalOutShape.push_back(outShape);
-            }
-        } // End of for loop
+        // Ensure the value is positive for dBFS conversion
+        const absValue = Math.abs(value);
 
-        return totalOutShape;
-    }; // End of generateComplexSignal() function
+        // Convert to dBFS and consider the case when the value is 0
+        const dBFS = absValue > 0 ? 20 * Math.log10(absValue) : -Infinity;
 
-    const const_audio_frames = generateComplexSignal(Formants);
+        channelData[i] = value * (2 ** (bitsPerSample - 1) - 1); // Scale for 24-bit audio
+    }
+
+    /*
+    // For API generated audio
+    const osc = audioContext.createOscillator();
+    osc.type = "sine";
+    osc.frequency.value = 440; // 440 Hz
+    gainNode.gain.value = 0.5
+    osc.connect(gainNode);
+    osc.start();
+    */
+
+    // For artificially generated audio
+    const source = audioContext.createBufferSource();
+    source.buffer = audioBuffer;
+    gainNode.connect(audioContext.destination); //source.connect(audioContext.destination);
+    source.connect(gainNode);
+    source.start(0);
+
+    /*
+    // For MP3 audio
+    const audioBufferMP3 = await fetch('audio.mp3')
+        .then( response => response.arrayBuffer() );
+    const audioBufferSourceNode = audioContext.createBufferSource();
+    audioBufferSourceNode.buffer = await audioContext.decodeAudioData(audioBufferMP3);
+    gainNode.gain.value = 0.5;
+    audioBufferSourceNode.connect(gainNode);
+    audioBufferSourceNode.start(0);*/
+
+    const audio_frames = generateComplexSignal(Formants, null);
 });
 
 Cpp20BTN.addEventListener('click', function() {
