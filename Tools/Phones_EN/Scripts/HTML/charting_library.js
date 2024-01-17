@@ -1074,7 +1074,7 @@ Object.prototype.mult_scalar = function(b) {
     return new POINT ({ x: this.x * b, y: this.y * b });
 };
 
-function linear_interpolation (formant,the_interpolation_frame,audio_component)
+function linear_spline_interpolation (formant,the_interpolation_frame,audio_component)
 {
     if (formant.length == 0 )
         throw ("runtime_error: Not enough frames for linear interpolation within the specified oscillator interval.");
@@ -1107,7 +1107,7 @@ function linear_interpolation (formant,the_interpolation_frame,audio_component)
     throw ("runtime_error: unspecfied interpolation error.");
 }
 
-function bezier_interpolation (formant,the_interpolation_frame,audio_component)
+function bezier_spline_interpolation (formant,the_interpolation_frame,audio_component)
 {
     if (formant.length < 4 || the_interpolation_frame > 1)
         return pts;
@@ -1152,10 +1152,10 @@ function generateComplexSignal(shapes_oscilatorParamsVec
             {
                 const startingShape = outShape;
                 /*
-                const hz = bezier_interpolation(shape_oscillatorParams, frame_idx, "frequency");
-                const db = bezier_interpolation(shape_oscillatorParams, frame_idx, "amplitude");*/
-                const hz = linear_interpolation(shape_oscillatorParams, frame_idx, "frequency");
-                const db = linear_interpolation(shape_oscillatorParams, frame_idx, "amplitude");
+                const hz = bezier_spline_interpolation(shape_oscillatorParams, frame_idx, "frequency");
+                const db = bezier_spline_interpolation(shape_oscillatorParams, frame_idx, "amplitude");*/
+                const hz = linear_spline_interpolation(shape_oscillatorParams, frame_idx, "frequency");
+                const db = linear_spline_interpolation(shape_oscillatorParams, frame_idx, "amplitude");
                 
                 if (has_shape(shape_oscillatorParams.shape
                     , WaveShape.Sine_enum))
