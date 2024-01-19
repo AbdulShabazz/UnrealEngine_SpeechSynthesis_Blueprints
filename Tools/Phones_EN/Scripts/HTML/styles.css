@@ -345,3 +345,9 @@ select:hover {
   display: inline-block;
 }
 
+.audioPlaybackControls_class {
+    display: inline;
+    width: 100%;
+    height: 32px;
+    text-align: center;
+}
