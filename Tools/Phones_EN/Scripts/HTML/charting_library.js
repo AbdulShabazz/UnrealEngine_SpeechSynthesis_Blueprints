@@ -1104,7 +1104,7 @@ function linear_spline_interpolation (formant,the_interpolation_frame,audio_comp
         return  audio_component_2;
     }
 
-    throw ("runtime_error: unspecfied interpolation error.");
+    throw ("runtime_error: unspecfied linear spline interpolation error.");
 }
 
 function bezier_spline_interpolation (formant,the_interpolation_frame,audio_component)
@@ -1269,20 +1269,119 @@ audioContext = new AudioContext();
 gainNode = audioContext.createGain();
 gainNode.gain.value = 1.00; //  range [0,2] step size 0.01
 
+function setInt24(view, offset, value) {
+    this.setUint8(offset, (value & 0xFF0000) >> 16);
+    this.setUint16(offset + 1, value & 0x00FFFF);
+}
+
+/*
+function setInt32(view, offset, value) {
+    this.setUint8(offset, (value & 0xFF0000) >> 16);
+    this.setUint16(offset + 1, value & 0x00FFFF);
+}
+*/
+
+function setInt64(view, offset, value) {
+    /* 64-bit integers cannot natively be represented in (53-bit) javascript, see BigInt */
+    // Check if the environment supports BigInt
+    if (typeof BigInt === 'undefined') {
+        throw new Error('BigInt is not supported for this environment.');
+    }
+
+    // Ensure the value is a BigInt
+    const bigValue = BigInt(value);
+
+    // Mask to extract lower 32 bits
+    const lowerMask = BigInt(0xFFFFFFFF);
+
+    // Extract lower 32 bits and upper 32 bits
+    const lowerPart = bigValue & lowerMask;
+    const upperPart = (bigValue >> BigInt(32)) & lowerMask;
+
+    // Write the lower and upper parts into the DataView
+    // Assuming little-endian format
+    this.setUint32(offset, Number(lowerPart), true);
+    this.setUint32(offset + 4, Number(upperPart), true);
+}
+
+function bufferToWave(buffer) {
+    let numberOfChannels = buffer.length;
+    let sampleRate = buffer[0].sampleRate;
+    let frameLength = buffer[0].length;
+    let byteOffset = 2; // 16-bit data, 2 bytes (default)
+
+    switch (buffer[0].bitsPerSample) {
+    case 24:
+        byteOffset = 3; // 24-bit data, 3 bytes
+        break;
+    case 32:
+        byteOffset = 4; // 32-bit data, 4 bytes
+        break;
+    case 64:
+        byteOffset = 8; // 64-bit data, 8 bytes
+        break;
+    }
+
+    // Create a buffer to hold the WAV file data
+    let wavBuffer = new ArrayBuffer(44 + length * numberOfChannels * byteOffset);
+    let view = new DataView(wavBuffer);
+
+    // Write WAV container headers
+    // ... (code to write the 'RIFF', 'WAVE', 'fmt ', 'data' chunk headers, etc.)
+
+    // Write PCM data
+    let pcm_wav_header = 44;
+
+    view.setInt24 = setInt24;
+    //view.setInt32 = setInt32;
+    view.setInt64 = setInt64;
+
+    view.setIntN = view.setInt16;
+    switch (buffer[0].bitsPerSample) {
+        case 24:
+            view.setIntN = view.setInt24;
+            break;
+        case 32:
+            //view.setIntN = view.setInt32;
+            break;
+        case 64:
+            view.setIntN = view.setInt64;
+            break;
+    }
+
+    for (let i = 0; i < frameLength; i++) {
+        for (let channel = 0; channel < numberOfChannels; channel++) {
+            let sample = Math.max(-1, Math.min(1, buffer[channel][i])); // clamp
+            view.setIntN(pcm_wav_header, sample < 0 ? sample * 0x8000 : sample * 0x7FFF, true);
+            pcm_wav_header += byteOffset;
+        }
+    }
+
+    return wavBuffer;
+}
+
 AudioBTN.addEventListener('click', function() {
 
     // Bard: Here's the JavaScript code to generate a sinusoidal audio of 1s duration at PCM 24 bit/48 kHz sampling:
 
     // Define desired wave parameters
     const sampleRate = 48000; // 48 kHz
-    const duration = 1; // 1 second
-    const frequency = 440; // Hz (e.g., 440 Hz for A4)
-    const amplitude = 0.4; // 0.5 for a comfortable volume
     const bitsPerSample = 24; // 24-bit audio
+    const frequency = 440; // Hz (e.g., 440 Hz for A4)
+    const duration = 1; // 1 second
+    const amplitude = 0.4; // 0.5 for a comfortable volume
 
     // Create an audio buffer with appropriate settings
     const audioBuffer = audioContext.createBuffer(2, duration * sampleRate, sampleRate);
+
     let channelData = audioBuffer.getChannelData(0);
+    let channelDataRight = audioBuffer.getChannelData(0);
+
+    channelData.sampleRate = sampleRate;
+    channelData.bitsPerSample = bitsPerSample;
+
+    channelDataRight.sampleRate = sampleRate;
+    channelDataRight.bitsPerSample = bitsPerSample;
 
     // Generate the sine wave data
     const I = channelData.length;
@@ -1296,8 +1395,34 @@ AudioBTN.addEventListener('click', function() {
         // Convert to dBFS and consider the case when the value is 0
         const dBFS = absValue > 0 ? 20 * Math.log10(absValue) : -Infinity;
 
-        channelData[i] = value * (2 ** (bitsPerSample - 1) - 1); // Scale for 24-bit audio
+        const nsample = value * (2 ** (bitsPerSample - 1) - 1); // Scale for 24-bit audio
+
+        channelData[i] = nsample;
+        channelDataRight[i] = i > 0 ? channelData[i-1] : 0;  // offset channel samples by 1 to create a perceived stereo channel
     }
+
+    const channelDataLeft = channelData;
+
+    // Example usage
+    let wavBuffer = bufferToWave([/*yourLeftChannelData*/channelDataLeft, /*yourRightChannelData*/channelDataRight]);
+    let blob = new Blob([wavBuffer], {type: 'audio/wav'});
+    let url = URL.createObjectURL(blob);
+
+    // Create an audio element and set its source to the blob URL
+    let audio = new Audio(url);
+    audio.controls = true;
+    audio.classList.add('audioPlaybackControls_class');
+    audioPlaybackControls.innerHTML = '';
+    audioPlaybackControls.appendChild(audio);
+
+    /*
+    // Optionally, create a download link
+    let downloadLink = document.createElement('a');
+    downloadLink.href = url;
+    downloadLink.download = 'synthesized_speech.wav';
+    downloadLink.textContent = 'Download Synthesized Speech';
+    document.body.appendChild(downloadLink);
+    */
 
     /*
     // For API generated audio
