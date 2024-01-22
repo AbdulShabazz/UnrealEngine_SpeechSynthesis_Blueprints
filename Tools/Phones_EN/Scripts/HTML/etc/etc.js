@@ -1,5 +1,22 @@
 
+switch (buffer[0].bitsPerSample) {
+    case 24:
+        byteOffset = 3; // 24-bit data, 3 bytes
+        break;
+    case 32:
+        byteOffset = 4; // 32-bit data, 4 bytes
+        break;
+    case 64:
+        byteOffset = 8; // 64-bit data, 8 bytes
+        break;
+    }
 
+/*
+function setInt32(view, offset, value) {
+    this.setUint8(offset, (value & 0xFF0000) >> 16);
+    this.setUint16(offset + 1, value & 0x00FFFF);
+}
+*/
 
             /* 
             Each sample may have multiple formants, 
