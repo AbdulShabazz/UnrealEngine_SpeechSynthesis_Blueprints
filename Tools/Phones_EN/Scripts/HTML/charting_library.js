@@ -1074,6 +1074,238 @@ Object.prototype.mult_scalar = function(b) {
     return new POINT ({ x: this.x * b, y: this.y * b });
 };
 
+/** trigonometric functions */
+
+class FWaveform extends Object {
+    //public:
+    //FWaveform() = default;
+    
+    constructor()
+    {
+        super();
+        /*
+        this.amplitude = -6.5;
+        this.frequency = 40.0;
+        this.time_step = 0.0;
+        this.phase = 0.0;
+        this.shape = "Sine";
+        */
+       this.RAND_MAX = 0x7fff; // #define RAND_MAX 32767 (stdlib.h)
+    }
+
+    /**
+    @brief Generates a Sine wave.
+    @param amplitude_constDouble: The amplitude of the oscillator signal.
+    @param frequencyHz_double: The frequency of the oscillator signal.
+    @param timeStep_constDouble: The time-step (t) at which the oscillator is to be evaluated.
+    @param theta_constDouble: The phase of the oscillator signal.
+    @return double ( The oscillator signal at time-step t).*/
+    static sine(amplitude_constDouble
+        , frequencyHz_double
+        , timeStep_constDouble
+        , theta_constDouble) {
+        return amplitude_constDouble * Math.sin(2 * PI_HiRes * frequencyHz_double * timeStep_constDouble + theta_constDouble);
+    }
+
+    /**
+    @brief Generates a Quarter-Sine wave.
+    @param amplitude_constDouble: The amplitude of the oscillator signal.
+    @param frequencyHz_double: The frequency of the oscillator signal.
+    @param timeStep_constDouble: The time-step (t) at which the oscillator is to be evaluated.
+    @param theta_constDouble: The phase of the oscillator signal.
+    @param quarterPeriod_constDouble: The quarter-period of the oscillator signal.
+    @return double ( The oscillator signal at time-step t).*/
+    static quarterSine(amplitude_constDouble
+        , frequencyHz_double
+        , timeStep_constDouble
+        , theta_constDouble) {
+        const quarterPeriod_constDouble = 1 / (4 * frequencyHz_double);
+        return amplitude_constDouble * Math.sin(2 * PI_HiRes * Math.fmod(Math.abs(timeStep_constDouble), quarterPeriod_constDouble) + theta_constDouble);
+    }
+
+    /**
+    @brief Generates a Half-Sine wave.
+    @param amplitude_constDouble: The amplitude of the oscillator signal.
+    @param frequencyHz_double: The frequency of the oscillator signal.
+    @param timeStep_constDouble: The time-step (t) at which the oscillator is to be evaluated.
+    @param theta_constDouble: The phase of the oscillator signal.
+    @return double (The oscillator signal at time-step, t). */
+    static halfSine(amplitude_constDouble
+        , frequencyHz_double
+        , timeStep_constDouble
+        , theta_constDouble) {
+        const halfPeriod_constDouble = 1 / (2 * frequencyHz_double);
+        return amplitude_constDouble * Math.sin(2 * PI_HiRes * Math.fmod(Math.abs(timeStep_constDouble), halfPeriod_constDouble) + theta_constDouble);
+    }
+
+    /**
+    @brief Generate a white (Gaussian) noise signal.
+    @param amplitude_constDouble
+    @return double * /
+    double whiteGaussianNoise(amplitude_constDouble) {
+        static std::mt19937 generator; // Random number generator
+        std::normal_distribution<double> distribution(0.0, amplitude_constDouble); // Normal distribution with mean 0 and standard deviation amplitude
+
+        return distribution(generator);
+    }*/
+
+    /**
+     * Generates white Gaussian noise.
+     * @param {number} amplitude_constDouble - Standard deviation of the normal distribution.
+     * @returns {number} A random number following a Gaussian distribution.*/
+    static whiteGaussianNoise(amplitude_constDouble) {
+        const epsilon = 0.0001; //1e-10; // A small positive constant to prevent u or v from being zero
+        
+        let u = Math.random();
+        let v = Math.random();
+
+        // Ensure u and v are not zero by adding a small constant
+        //   Converting [0,1) to (0,1)
+        u = (u === 0) ? epsilon : u;
+        v = (v === 0) ? epsilon : v;
+
+        // Performing the Box-Muller transform
+        let z = Math.sqrt(-2.0 * Math.log(u)) * Math.cos(2.0 * Math.PI * v);
+
+        return z * amplitude_constDouble;
+    }
+
+    static brownNoiseValue_double = 0;
+    static lastBrownNoiseValue_double = 0;
+    static brownNoiseIncrement_double = 0;
+    static brownNoiseDecay_double= 0;
+    /**
+    @brief Generate a brown noise signal.
+    @param amplitude_constDouble: The amplitude of the oscillator signal.
+    @param frequencyHz_double: The frequency of the oscillator signal.
+    @param timeStep_constDouble: The time-step (t) at which the oscillator is to be evaluated.
+    @return double */
+    static brownNoise(amplitude_constDouble
+        , frequencyHz_double
+        , timeStep_constDouble) {
+
+        if (FWaveform.brownNoiseIncrement_double == 0.0) {
+            FWaveform.brownNoiseIncrement_double = 1.0 / (frequencyHz_double * 0.1);
+            FWaveform.brownNoiseDecay_double = Math.exp(-1.0 / (frequencyHz_double * 0.1));
+        }
+
+        FWaveform.brownNoiseValue_double = (FWaveform.brownNoiseValue_double + FWaveform.brownNoiseIncrement_double * (2.0 * (Math.random() / this.RAND_MAX) - 1.0)) * FWaveform.brownNoiseDecay_double;
+        return amplitude_constDouble * (FWaveform.brownNoiseValue_double - FWaveform.lastBrownNoiseValue_double);
+    };
+
+    /**
+    @brief Generate a pink noise signal.
+    @param amplitude_constDouble: The amplitude of the oscillator signal.
+    @param frequencyHz_double: The frequency of the oscillator signal.
+    @param timeStep_constDouble: The time-step (t) at which the oscillator is to be evaluated.
+    @return double * /
+    pinkNoise(amplitude_constDouble
+        , frequencyHz_double
+        , timeStep_constDouble) {
+        static double pinkNoiseValue_double {};
+        static double lastPinkNoiseValue_double {};
+        static double pinkNoiseIncrement_double {};
+        static double pinkNoiseDecay_double {};
+
+        if (pinkNoiseIncrement_double == 0.0) {
+            pinkNoiseIncrement_double = 1.0 / (frequencyHz_double * 0.1);
+            pinkNoiseDecay_double = Math.exp(-1.0 / (frequencyHz_double * 0.1));
+        }
+
+        pinkNoiseValue_double = (pinkNoiseValue_double + pinkNoiseIncrement_double * (2.0 * ((double)rand() / (double)RAND_MAX) - 1.0)) * pinkNoiseDecay_double;
+        return amplitude_constDouble * (pinkNoiseValue_double - lastPinkNoiseValue_double);
+    }*/
+
+    static pinkNoiseValue = 0;
+    static lastPinkNoiseValue = 0;
+    static pinkNoiseIncrement = 0;
+    static pinkNoiseDecay = 0;
+
+    /**
+    @brief Generates pink noise.
+    @details Generates pink noise.
+    @param {number} amplitude - The amplitude of the oscillator signal.
+    @param {number} frequencyHz - The frequency of the oscillator signal in Hertz.
+    @param {number} nextFrame - The time-step at which the oscillator is to be evaluated.
+    @return {number} The generated pink noise value.*/
+    static pinkNoise(amplitude, frequencyHz) {
+        if (FWaveform.pinkNoiseIncrement === 0) {
+            FWaveform.pinkNoiseIncrement = 1.0 / (frequencyHz * 0.1);
+            FWaveform.pinkNoiseDecay = Math.exp(-1.0 / (frequencyHz * 0.1));
+        }
+
+        // Generating a random number between -1 and 1
+        const randomFactor = 2.0 * Math.random() - 1.0;
+
+        FWaveform.pinkNoiseValue = (FWaveform.pinkNoiseValue + FWaveform.pinkNoiseIncrement * randomFactor) * FWaveform.pinkNoiseDecay;
+        const retPinkNoiseValue = amplitude * (FWaveform.pinkNoiseValue - FWaveform.lastPinkNoiseValue);
+
+        FWaveform.lastPinkNoiseValue = FWaveform.pinkNoiseValue;
+
+        return retPinkNoiseValue;
+    }
+
+    static blueNoiseValue_double = 0;
+    static lastBlueNoiseValue_double = 0;
+    static blueNoiseIncrement_double = 0;
+    static blueNoiseDecay_double = 0;
+
+    /**
+    @brief Generate a blue noise signal.
+    @param amplitude_constDouble: The amplitude of the oscillator signal.
+    @param frequencyHz_double: The frequency of the oscillator signal.
+    @param timeStep_constDouble: The time-step (t) at which the oscillator is to be evaluated.
+    @return double */
+    static blueNoise(amplitude_constDouble
+        , frequencyHz_double
+        , timeStep_constDouble) {
+
+        if (FWaveform.blueNoiseIncrement_double == 0.0) {
+            FWaveform.blueNoiseIncrement_double = 1.0 / (frequencyHz_double * 0.1);
+            FWaveform.blueNoiseDecay_double = Math.exp(-1.0 / (frequencyHz_double * 0.1));
+        }
+
+        FWaveform.blueNoiseValue_double = (FWaveform.blueNoiseValue_double + FWaveform.blueNoiseIncrement_double * (2.0 * (Math.random() / RAND_MAX) - 1.0)) * FWaveform.blueNoiseDecay_double;
+        return amplitude_constDouble * (FWaveform.blueNoiseValue_double - FWaveform.lastBlueNoiseValue_double);
+    }
+
+    /**
+    @brief Generate a purple (violet) noise signal.
+    @return double * /
+    static purpleVioletNoise() {
+        double newWhite = dist(eng);  // Generate new white noise sample
+        double violet = newWhite - lastWhite; // Differentiate to get violet noise
+        lastWhite = newWhite; // Update the last white noise sample
+        return violet;
+    }*/
+
+    static lastWhite = 0;
+
+    /**
+    @brief Generate a purple (violet) noise signal.
+    @return double */
+    static purpleVioletNoise() {
+        // Generate new white noise sample
+        // Math.random() generates a value between 0 and 1, so we adjust it to get a range similar to a standard normal distribution
+        const newWhite = (Math.random() * 2 - 1); 
+
+        // Differentiate to get violet noise
+        const violet = newWhite - FWaveform.lastWhite;
+
+        // Update the last white noise sample
+        FWaveform.lastWhite = newWhite;
+
+        return violet;
+    }
+} // end of FWaveform
+
+/**
+@brief linear spline (interpolation) function.
+@details linear spline (interpolation) function.
+@param formant - The formant object.
+@param the_interpolation_frame - The frame to interpolate.
+@param audio_component - The audio component to interpolate (eg. 'amplitude' or 'frequency').
+@returns point */
 function linear_spline_interpolation (formant,the_interpolation_frame,audio_component)
 {
     if (formant.length == 0 )
@@ -1105,8 +1337,16 @@ function linear_spline_interpolation (formant,the_interpolation_frame,audio_comp
     }
 
     throw ("runtime_error: unspecfied linear spline interpolation error.");
-}
+} // end of linear_spline_interpolation
 
+/**
+ * @brief Bezier spline (interpolation) function.
+ * @details Bezier spline (interpolation) function.
+ * @param formant - The formant object.
+ * @param the_interpolation_frame - The frame to interpolate.
+ * @param audio_component - The audio component to interpolate (eg. 'amplitude' or 'frequency').
+ * @returns point
+ */
 function bezier_spline_interpolation (formant,the_interpolation_frame,audio_component)
 {
     if (formant.length < 4 || the_interpolation_frame > 1)
@@ -1274,13 +1514,6 @@ function setInt24(view, offset, value) {
     this.setUint16(offset + 1, value & 0x00FFFF);
 }
 
-/*
-function setInt32(view, offset, value) {
-    this.setUint8(offset, (value & 0xFF0000) >> 16);
-    this.setUint16(offset + 1, value & 0x00FFFF);
-}
-*/
-
 function setInt64(view, offset, value) {
     /* 64-bit integers cannot natively be represented in (53-bit) javascript, see BigInt */
     // Check if the environment supports BigInt
@@ -1304,45 +1537,69 @@ function setInt64(view, offset, value) {
     this.setUint32(offset + 4, Number(upperPart), true);
 }
 
-function bufferToWave(buffer) {
-    let numberOfChannels = buffer.length;
-    let sampleRate = buffer[0].sampleRate;
-    let frameLength = buffer[0].length;
-    let byteOffset = 2; // 16-bit data, 2 bytes (default)
-
-    switch (buffer[0].bitsPerSample) {
-    case 24:
-        byteOffset = 3; // 24-bit data, 3 bytes
-        break;
-    case 32:
-        byteOffset = 4; // 32-bit data, 4 bytes
-        break;
-    case 64:
-        byteOffset = 8; // 64-bit data, 8 bytes
-        break;
+// Helper functions to write strings and 24-bit integers
+function writeString(view, offset, string) {
+    for (let i = 0; i < string.length; i++) {
+        view.setUint8(offset + i, string.charCodeAt(i));
     }
+}
+
+function bufferToWave(buffer) {
+    const numberOfChannels = buffer.length;
+    const sampleRate = buffer[0].sampleRate;
+    const frameLength = buffer[0].length;
+    const bitsPerSample = buffer[0].bitsPerSample;
+    const byteOffset = buffer[0].bitsPerSample / 8; // Calculate byte offset based on bits per sample
+
+    const blockAlign = numberOfChannels * byteOffset;
+
+    const dataChunkSize = frameLength * numberOfChannels * byteOffset;
+    const byteRate = sampleRate * blockAlign;
 
     // Create a buffer to hold the WAV file data
-    let wavBuffer = new ArrayBuffer(44 + length * numberOfChannels * byteOffset);
+    let wavBuffer = new ArrayBuffer(44 + dataChunkSize);
+
+    // Write WAV container headers; (code to write the 'RIFF', 'WAVE', 'fmt ', 'data' chunk headers, etc.)
     let view = new DataView(wavBuffer);
 
-    // Write WAV container headers
-    // ... (code to write the 'RIFF', 'WAVE', 'fmt ', 'data' chunk headers, etc.)
+    // Writing the 'RIFF' chunk descriptor
+    writeString(view, 0, 'RIFF');
+    view.setUint32(4, 36 + dataChunkSize, true); // File size - 8 bytes
+    writeString(view, 8, 'WAVE');
+
+    // Writing the 'fmt ' sub-chunk
+    writeString(view, 12, 'fmt ');
+    view.setUint32(16, 16, true); // Sub-chunk size (16 for PCM)
+    view.setUint16(20, 1, true); // Audio format (1 for PCM)
+    view.setUint16(22, numberOfChannels, true);
+    view.setUint32(24, sampleRate, true);
+    view.setUint32(28, byteRate, true);
+    view.setUint16(32, blockAlign, true);
+    view.setUint16(34, bitsPerSample, true);
+
+    // Writing the 'data' sub-chunk
+    writeString(view, 36, 'data');
+    view.setUint32(40, dataChunkSize, true);
 
     // Write PCM data
     let pcm_wav_header = 44;
 
     view.setInt24 = setInt24;
-    //view.setInt32 = setInt32;
     view.setInt64 = setInt64;
 
     view.setIntN = view.setInt16;
     switch (buffer[0].bitsPerSample) {
+        case 8:
+            view.setIntN = view.setInt8;
+            break;
+        case 16:
+            view.setIntN = view.setInt16;
+            break;
         case 24:
             view.setIntN = view.setInt24;
             break;
         case 32:
-            //view.setIntN = view.setInt32;
+            view.setIntN = view.setInt32;
             break;
         case 64:
             view.setIntN = view.setInt64;
