@@ -24,7 +24,7 @@
    - The UE Formant Curve Editor should support (temporary) Session Saves and (directlibrary) SaveAs functionality (eg. Sara-0001).
 
 2. **Signal Processing**:
-   - Carve the F0 waveforms out of Gaussian noise mask filter.
+   - Carve the F0 waveforms out of Gaussian noise mask (filter).
    - Employ state-machine for ADSR envelope mode switching to prevent signal discontinuities.
    - Use distinct sine audio chords to simulate ADSR characteristics in lieu of formant signals.
    - Compute delta and delta-delta tangent (curve) features near transition points for smooth phone transitions.
@@ -34,6 +34,7 @@ every segment of generated speech requires a parenthetical caption (ie. a wryly)
 The system must also be capable of producing the tone of speech required in the caption.
    - Lock the noise color band bandwidths to faithfully follow the contours of the formant frequencies.
    - Add additional Phrase, Sentence, and Paragraph-level oscillators to better randomize effects of prosody and emotion.
+   - Multiple contiguous ARPABETPhone Blueprints can be selected and their formant (audio sample/prosody) curves edited, simultaneously.
 
 ### Machine Learning and Data Analysis
 1. **GAN Training for Spectrogram Generation**:
