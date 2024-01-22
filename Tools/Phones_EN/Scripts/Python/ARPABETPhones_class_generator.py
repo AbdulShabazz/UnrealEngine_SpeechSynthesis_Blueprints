@@ -1,3 +1,4 @@
+''' This script generates the ARPABETPhones.h file, which contains the'''
 import os
 import arpabet_phoneme_library as apl
 import get_yes_or_no_confirmation as get_confirmation
@@ -27,21 +28,23 @@ for ph in apl.arpabet_phone_library:
 
     }};'''
 
-    for ph2 in apl.arpabet_phone_library:
+    # for ph2 in apl.arpabet_phone_library:
 
-        transition_class = f'''
+    #    transition_class = f'''
 
-    class ARPABETPhone_{ph}_to_{ph2} : public FPhone
-    {{
-    public:
+    # class ARPABETPhone_{ph}_to_{ph2} : public FPhone
+    # {{
+    # public:
 
-    }};'''
+    # }};'''
 
-        foundation_class += transition_class
+    #    foundation_class += transition_class
 
     if updateFilesFlag == "Ask":
         if os.path.exists("ARPABETPhones.h"):
-            if get_confirmation.get_yes_or_no_confirmation("ARPABETPhones.h file already exists. Do you want to overwrite it? (yes/no)") == "y":
+            if get_confirmation.get_yes_or_no_confirmation("\
+                    ARPABETPhones.h file already exists. \
+                    Do you want to overwrite it? (yes/no)") == "y":
                 updateFilesFlag = "True"
             else:
                 updateFilesFlag = "False"
