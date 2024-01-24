@@ -1,4 +1,42 @@
 
+
+
+view.setInt24 = setInt24;
+view.setInt64 = setInt64;
+
+function writeInt24(view, offset, value) {
+    view.setInt8(offset, value & 0xFF);
+    view.setInt16(offset + 1, value, value);
+    return offset + 3;
+}
+
+// Writing the 'RIFF' chunk descriptor
+current_byte_offset = writeUint8(view, current_byte_offset, 0x52, littleEndianFlag);
+current_byte_offset = writeUint8(view, current_byte_offset, 0x49, littleEndianFlag);
+current_byte_offset = writeUint8(view, current_byte_offset, 0x46, littleEndianFlag);
+current_byte_offset = writeUint8(view, current_byte_offset, 0x46, littleEndianFlag);
+
+function writeString(view, offset, string) {
+    // Encode the string as UTF-8
+    const textEncoder = new TextEncoder();
+    const encoded = textEncoder.encode(string);
+
+    // Write each byte of the encoded string to the DataView
+    for (let i = 0; i < encoded.length; ++i) {
+        view.setUint8(offset + i, encoded[i]);
+    }
+
+    // Return the new offset, adjusted for the length of the encoded string
+    return offset + encoded.length;
+}
+
+function writeString(view, offset, string) {
+    for (let i = 0; i < string.length; ++i) {
+        view.setUint8(offset + i, string.charCodeAt(i));
+    }
+    return offset + string.length;
+}
+
 switch (buffer[0].bitsPerSample) {
     case 24:
         byteOffset = 3; // 24-bit data, 3 bytes
