@@ -1,5 +1,316 @@
 
 
+    // Write the 'RIFF' audio content
+    let nextChunk = 0;
+    for (let i = 0; i < totalFrames; i++) {
+        for (let channel = 0; channel < numberOfChannels; channel++) {
+            let sample = Math.max(-maxIntN, Math.min(maxIntN, buffer[channel][i])); // clamp
+            writeChunk(view, pcm_wav_header + nextChunk, sample < 0 ? sample & 0x8000 : sample & 0x7FFF, littleEndianFlag);
+            nextChunk += byteOffset;
+        }
+    }
+
+    // Write the PCM chunk data
+    let writeChunk = writeInt8;
+    switch (buffer[0].bitsPerSample) {
+        case 8:
+            writeChunk = writeInt8;
+            break;
+        case 16:
+            writeChunk = writeInt16;
+            break;
+        case 24:
+            writeChunk = writeInt24;
+            break;
+        case 32:
+            writeChunk = writeInt32;
+            break;
+        case 64:
+            writeChunk = writeInt64;
+            break;
+    }
+
+audioContext = new AudioContext();
+gainNode = audioContext.createGain();
+gainNode.gain.value = 1.00; //  range [0,2] step size 0.01
+
+let quarterPeriod = new Array();
+let secondQuarter = new Array();
+let thirdQuarter = new Array();
+let fourthQuarter = new Array();
+let fullSinusoidal = new Array();
+/*
+const stack = new Array(); // Initialize a stack
+let fullPeriod = sampleRate / frequency; // Number of samples in one cycle
+
+let halfPeriod = fullPeriod / 2; // Number of samples in one half-cycle
+let quarterPeriod = fullPeriod / 4; // Number of samples in one half-cycle
+*/
+
+/*
+NOTE: The following strategy was abandoned due to the false assumption peak values and zero-crossings are always captured as output values to the Sine function.
+To create perfect sinusoidals involves two steps: 
+
+First, values are cached to a stack object until the signal's quarter-period is reached, 
+where it achieves its peak value.
+
+Second, values are removed from the stack (in L.I.F.O. order) for the second quarter of the half-cycle, 
+minding the correct polarity of the values. A critical aspect of this method is that the zero-crossing 
+point at the cycle's half-period should align with an integer multiple of the entire cycle length. 
+This alignment is necessary because it maintains the frequency without needing to adjust it or resort to dithering methods.
+
+To ensure the halfPeriod results in an integer value without altering the frequency, sinc interpolation is also utilized. 
+This technique accurately determines the exact point of the half-period's zero-crossing 
+and its corresponding value on the y-axis. Although this method is computationally expensive, 
+it is favored for its precision.
+* /
+
+// Use the queued values for audio processing
+let cacheFullFlag = false;
+for (let i = 0; i < I; ++i) {
+    // Generate a half-period of the waveform
+    const time = i / sampleRate;
+    const value = Math.sin(2 * Math.PI * frequency * time) * amplitude;
+    if (i > 0 && !cacheFullFlag) {
+        const I = quarterPeriod.length-1;
+        const lastValue = quarterPeriod[I];
+        if (value > lastValue) {
+            quarterPeriod.push(value);
+        } else {
+            cacheFullFlag = true;// Generate other quarters
+            const secondQuarter = quarterPeriod.slice(1).reverse();
+            const thirdQuarter = quarterPeriod.slice(1).map(x => -x);
+            const fourthQuarter = thirdQuarter.slice(1).reverse();
+
+            // Full sinusoidal wave array
+            fullSinusoidal = [...quarterPeriod, ...secondQuarter, ...thirdQuarter, ...fourthQuarter];
+            break;
+        }
+    } else if (!cacheFullFlag) {
+        quarterPeriod.push(0);
+    } else {
+        break;
+    }
+}
+
+// State machine to cycle through sinusoidal wave
+class SinusoidalStateMachine {
+    constructor() {
+        this.state = 0;
+    }
+
+    nextValue() {
+        const value = fullSinusoidal[this.state];
+        this.state = (this.state + 1) % fullSinusoidal.length;
+        return value;
+    }
+}
+
+const sinusoidalMachine = new SinusoidalStateMachine();
+
+for (let i = 0; i < I; ++i) {
+    // offset channel samples by 1 for a perceived stereo signal
+    channelDataLeft[i] = sinusoidalMachine.nextValue();
+    channelDataRight[i] = (i > 0) ? channelDataLeft[i-1] : 0;
+}
+
+*/
+
+/*
+    /*
+    The creation of perfect sinusoidal waveforms involves two main steps: Firstly, 
+    values are added to a stack until the midpoint of the waveform's cycle, where it crosses zero. 
+    Then, these values are removed from the stack for the second half of the cycle, 
+    minding the correct polarity of the values. A critical aspect of this method is that the zero-crossing 
+    point at the cycle's half-period should align with an integer multiple of the entire cycle length. 
+    This alignment is necessary because it maintains the frequency without needing to adjust it or resort to dithering, 
+    or similar methods.
+
+    To ensure halfPeriod results in an integer value without altering the frequency, sinc interpolation is utilized. 
+    This technique accurately determines the exact point of the half-period's zero-crossing 
+    and its corresponding value on the y-axis. Although this method is computationally expensive, 
+    it is favored for its precision.
+    * /
+
+    // Use the queued values for audio processing
+    for (let i = 0; i < I; ++i) {
+        // Generate a half-period of the waveform
+        const time = i / sampleRate;
+        const value = Math.sin(2 * Math.PI * frequency * time) * amplitude;
+        if (i < halfPeriod) {
+            stack.push(value);
+        } else if (i === halfPeriod) {
+            // Determine the exact zero-crossing point
+            //const zeroCrossing = sinc_interpolation([i - 1, i], [stack[i - 1], value], halfPeriod, frequency);
+            const zeroCrossing = sinc_interpolation(stack, [stack[0], value], halfPeriod, frequency);
+            stack.push(zeroCrossing);
+        }
+
+        const idx = i % fullPeriod;
+        if (idx < halfPeriod) {
+            // Process and apply to channels
+            channelDataLeft[i] = stack[idx];
+        } else {
+            const reverseIndex =  fullPeriod - idx + 1;
+            channelDataLeft[i] = -stack[reverseIndex]; // Reverse with polarity change
+        }
+        channelDataRight[i] = (i > 0) ? channelDataLeft[i-1] : 0; 
+    }
+
+    */
+
+function writeInt64(view, offset, value, isLittleEndian) {
+    if (isLittleEndian) {
+        view.setInt32(offset, (value >> 32) & 0xFFFFFFFF, true);
+        view.setInt32(offset + 4, (value) & 0xFFFFFFFF, true);
+    } else {
+        view.setInt32(offset, (value) & 0xFFFFFFFF, false);
+        view.setInt32(offset + 4, (value >> 32) & 0xFFFFFFFF, false);
+    }
+    return offset + 8;
+}
+
+    // Generate one cycle of the waveform
+    for (let i = 0; i < halfPeriod; ++i) {
+        const time = i / sampleRate;
+        const value = Math.sin(2 * Math.PI * frequency * time) * amplitude;
+        stack.push(value);
+    }
+
+class Stack extends Array {
+    constructor() {
+        super(); // Calls the Array constructor
+        this._idx = 0; // Index of the top element in the stack
+        this.items = []; // Array to store queue elements
+
+        /** 
+        // Example usage
+        const queue = new Queue();
+        queue.queue(1); // Adding element to the queue
+        queue.queue(2);
+        console.log(queue.dequeue()); // Removes 1 from the queue
+        console.log(queue.front()); // Returns 2, the current front of the queue
+        console.log(queue.size()); // Returns the size of the queue
+        console.log(queue.printQueue()); // Prints all elements in the queue */
+    }
+
+    // Method to add an element to the queue
+    queue(element) {
+        this.items.push(element);
+    }
+
+    // Method to remove and return the element at the front of the queue
+    dequeue() {
+        if (this.isEmpty()) {
+            return "Queue is empty";
+        }
+        return this.items.shift();
+    }
+
+    // Helper method to check if the queue is empty
+    isEmpty() {
+        return this.items.length === 0;
+    }
+
+    // Helper method to view the front element of the queue
+    front() {
+        if (this.isEmpty()) {
+            return "Queue is empty";
+        }
+        return this.items[0];
+    }
+
+    // Helper method to return the size of the queue
+    size() {
+        return this.items.length;
+    }
+
+    // Helper method to print all elements in the queue
+    printQueue() {
+        let str = "";
+        for (let i = 0; i < this.items.length; i++) {
+            str += this.items[i] + " ";
+        }
+        return str.trim();
+    }
+}
+
+class Queue {
+    constructor() {
+        this.items = []; // Array to store queue elements
+    }
+
+    // Method to add an element to the queue
+    queue(element) {
+        this.items.push(element);
+    }
+
+    // Method to remove and return the element at the front of the queue
+    dequeue() {
+        if (this.isEmpty()) {
+            return "Queue is empty";
+        }
+        return this.items.shift();
+    }
+
+    // Helper method to check if the queue is empty
+    isEmpty() {
+        return this.items.length === 0;
+    }
+
+    // Helper method to view the front element of the queue
+    front() {
+        if (this.isEmpty()) {
+            return "Queue is empty";
+        }
+        return this.items[0];
+    }
+
+    // Helper method to return the size of the queue
+    size() {
+        return this.items.length;
+    }
+
+    // Helper method to print all elements in the queue
+    printQueue() {
+        let str = "";
+        for (let i = 0; i < this.items.length; i++) {
+            str += this.items[i] + " ";
+        }
+        return str.trim();
+    }
+}
+
+// Example usage
+const queue = new Queue();
+queue.queue(1); // Adding element to the queue
+queue.queue(2);
+console.log(queue.dequeue()); // Removes 1 from the queue
+console.log(queue.front()); // Returns 2, the current front of the queue
+console.log(queue.size()); // Returns the size of the queue
+console.log(queue.printQueue()); // Prints all elements in the queue
+
+
+const valueNormalizationFactor = 2 ** (bitsPerSample - 1) - 1; // Scale for 24-bit audio
+
+let writeChunk = writeFloat8;
+switch (buffer[0].bitsPerSample) {
+    case 8:
+        writeChunk = writeFloat8;
+        break;
+    case 16:
+        writeChunk = writeFloat16;
+        break;
+    case 24:
+        writeChunk = writeFloat24;
+        break;
+    case 32:
+        writeChunk = writeFloat32;
+        break;
+    case 64:
+        writeChunk = writeFloat64;
+        break;
+}
 
 view.setInt24 = setInt24;
 view.setInt64 = setInt64;
