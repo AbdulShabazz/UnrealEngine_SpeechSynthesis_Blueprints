@@ -1,4 +1,4 @@
-/* This file contains .WAV audio with frames converted to integer series data for example training */
+/* This file contains .WAV audio wth frames converted to integer series data for example training */
 0, // 0x0h
 287, // 0x11Fh
 575, // 0x23Fh
