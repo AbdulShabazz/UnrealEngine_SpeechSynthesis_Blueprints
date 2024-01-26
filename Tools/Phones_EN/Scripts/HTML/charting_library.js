@@ -1100,7 +1100,7 @@ class FWaveform extends Object {
     @param timeStep_constDouble: The time-step (t) at which the oscillator is to be evaluated.
     @param theta_constDouble: The phase of the oscillator signal.
     @return double ( The oscillator signal at time-step t).*/
-    static sine(amplitude_constDouble
+    sine(amplitude_constDouble
         , frequencyHz_double
         , timeStep_constDouble
         , theta_constDouble) {
@@ -1115,7 +1115,7 @@ class FWaveform extends Object {
     @param theta_constDouble: The phase of the oscillator signal.
     @param quarterPeriod_constDouble: The quarter-period of the oscillator signal.
     @return double ( The oscillator signal at time-step t).*/
-    static quarterSine(amplitude_constDouble
+    quarterSine(amplitude_constDouble
         , frequencyHz_double
         , timeStep_constDouble
         , theta_constDouble) {
@@ -1130,7 +1130,7 @@ class FWaveform extends Object {
     @param timeStep_constDouble: The time-step (t) at which the oscillator is to be evaluated.
     @param theta_constDouble: The phase of the oscillator signal.
     @return double (The oscillator signal at time-step, t). */
-    static halfSine(amplitude_constDouble
+    halfSine(amplitude_constDouble
         , frequencyHz_double
         , timeStep_constDouble
         , theta_constDouble) {
@@ -1150,10 +1150,10 @@ class FWaveform extends Object {
     }*/
 
     /**
-     * Generates white Gaussian noise.
-     * @param {number} amplitude_constDouble - Standard deviation of the normal distribution.
-     * @returns {number} A random number following a Gaussian distribution.*/
-    static whiteGaussianNoise(amplitude_constDouble) {
+    Generates white Gaussian noise.
+    @param {number} amplitude_constDouble - Standard deviation of the normal distribution.
+    @returns {number} A random number following a Gaussian distribution.*/
+    whiteGaussianNoise(amplitude_constDouble) {
         const epsilon = 0.0001; //1e-10; // A small positive constant to prevent u or v from being zero
         
         let u = Math.random();
@@ -1180,7 +1180,7 @@ class FWaveform extends Object {
     @param frequencyHz_double: The frequency of the oscillator signal.
     @param timeStep_constDouble: The time-step (t) at which the oscillator is to be evaluated.
     @return double */
-    static brownNoise(amplitude_constDouble
+    brownNoise(amplitude_constDouble
         , frequencyHz_double
         , timeStep_constDouble) {
 
@@ -1228,7 +1228,7 @@ class FWaveform extends Object {
     @param {number} frequencyHz - The frequency of the oscillator signal in Hertz.
     @param {number} nextFrame - The time-step at which the oscillator is to be evaluated.
     @return {number} The generated pink noise value.*/
-    static pinkNoise(amplitude, frequencyHz) {
+    pinkNoise(amplitude, frequencyHz) {
         if (FWaveform.pinkNoiseIncrement === 0) {
             FWaveform.pinkNoiseIncrement = 1.0 / (frequencyHz * 0.1);
             FWaveform.pinkNoiseDecay = Math.exp(-1.0 / (frequencyHz * 0.1));
@@ -1256,7 +1256,7 @@ class FWaveform extends Object {
     @param frequencyHz_double: The frequency of the oscillator signal.
     @param timeStep_constDouble: The time-step (t) at which the oscillator is to be evaluated.
     @return double */
-    static blueNoise(amplitude_constDouble
+    blueNoise(amplitude_constDouble
         , frequencyHz_double
         , timeStep_constDouble) {
 
@@ -1284,7 +1284,7 @@ class FWaveform extends Object {
     /**
     @brief Generate a purple (violet) noise signal.
     @return double */
-    static purpleVioletNoise() {
+    purpleVioletNoise() {
         // Generate new white noise sample
         // Math.random() generates a value between 0 and 1, so we adjust it to get a range similar to a standard normal distribution
         const newWhite = (Math.random() * 2 - 1); 
@@ -1377,6 +1377,8 @@ function generateComplexSignal(shapes_oscilatorParamsVec
     let frame_idx = 0;
     let audioFrames_float64Vec = [];
 
+    let waveform = new FWaveform();
+
     for (const shape_oscillatorParams of shapes_oscilatorParamsVec) {
         var outShape = 0;
 
@@ -1399,97 +1401,97 @@ function generateComplexSignal(shapes_oscilatorParamsVec
                 
                 if (has_shape(shape_oscillatorParams.shape
                     , WaveShape.Sine_enum))
-                    outShape += sine(db
+                    outShape += waveform.sine(db
                         , hz
                         , frame_idx
                         , shape_oscillatorParams.theta); 
 
                 if (has_shape(shape_oscillatorParams.shape
                     , WaveShape.Cosine_enum))
-                    outShape += cosine(db
+                    outShape += waveform.cosine(db
                         , hz
                         , frame_idx
                         , shape_oscillatorParams.theta);
 
                 if (has_shape(shape_oscillatorParams.shape
                     , WaveShape.QuarterSine_enum))
-                    outShape += quarterSine(db
+                    outShape += waveform.quarterSine(db
                         , hz
                         , frame_idx
                         , shape_oscillatorParams.theta);
 
                 if (has_shape(shape_oscillatorParams.shape
                     , WaveShape.HalfSine_enum))
-                    outShape += halfSine(db
+                    outShape += waveform.halfSine(db
                         , hz
                         , frame_idx
                         , shape_oscillatorParams.theta);
 
                 if (has_shape(shape_oscillatorParams.shape
                     , WaveShape.Triangle_enum))
-                    outShape += Triangle(db
+                    outShape += waveform.Triangle(db
                         , hz
                         , frame_idx);
 
                 if (has_shape(shape_oscillatorParams.shape
                     , WaveShape.Square_enum))
-                    outShape += Square(db
+                    outShape += waveform.Square(db
                         , hz
                         , frame_idx);
 
                 if (has_shape(shape_oscillatorParams.shape
                     , WaveShape.ForwardSawtooth_enum))
-                    outShape += forwardSaw(db
+                    outShape += waveform.forwardSaw(db
                         , hz
                         , frame_idx);
 
                 if (has_shape(shape_oscillatorParams.shape
                     , WaveShape.ReverseSawtooth_enum))
-                    outShape += ReverseSaw(db
+                    outShape += waveform.ReverseSaw(db
                         , hz
                         , frame_idx);
 
                 if (has_shape(shape_oscillatorParams.shape
                     , WaveShape.WhiteNoise_enum))
-                    outShape += whiteNoise(db);
+                    outShape += waveform.whiteNoise(db);
 
                 if (has_shape(shape_oscillatorParams.shape
                     , WaveShape.BrownNoise_enum))
-                    outShape += brownNoise(db
+                    outShape += waveform.brownNoise(db
                         , hz
                         , frame_idx);
 
                 if (has_shape(shape_oscillatorParams.shape
                     , WaveShape.PinkNoise_enum))
-                    outShape += pinkNoise(db
+                    outShape += waveform.pinkNoise(db
                         , hz
                         , frame_idx);
 
                 if (has_shape(shape_oscillatorParams.shape
                     , WaveShape.YellowNoise_enum))
-                    outShape += yellowNoise(db
+                    outShape += waveform.yellowNoise(db
                         , hz
                         , frame_idx);
 
                 if (has_shape(shape_oscillatorParams.shape
                     , WaveShape.BlueNoise_enum))
-                    outShape += blueNoise(db
+                    outShape += waveform.blueNoise(db
                         , hz
                         , frame_idx);
 
                 if (has_shape(shape_oscillatorParams.shape
                     , WaveShape.GreyNoise_enum))
-                    outShape += greyNoise(db
+                    outShape += waveform.greyNoise(db
                         , hz
                         , frame_idx);
 
                 if (has_shape(shape_oscillatorParams.shape
                     , WaveShape.WhiteGaussianNoise_enum))
-                    outShape += whiteGaussianNoise(db);
+                    outShape += waveform.whiteGaussianNoise(db);
 
                 if (has_shape(shape_oscillatorParams.shape
                     , WaveShape.PurpleVioletNoise_enum))
-                    outShape += purpleVioletNoise();
+                    outShape += waveform.purpleVioletNoise();
 
                 if (outShape == startingShape)
                     throw ("invalid_argument to WaveShape generator - Unexpected or Unknown WaveShape type.");
@@ -1504,10 +1506,6 @@ function generateComplexSignal(shapes_oscilatorParamsVec
 
     return audioFrames_float64Vec;
 }; // End of generateComplexSignal()
-
-audioContext = new AudioContext();
-gainNode = audioContext.createGain();
-gainNode.gain.value = 1.00; //  range [0,2] step size 0.01
 
 function setInt24(view, offset, value) {
     this.setUint8(offset, (value & 0xFF0000) >> 16);
@@ -1537,84 +1535,265 @@ function setInt64(view, offset, value) {
     this.setUint32(offset + 4, Number(upperPart), true);
 }
 
-// Helper functions to write strings and 24-bit integers
+// Helper functions to write strings as 8-bit integers (bytes)
 function writeString(view, offset, string) {
-    for (let i = 0; i < string.length; i++) {
-        view.setUint8(offset + i, string.charCodeAt(i));
+    for (let i = 0; i < string.length; ++i) {
+        // Get the UTF-16 code unit for each character
+        const codeUnit = string.charCodeAt(i);
+
+        // Write the code unit to the DataView as a 16-bit integer
+        view.setUint16(offset + i, codeUnit, true); // using little-endian format
     }
+
+    // Return the new offset, which is the initial offset plus twice the string's length
+    return offset + string.length;
 }
 
+// Helper functions to write unsigned integers
+
+function writeUint8(view, offset, value, isLittleEndian) {
+    view.setUint8(offset, value, isLittleEndian);
+    return offset + 1;
+}
+
+function writeUint16(view, offset, value, isLittleEndian) {
+    view.setUint16(offset, value, isLittleEndian);
+    return offset + 2;
+}
+
+function writeUint24(view, offset, value, isLittleEndian) {
+    if (isLittleEndian) {
+        // Little-endian: Write LSB first
+        view.setInt8(offset, value & 0xFF);
+        view.setInt16(offset + 1, (value >> 8) & 0xFFFF, true); // true for little-endian
+    } else {
+        // Big-endian: Write MSB first
+        view.setInt16(offset, (value >> 8) & 0xFFFF, false); // false for big-endian
+        view.setInt8(offset + 2, value & 0xFF);
+    }
+    return offset + 3;
+}
+
+function writeUint32(view, offset, value, isLittleEndian) {
+    view.setUint32(offset, value, isLittleEndian);
+    return offset + 4;
+}
+
+function writeUint64(view, offset, value, isLittleEndian) {
+    if (isLittleEndian) {
+        view.setUint32(offset, (value >> 32) & 0xFFFFFFFF, true);
+        view.setUint32(offset + 4, (value) & 0xFFFFFFFF, true);
+    } else {
+        view.setUint32(offset, (value) & 0xFFFFFFFF, false);
+        view.setUint32(offset + 4, (value >> 32) & 0xFFFFFFFF, false);
+    }
+    return offset + 8;
+}
+
+// Helper functions to write signed integers
+
+function writeInt8(view, offset, value, isLittleEndian) {
+    view.setInt8(offset, value);
+    return offset + 1;
+}
+
+function writeInt16(view, offset, value, isLittleEndian) {
+    view.setInt16(offset, value, isLittleEndian);
+    return offset + 2;
+}
+
+function writeInt24(view, offset, value, isLittleEndian) {
+    if (isLittleEndian) {
+        // Little-endian: Write LSB first
+        view.setInt8(offset, value & 0xFF);
+        view.setInt16(offset + 1, (value >> 8) & 0xFFFF, true); // true for little-endian
+    } else {
+        // Big-endian: Write MSB first
+        view.setInt16(offset, (value >> 8) & 0xFFFF, false); // false for big-endian
+        view.setInt8(offset + 2, value & 0xFF);
+    }
+    return offset + 3;
+}
+
+function writeInt32(view, offset, value, isLittleEndian) {
+    view.setInt32(offset, value, isLittleEndian);
+    return offset + 4;
+}
+
+function writeInt64(view, offset, value, isLittleEndian) {
+    let high = 0;
+    let low = 0;
+
+    if (value >= 0) {
+        // Positive value
+        high = (value / Math.pow(2, 32)) >>> 0;
+        low = value >>> 0;
+    } else {
+        // Negative value
+        // Add 1 to the absolute value to avoid issues with the most negative number
+        value += 1;
+        low = (Math.abs(value) % Math.pow(2, 32)) >>> 0;
+        high = (Math.abs(value) / Math.pow(2, 32)) >>> 0;
+        
+        // Adjust for two's complement representation
+        low = (~low + 1) >>> 0;
+        high = ~high + (low === 0 ? 1 : 0);
+    }
+
+    if (isLittleEndian) {
+        view.setInt32(offset, low, true);
+        view.setInt32(offset + 4, high, true);
+    } else {
+        view.setInt32(offset, high, false);
+        view.setInt32(offset + 4, low, false);
+    }
+
+    return offset + 8;
+}
+
+// Helper functions to write floating-point numbers
+
+function writeFloat8(view, offset, value, isLittleEndian) {
+    if (isLittleEndian) {
+        view.setFloat32(offset, (value & 0xFF), true);
+    } else {
+        view.setFloat32(offset, (value & 0xFF000000), false);
+    }
+    return offset + 4;
+}
+
+function writeFloat16(view, offset, value, isLittleEndian) {
+    if (isLittleEndian) {
+        view.setFloat32(offset, (value & 0xFFFF), true);
+    } else {
+        view.setFloat32(offset, (value & 0xFFFF0000), false);
+    }
+    return offset + 4;
+}
+
+function writeFloat24(view, offset, value, isLittleEndian) {
+    if (isLittleEndian) {
+        view.setFloat32(offset, (value & 0xFFFFFF), true);
+    } else {
+        view.setFloat32(offset, (value & 0xFFFFFF00), false);
+    }
+    return offset + 4;
+}
+
+function writeFloat32(view, offset, value, isLittleEndian) {
+    view.setFloat32(offset, value, isLittleEndian);
+    return offset + 4;
+}
+
+function writeFloat64(view, offset, value, isLittleEndian) {
+    view.setFloat64(offset, value, isLittleEndian);
+    return offset + 8;
+}
+
+/** 
+@brief converts a buffer to WAV audio.
+@details Converts a buffer to WAV audio.
+@param buffer - The buffer to convert.
+@returns The WAV file as a Uint8Array.*/
 function bufferToWave(buffer) {
     const numberOfChannels = buffer.length;
     const sampleRate = buffer[0].sampleRate;
-    const frameLength = buffer[0].length;
+    const totalFrames = buffer[0].length;
     const bitsPerSample = buffer[0].bitsPerSample;
     const byteOffset = buffer[0].bitsPerSample / 8; // Calculate byte offset based on bits per sample
+    const maxIntN = Math.pow(2, bitsPerSample - 1) - 1; // 2^23 - 1 = 8_388_607; preserve the sign bit
 
     const blockAlign = numberOfChannels * byteOffset;
 
-    const dataChunkSize = frameLength * numberOfChannels * byteOffset;
+    const dataChunkSize = totalFrames * numberOfChannels * byteOffset;
     const byteRate = sampleRate * blockAlign;
+    const littleEndianFlag = true;
+    const pcm_header_offset = 44;
 
     // Create a buffer to hold the WAV file data
-    let wavBuffer = new ArrayBuffer(44 + dataChunkSize);
+    let wavBuffer = new ArrayBuffer(pcm_header_offset + dataChunkSize);
 
     // Write WAV container headers; (code to write the 'RIFF', 'WAVE', 'fmt ', 'data' chunk headers, etc.)
+    const pcm_wav_header = 44;
+    let current_byte_offset = 0;
     let view = new DataView(wavBuffer);
 
-    // Writing the 'RIFF' chunk descriptor
-    writeString(view, 0, 'RIFF');
-    view.setUint32(4, 36 + dataChunkSize, true); // File size - 8 bytes
-    writeString(view, 8, 'WAVE');
-
-    // Writing the 'fmt ' sub-chunk
-    writeString(view, 12, 'fmt ');
-    view.setUint32(16, 16, true); // Sub-chunk size (16 for PCM)
-    view.setUint16(20, 1, true); // Audio format (1 for PCM)
-    view.setUint16(22, numberOfChannels, true);
-    view.setUint32(24, sampleRate, true);
-    view.setUint32(28, byteRate, true);
-    view.setUint16(32, blockAlign, true);
-    view.setUint16(34, bitsPerSample, true);
-
-    // Writing the 'data' sub-chunk
-    writeString(view, 36, 'data');
-    view.setUint32(40, dataChunkSize, true);
-
-    // Write PCM data
-    let pcm_wav_header = 44;
-
-    view.setInt24 = setInt24;
-    view.setInt64 = setInt64;
-
-    view.setIntN = view.setInt16;
+    // Write the PCM chunk data
+    let writeChunk = writeInt8;
     switch (buffer[0].bitsPerSample) {
         case 8:
-            view.setIntN = view.setInt8;
+            writeChunk = writeInt8;
             break;
         case 16:
-            view.setIntN = view.setInt16;
+            writeChunk = writeInt16;
             break;
         case 24:
-            view.setIntN = view.setInt24;
+            writeChunk = writeInt24;
             break;
         case 32:
-            view.setIntN = view.setInt32;
+            writeChunk = writeInt32;
             break;
         case 64:
-            view.setIntN = view.setInt64;
+            writeChunk = writeInt64;
             break;
     }
 
-    for (let i = 0; i < frameLength; i++) {
+    // Write the 'RIFF' audio content
+    let nextChunk = 0;
+    for (let i = 0; i < totalFrames; i++) {
         for (let channel = 0; channel < numberOfChannels; channel++) {
-            let sample = Math.max(-1, Math.min(1, buffer[channel][i])); // clamp
-            view.setIntN(pcm_wav_header, sample < 0 ? sample * 0x8000 : sample * 0x7FFF, true);
-            pcm_wav_header += byteOffset;
+            let sample = Math.max(-maxIntN, Math.min(maxIntN, buffer[channel][i])); // clamp
+            writeChunk(view, pcm_wav_header + nextChunk, sample, littleEndianFlag);
+            nextChunk += byteOffset;
         }
     }
 
-    return wavBuffer;
+    // Writing the 'RIFF' chunk descriptor
+    current_byte_offset = writeString(view, current_byte_offset, 'RIFF$', littleEndianFlag);
+    //view.setUint32(4, 36 + dataChunkSize, true); // File size - 8 bytes
+    current_byte_offset = writeUint32(view, current_byte_offset, pcm_header_offset - current_byte_offset + dataChunkSize, littleEndianFlag); // File size - 8 bytes
+    //writeString(view, 8, 'WAVE');
+    current_byte_offset = writeString(view, current_byte_offset, 'WAVE', littleEndianFlag);
+    //writeString(view, 12, 'fmt '); // Writing the 'fmt ' sub-chunk
+    current_byte_offset = writeString(view, current_byte_offset, 'fmt ', littleEndianFlag);
+    //view.setUint32(16, 16, true); // Sub-chunk size (16 for PCM)
+    current_byte_offset = writeUint32(view, current_byte_offset, bitsPerSample, littleEndianFlag); // Sub-chunk size (16 for PCM)
+    //view.setUint16(20, 1, true); // Audio format (1 for PCM)
+    current_byte_offset = writeUint16(view, current_byte_offset, 1, littleEndianFlag); // Audio format (1 for PCM)
+    //view.setUint16(22, numberOfChannels, true);
+    current_byte_offset = writeUint16(view, current_byte_offset, numberOfChannels, littleEndianFlag);
+    //view.setUint32(24, sampleRate, true);
+    current_byte_offset = writeUint32(view, current_byte_offset, sampleRate, littleEndianFlag);
+    //view.setUint32(28, byteRate, true);
+    current_byte_offset = writeUint32(view, current_byte_offset, byteRate, littleEndianFlag);
+    //view.setUint16(32, blockAlign, true);
+    current_byte_offset = writeUint16(view, current_byte_offset, blockAlign, littleEndianFlag);
+    //view.setUint16(34, bitsPerSample, true);
+    current_byte_offset = writeUint16(view, current_byte_offset, bitsPerSample, littleEndianFlag);
+
+    // Writing the 'data' sub-chunk.. //
+
+    //writeString(view, 36, 'data');
+    current_byte_offset = writeString(view, current_byte_offset, 'data', littleEndianFlag);
+    //view.setUint32(40, dataChunkSize, true);
+    current_byte_offset = writeUint32(view, current_byte_offset, dataChunkSize, littleEndianFlag);
+
+    return wavBuffer; //return new Uint8Array(view.buffer); // 
+}
+
+function sinc(x) {
+    if (x === 0) return 1;
+    const piX = Math.PI * x;
+    return Math.sin(piX) / piX;
+}
+
+function sinc_interpolation (x, y, t, f) {
+    let yt = 0;
+    const I = x.length;
+    for (let i = 0; i < I; ++i) {
+        yt += y[i] * sinc((t - x[i]) * f);
+    }
+    return yt;
 }
 
 AudioBTN.addEventListener('click', function() {
@@ -1629,41 +1808,49 @@ AudioBTN.addEventListener('click', function() {
     const amplitude = 0.4; // 0.5 for a comfortable volume
 
     // Create an audio buffer with appropriate settings
-    const audioBuffer = audioContext.createBuffer(2, duration * sampleRate, sampleRate);
+    //const audioBuffer = audioContext.createBuffer(2, duration * sampleRate, sampleRate);
 
-    let channelData = audioBuffer.getChannelData(0);
-    let channelDataRight = audioBuffer.getChannelData(0);
+    //let channelDataLeft = audioBuffer.getChannelData(0);
+    //let channelDataRight = audioBuffer.getChannelData(0);
+    let channelDataLeft = new Float64Array (duration * sampleRate);
+    let channelDataRight = new Float64Array (duration * sampleRate);
 
-    channelData.sampleRate = sampleRate;
-    channelData.bitsPerSample = bitsPerSample;
+    channelDataLeft.sampleRate = sampleRate;
+    channelDataLeft.bitsPerSample = bitsPerSample;
 
     channelDataRight.sampleRate = sampleRate;
     channelDataRight.bitsPerSample = bitsPerSample;
 
     // Generate the sine wave data
-    const I = channelData.length;
+    const I = channelDataLeft.length;
+    const maxInt24 = Math.pow(2, bitsPerSample - 1) - 1; // 2^23 - 1 = 8_388_607; preserve the sign bit
     for (let i = 0; i < I; ++i) {
-        const time = i / sampleRate;
+        const time = i / sampleRate; // returns a value between 0 and 1
         const value = Math.sin(2 * Math.PI * frequency * time) * amplitude;
 
         // Ensure the value is positive for dBFS conversion
         const absValue = Math.abs(value);
 
-        // Convert to dBFS and consider the case when the value is 0
+        // Convert to dBFS and consider the case when absValue is 0
         const dBFS = absValue > 0 ? 20 * Math.log10(absValue) : -Infinity;
 
-        const nsample = value * (2 ** (bitsPerSample - 1) - 1); // Scale for 24-bit audio
+        const nsample = value * maxInt24; // Scale for 24-bit audio
 
-        channelData[i] = nsample;
-        channelDataRight[i] = i > 0 ? channelData[i-1] : 0;  // offset channel samples by 1 to create a perceived stereo channel
+        channelDataLeft[i] = nsample;
+        channelDataRight[i] = (i > 0) ? channelDataLeft[i-1] : 0;  // offset channel samples by 1 for a perceived stereo signal
     }
 
-    const channelDataLeft = channelData;
-
     // Example usage
-    let wavBuffer = bufferToWave([/*yourLeftChannelData*/channelDataLeft, /*yourRightChannelData*/channelDataRight]);
+    let wavBuffer = bufferToWave([channelDataLeft, channelDataRight]);
     let blob = new Blob([wavBuffer], {type: 'audio/wav'});
     let url = URL.createObjectURL(blob);
+
+    // Optionally, create a download link
+    let downloadLink = document.createElement('a');
+    downloadLink.href = url;
+    downloadLink.download = 'audition_audio.wav';
+    downloadLink.textContent = '[ Download Synthesized Speech ]';
+    document.body.appendChild(downloadLink);
 
     // Create an audio element and set its source to the blob URL
     let audio = new Audio(url);
@@ -1671,15 +1858,6 @@ AudioBTN.addEventListener('click', function() {
     audio.classList.add('audioPlaybackControls_class');
     audioPlaybackControls.innerHTML = '';
     audioPlaybackControls.appendChild(audio);
-
-    /*
-    // Optionally, create a download link
-    let downloadLink = document.createElement('a');
-    downloadLink.href = url;
-    downloadLink.download = 'synthesized_speech.wav';
-    downloadLink.textContent = 'Download Synthesized Speech';
-    document.body.appendChild(downloadLink);
-    */
 
     /*
     // For API generated audio
@@ -1691,12 +1869,13 @@ AudioBTN.addEventListener('click', function() {
     osc.start();
     */
 
+    /*
     // For artificially generated audio
     const source = audioContext.createBufferSource();
     source.buffer = audioBuffer;
     gainNode.connect(audioContext.destination); //source.connect(audioContext.destination);
     source.connect(gainNode);
-    source.start(0);
+    source.start(0);*/
 
     /*
     // For MP3 audio
