@@ -1536,13 +1536,13 @@ function setInt64(view, offset, value) {
 }
 
 // Helper functions to write strings as 8-bit integers (bytes)
-function writeString(view, offset, string) {
+function writeString(view, offset, string, littleEndianFlag) {
     for (let i = 0; i < string.length; ++i) {
         // Get the UTF-16 code unit for each character
         const codeUnit = string.charCodeAt(i);
 
         // Write the code unit to the DataView as a 16-bit integer
-        view.setUint16(offset + i, codeUnit, true); // using little-endian format
+        view.setUint16(offset + i, codeUnit, littleEndianFlag); // using little-endian format
     }
 
     // Return the new offset, which is the initial offset plus twice the string's length
@@ -1749,7 +1749,7 @@ function bufferToWave(buffer) {
     }
 
     // Writing the 'RIFF' chunk descriptor
-    current_byte_offset = writeString(view, current_byte_offset, 'RIFF$', littleEndianFlag);
+    current_byte_offset = writeString(view, current_byte_offset, 'RIFF', littleEndianFlag); // ChunkID 'RIFF' (big-endian)
     //view.setUint32(4, 36 + dataChunkSize, true); // File size - 8 bytes
     current_byte_offset = writeUint32(view, current_byte_offset, pcm_header_offset - current_byte_offset + dataChunkSize, littleEndianFlag); // File size - 8 bytes
     //writeString(view, 8, 'WAVE');
@@ -1757,7 +1757,7 @@ function bufferToWave(buffer) {
     //writeString(view, 12, 'fmt '); // Writing the 'fmt ' sub-chunk
     current_byte_offset = writeString(view, current_byte_offset, 'fmt ', littleEndianFlag);
     //view.setUint32(16, 16, true); // Sub-chunk size (16 for PCM)
-    current_byte_offset = writeUint32(view, current_byte_offset, bitsPerSample, littleEndianFlag); // Sub-chunk size (16 for PCM)
+    current_byte_offset = writeUint32(view, current_byte_offset, 16, littleEndianFlag); // Sub-chunk size (16 for PCM)
     //view.setUint16(20, 1, true); // Audio format (1 for PCM)
     current_byte_offset = writeUint16(view, current_byte_offset, 1, littleEndianFlag); // Audio format (1 for PCM)
     //view.setUint16(22, numberOfChannels, true);
