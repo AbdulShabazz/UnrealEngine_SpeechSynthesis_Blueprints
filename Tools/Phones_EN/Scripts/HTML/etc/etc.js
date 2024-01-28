@@ -1,5 +1,71 @@
 
 
+/**
+@brief Compute the endianness of the operating system.
+@details Compute the endianness of the operating system.
+@returns (bool) */
+function verifyPlatformIsLittleEndian() {
+    let buffer = new ArrayBuffer(4);
+    view = new DataView(buffer);
+    view.setUint32(0, 1);
+    if (buffer[0] === 1) {
+        return true; /* 'little-endian' */;
+    }
+    else if (buffer[0] === 0) {
+        return false; /* 'big-endian' */;
+    } else throw new Error( "Unknown endianness.");
+}
+
+/**
+@brief Compute the endianness of the operating system.
+@details Compute the endianness of the operating system. */
+function issLittleEndian() {
+    let buffer = new ArrayBuffer(2);
+    let uint8Array = new Uint8Array(buffer);
+    let uint16array = new Uint16Array(buffer);
+    uint8Array[0] = 0xAA; // set first byte
+    uint8Array[1] = 0xBB; // set second byte
+    if (uint16array[0] === 0xBBAA) {
+        return true; /* 'little-endian' */;
+    }
+    else if (uint16array[0] === 0xAABB) {
+        return false; /* 'big-endian' */;
+    } else throw new Error( "Unknown endianness.");
+}
+
+    /*
+    // For API generated audio
+    const osc = audioContext.createOscillator();
+    osc.type = "sine";
+    osc.frequency.value = 440; // 440 Hz
+    gainNode.gain.value = 0.5
+    osc.connect(gainNode);
+    osc.start();
+    */
+
+    /*
+    // For artificially generated audio
+    const source = audioContext.createBufferSource();
+    source.buffer = audioBuffer;
+    gainNode.connect(audioContext.destination); //source.connect(audioContext.destination);
+    source.connect(gainNode);
+    source.start(0);*/
+
+    /*
+    // For MP3 audio
+    const audioBufferMP3 = await fetch('audio.mp3')
+        .then( response => response.arrayBuffer() );
+    const audioBufferSourceNode = audioContext.createBufferSource();
+    audioBufferSourceNode.buffer = await audioContext.decodeAudioData(audioBufferMP3);
+    gainNode.gain.value = 0.5;
+    audioBufferSourceNode.connect(gainNode);
+    audioBufferSourceNode.start(0);*/
+
+    //const audioBuffer = audioContext.createBuffer(2, duration * sampleRate, sampleRate);
+
+    //let channelDataLeft = audioBuffer.getChannelData(0);
+    //let channelDataRight = audioBuffer.getChannelData(0);
+
     // Write the 'RIFF' audio content
     let nextChunk = 0;
     for (let i = 0; i < totalFrames; i++) {
