@@ -1690,6 +1690,23 @@ function writeFloat64(view, offset, value, isLittleEndian) {
     return offset + 8;
 }
 
+/**
+@brief Compute the endianness of the operating system.
+@details Compute the endianness of the operating system. */
+function verifyPlatformIsLittleEndian() {
+    let buffer = new ArrayBuffer(2);
+    let uint8Array = new Uint8Array(buffer);
+    let uint16array = new Uint16Array(buffer);
+    uint8Array[0] = 0xAA; // set first byte
+    uint8Array[1] = 0xBB; // set second byte
+    if (uint16array[0] === 0xBBAA) {
+        return true; /* 'little-endian' */;
+    }
+    else if (uint16array[0] === 0xAABB) {
+        return false; /* 'big-endian' */;
+    } else throw new Error( "Unknown endianness.");
+}
+
 /** 
 @brief converts a buffer to WAV audio.
 @details Converts a buffer to WAV audio.
@@ -1702,12 +1719,12 @@ function bufferToWave(buffer) {
     const bitsPerSample = buffer[0].bitsPerSample;
     const byteOffset = buffer[0].bitsPerSample / 8; // Calculate byte offset based on bits per sample
     const maxIntN = Math.pow(2, bitsPerSample - 1) - 1; // 2^23 - 1 = 8_388_607; preserve the sign bit
+    const littleEndianFlag = verifyPlatformIsLittleEndian(); // true for little-endian, false for big-endian
 
     const blockAlign = numberOfChannels * byteOffset;
 
     const dataChunkSize = totalFrames * numberOfChannels * byteOffset;
     const byteRate = sampleRate * blockAlign;
-    const littleEndianFlag = true;
     const pcm_header_offset = 44;
 
     // Create a buffer to hold the WAV file data
@@ -1801,17 +1818,13 @@ AudioBTN.addEventListener('click', function() {
     // Bard: Here's the JavaScript code to generate a sinusoidal audio of 1s duration at PCM 24 bit/48 kHz sampling:
 
     // Define desired wave parameters
-    const sampleRate = 48000; // 48 kHz
+    const sampleRate = 48000; // 48000 kHz
     const bitsPerSample = 24; // 24-bit audio
     const frequency = 440; // Hz (e.g., 440 Hz for A4)
     const duration = 1; // 1 second
     const amplitude = 0.4; // 0.5 for a comfortable volume
 
     // Create an audio buffer with appropriate settings
-    //const audioBuffer = audioContext.createBuffer(2, duration * sampleRate, sampleRate);
-
-    //let channelDataLeft = audioBuffer.getChannelData(0);
-    //let channelDataRight = audioBuffer.getChannelData(0);
     let channelDataLeft = new Float64Array (duration * sampleRate);
     let channelDataRight = new Float64Array (duration * sampleRate);
 
@@ -1858,34 +1871,6 @@ AudioBTN.addEventListener('click', function() {
     audio.classList.add('audioPlaybackControls_class');
     audioPlaybackControls.innerHTML = '';
     audioPlaybackControls.appendChild(audio);
-
-    /*
-    // For API generated audio
-    const osc = audioContext.createOscillator();
-    osc.type = "sine";
-    osc.frequency.value = 440; // 440 Hz
-    gainNode.gain.value = 0.5
-    osc.connect(gainNode);
-    osc.start();
-    */
-
-    /*
-    // For artificially generated audio
-    const source = audioContext.createBufferSource();
-    source.buffer = audioBuffer;
-    gainNode.connect(audioContext.destination); //source.connect(audioContext.destination);
-    source.connect(gainNode);
-    source.start(0);*/
-
-    /*
-    // For MP3 audio
-    const audioBufferMP3 = await fetch('audio.mp3')
-        .then( response => response.arrayBuffer() );
-    const audioBufferSourceNode = audioContext.createBufferSource();
-    audioBufferSourceNode.buffer = await audioContext.decodeAudioData(audioBufferMP3);
-    gainNode.gain.value = 0.5;
-    audioBufferSourceNode.connect(gainNode);
-    audioBufferSourceNode.start(0);*/
 
     const audio_frames = generateComplexSignal(Formants, null);
 });
