@@ -1815,11 +1815,11 @@ function sinc_interpolation (x, y, t, f) {
 
 AudioBTN.addEventListener('click', function() {
 
-    // Bard: Here's the JavaScript code to generate a sinusoidal audio of 1s duration at PCM 24 bit/48 kHz sampling:
+    // Bard: Here's the JavaScript code to generate a sinusoidal audio wveform of 1s duration at PCM 24 bit/48 kHz sampling:
 
-    // Define desired wave parameters
-    const sampleRate = 48000; // 48000 kHz
-    const bitsPerSample = 24; // 24-bit audio
+    // Define desired .WAV audio parameters 
+    const sampleRate = 768000; // Unlimited Rate, though 384000 Hz Max decodable playback @ 32-bit PCM
+    const bitsPerSample = 32; // 32-bit MAX
     const frequency = 440; // Hz (e.g., 440 Hz for A4)
     const duration = 1; // 1 second
     const amplitude = 0.4; // 0.5 for a comfortable volume
