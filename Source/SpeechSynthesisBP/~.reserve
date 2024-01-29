@@ -1,3 +1,50 @@
+enum class Endian {
+    Little,
+    Big
+};
+
+Endian check_endianness() {
+    union {
+        uint32_t i;
+        char c[4];
+    } bint = {0x01020304};
+
+    return (bint.c[0] == 1) ? Endian::Big : Endian::Little;
+}
+
+
+#include <cstdint>
+#include <cstring>
+
+class DataView {
+public:
+    DataView(void* buffer, size_t size) : buffer_(buffer), size_(size) {}
+
+    uint32_t getUint32(size_t offset, bool littleEndian) {
+        if (offset + 4 > size_) {
+            throw std::out_of_range("Offset out of range");
+        }
+
+        uint32_t value;
+        std::memcpy(&value, static_cast<char*>(buffer_) + offset, 4);
+
+        if ((check_endianness() == Endian::Little && !littleEndian) ||
+            (check_endianness() == Endian::Big && littleEndian)) {
+            value = (value >> 24) |
+                    ((value << 8) & 0x00FF0000) |
+                    ((value >> 8) & 0x0000FF00) |
+                    (value << 24);
+        }
+
+        return value;
+    }
+
+    // Similar functions can be defined for getUint16, getInt32, etc.
+
+private:
+    void* buffer_;
+    size_t size_;
+};
 
 
 //
