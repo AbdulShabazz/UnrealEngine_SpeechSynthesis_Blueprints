@@ -124,7 +124,10 @@ class POINT extends Object {
 }
 
 class OSC_INTERVAL extends Object {
-    constructor({ amplitude = g_default_amplitude, frequency = g_default_frequency, frame = 0, time_step = 0 } = {}) {
+    constructor({ amplitude = g_default_amplitude
+        , frequency = g_default_frequency
+        , frame = 0
+        , time_step = 0 } = {}) {
         super();
         this.amplitude = amplitude;
         this.frequency = frequency;
@@ -134,9 +137,13 @@ class OSC_INTERVAL extends Object {
 }
 
 class FORMANTS extends Array {
-    constructor({ shape = "Sine" } = {}) {
+    constructor({ shape = "Sine"
+    , amplitude_bezierCurve_flag = false
+    , frequency_bezierCurve_flag = false } = {}) {
         super(); // Calls the Array constructor
         this.shape = shape; // Adds the shape property
+        this.amplitude_bezierCurve_flag = amplitude_bezierCurve_flag;
+        this.frequency_bezierCurve_flag = frequency_bezierCurve_flag;
     }
 }
 
@@ -778,6 +785,37 @@ BlueBTN.addEventListener('click', function() {
 
 GaussBTN.addEventListener('click', function() {
     updateActiveRadioButton(this);
+});
+
+function updateActiveBezierRadioButton(rButton, audioComponent) {
+    const activeStatus = rButton.activeFlag;
+    if (rButton.activeFlag) {
+        rButton.activeFlag = false;
+    } else {
+        rButton.activeFlag = true;
+        rButton.style.backgroundColor = activeColor;
+    }
+
+    switch (audioComponent) {
+        case "amplitude":
+            Formants[g_lastSelectedFormantIndex].amplitude_bezierCurve_flag 
+                = rButton.activeFlag ? true : false;
+            break;
+        case "frequency":
+            Formants[g_lastSelectedFormantIndex].frequency_bezierCurve_flag 
+                = rButton.activeFlag ? true : false;
+            break;
+        default:
+            return;
+    }
+}
+
+AmplitudeBezierBTN.addEventListener('click', function() {
+    updateActiveBezierRadioButton(this, "amplitude");
+});
+
+FrequencyBezierBTN.addEventListener('click', function() {
+    updateActiveBezierRadioButton(this, "frequency");
 });
 
 /** Audio Frame options */
