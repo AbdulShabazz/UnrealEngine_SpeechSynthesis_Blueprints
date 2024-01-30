@@ -797,16 +797,19 @@ function updateActiveBezierRadioButton(rButton, audioComponent) {
     }
 
     switch (audioComponent) {
+
         case "amplitude":
-            Formants[g_lastSelectedFormantIndex].amplitude_bezierCurve_flag 
-                = rButton.activeFlag ? true : false;
-            break;
+        Formants[g_lastSelectedFormantIndex].amplitude_bezierCurve_flag 
+            = rButton.activeFlag ? true : false;
+        break;
+
         case "frequency":
-            Formants[g_lastSelectedFormantIndex].frequency_bezierCurve_flag 
-                = rButton.activeFlag ? true : false;
-            break;
+        Formants[g_lastSelectedFormantIndex].frequency_bezierCurve_flag 
+            = rButton.activeFlag ? true : false;
+        break;
+
         default:
-            return;
+        return;
     }
 }
 
@@ -920,8 +923,9 @@ function showTAElement({ jsonINDIR = 'out' }={})
         break;
 
         case 'out':
-        json_form_class.style.display = 'block';
         JsonTA.style.display = 'inline-block';
+        json_form_class.style.display = 'block';
+        jsonFORM.style.display = 'none';
         jsonFORM.jsonIndirection = jsonINDIR;
         break;
 
