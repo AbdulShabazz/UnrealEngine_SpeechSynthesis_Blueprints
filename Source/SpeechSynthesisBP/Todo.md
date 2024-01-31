@@ -24,6 +24,7 @@
    - Include an ARPABETPhone::breath UE Audio blueprint activated after 5s of speech for realistic breathing.
    - Integrate noise generators to mimic speaker's breath.
    - The UE Formant Curve Editor should support (temporary) Session Saves and (DirectToLibrary) SaveAs functionality (eg. Sara-0001).
+   - For added realism add occasional shimmer, jitter, voice fry, etc. to the F0 waveforms.
 
 2. **Signal Processing**:
    - Carve the F0 waveforms out of Gaussian noise mask (filter).
