@@ -60,6 +60,7 @@
 ### Project Focus
 - Emphasis on high-fidelity voice synthesis over processing speed.
 - Interest in detailed voice attribute customization rather than real-time performance.
+- Add as a requirement, third-party voice libraries must properly voice the 100 builtin wryly's and should be compatible with Unreal Engine's licensing. (ie. no non-sythetic voices, nor respeeched voices, nor voices that are otherwise not compatible with Unreal Engine's licensing)
 
 ### Computational Model Training
 - **Goals**:
