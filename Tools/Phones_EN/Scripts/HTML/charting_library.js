@@ -523,10 +523,10 @@ formant_graph_canvas.addEventListener('click', function(e) {
 
         const I = formant.length;
         for (var i = 0; i < I; ++i) {
-            if (Math.abs(formant[i].frame - xValue) < 65) {
+            if (Math.abs(formant[i].frame - xValue) < 65) { // Edit current marker
                 displaySliders(i, formant);
                 break;
-            } else if (formant[i].frame > xValue) {
+            } else if (formant[i].frame > xValue) { // Insert new marker
                 formant.splice(i, 0, nextOSCINterval);
                 break;
             }
