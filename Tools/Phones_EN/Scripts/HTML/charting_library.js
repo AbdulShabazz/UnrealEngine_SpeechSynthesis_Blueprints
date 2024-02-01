@@ -1860,6 +1860,8 @@ AudioBTN.addEventListener('click', function() {
     // Bard: Here's the JavaScript code to generate a sinusoidal audio wveform of 1s duration at PCM 24 bit/48 kHz sampling:
 
     // Define desired .WAV audio parameters 
+    // (largest file decode: 768000 Hz @ 32-bit PCM)
+    // (largest file playback: 192000 Hz @ 32-bit PCM)
     const sampleRate = 192000; // Unlimited Rate, though 384000 Hz Max decodable playback @ 32-bit PCM
     const bitsPerSample = 32; // 32-bit MAX
     const frequency = 440; // Hz (e.g., 440 Hz for A4)
