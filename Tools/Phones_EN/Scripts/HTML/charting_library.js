@@ -4,7 +4,7 @@ g_default_amplitude = -6.0;
 
 function clamp(value, min, max) {
     return Math.min(Math.max(value, min), max);
-  }
+}
 
 // Configuration For chart.js plugins
 
