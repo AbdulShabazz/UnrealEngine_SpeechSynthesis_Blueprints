@@ -1,3 +1,46 @@
+
+
+
+    // Example of setting up the g_config
+    void setupConfig(std::map<std::string , ConfigValue>& g_config
+        , const std::vector<Formants>& formants) {
+        // ... setup g_config by populating it with configurations
+
+        // For example, adding a dataset
+        Dataset amplitudeDataset{
+            .label = "Amplitude (dBFS)",
+            // ... populate other properties
+        };
+
+        // Assuming there's a way to convert formants to dataset data
+        // amplitudeDataset.data = convertFormantsToData(formants[0], /* some lambda or function to extract amplitude */);
+
+        // Similarly for frequency dataset
+        Dataset frequencyDataset{
+            .label = "Frequency (Hz)",
+            // ... populate other properties
+        };
+
+        // ... add datasets to g_config
+
+        // Setup scales
+        Scale yAxisAmplitude{
+            .type = "linear",
+            // ... other properties
+        };
+
+        // ... add scales to g_config
+
+        // Setup tooltip
+        Tooltip tooltip{
+            .enabled = true,
+            .formatLabel = [](const std::string& label, const std::string& value) {
+                // ... format the label based on the content
+            },
+        };
+
+    } // setupConfig
+//
 enum class Endian {
     Little,
     Big
