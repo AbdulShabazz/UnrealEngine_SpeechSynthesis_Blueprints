@@ -35,6 +35,13 @@
     align-items: center; /* Centers vertically */
 }
 
+#chart-container {
+    width: 30000px; /* Adjust to your preference */
+    height: 585px; /* Adjust to your preference */
+    overflow-x: scroll; /* Enable horizontal scrolling */
+    overflow-y: hidden; /* Hide vertical scrollbar */
+}
+
 @keyframes successAnimation {
     0% {
         display: block;
