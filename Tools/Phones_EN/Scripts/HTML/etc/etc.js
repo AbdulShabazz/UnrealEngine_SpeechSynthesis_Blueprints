@@ -1,5 +1,13 @@
 
 
+const numberOfDataPoints = frequencyBand.length; // 24; // or use your data array length
+const pixelPerDataPoint = 256; // Adjust based on how much space you want for each data point
+
+// Set the width of the canvas
+const totalWidth = numberOfDataPoints * pixelPerDataPoint;
+myChart.canvas.style.width = totalWidth + 'px';
+myChart.update();
+
 /**
 @brief Compute the endianness of the operating system.
 @details Compute the endianness of the operating system.
