@@ -17,12 +17,12 @@ The project consists of the following files, each serving a distinct purpose wit
 - **Purpose**: Serves as the entry point of the application. Contains the markup for the interactive viewer and dropdown elements.
 - **Contents**: HTML elements for the graph container, formant control dropdowns, and references to external CSS and JavaScript files.
 
-### `styles.css`
+### `_.css`
 
 - **Purpose**: Provides styling for the application, ensuring that the interface is visually aligned with the specifications.
 - **Contents**: CSS rules for positioning the dropdown boxes, styling the graph container, and color-coding the control elements.
 
-### `script.js`
+### `_.js`
 
 - **Purpose**: Contains the interactive logic of the application. Handles user interactions and updates the graph in real time.
 - **Contents**: JavaScript code for initializing the graph using a charting library, attaching event listeners to dropdowns, and updating formant data dynamically.
