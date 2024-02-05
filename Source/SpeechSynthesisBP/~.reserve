@@ -1,6 +1,89 @@
 
 
 
+    /**
+    @brief Example of how to use the TTSCurveEditorNamespace for the above in a separate C++ source file
+        
+    // In a separate C++ source file
+    #include "TTSCurveEditorNamespace.h"
+
+    void initialize() {
+        using namespace TTSCurveEditorNamespace;
+
+        CrosshairPlugin plugin;
+        registerPlugin(plugin);
+        setDefaults();
+    }
+
+    // Mouse event handling would depend on your specific application framework
+    void onMouseMoveEvent(float mouseX, float mouseY) {
+        using namespace TTSCurveEditorNamespace;
+        updateCrossHair(mouseX, mouseY);
+    }
+    */
+
+    // Assuming Formants is defined elsewhere as per your previous messages
+
+    // A simplified variant type to represent different possible types in g_config
+    using ConfigValue = std::variant<
+        std::string,
+        double,
+        std::function<std::string(double, int, const std::vector<double>&)>,
+        // ... other types as needed
+    >;
+
+    struct Dataset {
+        std::string label;
+        std::string type;
+        std::vector<std::pair<double, double>> data; // Assuming data is a pair of doubles
+        std::string borderColor;
+        std::string backgroundColor;
+        std::string yAxisID;
+        std::string xAxisID;
+    };
+
+    struct Scale {
+        std::string type;
+        std::string title;
+        bool display;
+        std::string position;
+        // ... other properties
+    };
+
+    struct Tooltip {
+        bool enabled;
+        std::function<std::string(const std::string&, const std::string&)> formatLabel;
+        // ... other properties
+    };
+
+    struct Config {
+        std::string type;
+        std::vector<Dataset> datasets;
+        std::map<std::string, Scale> scales;
+        // ... other properties
+        Tooltip tooltip;
+    };
+
+//    
+
+    std::vector<ChartJS::AddEventListener> eventListeners{};
+
+    eventListeners.push_back(ChartJS::AddEventListener{
+        .windowEvent = ChartJS::windowEvent::mousemove, 
+        .m_hWnd = nullptr, 
+        .callback = [](ChartJS::Event const event) {
+        // ... handle mouse move event
+    }});
+
+    eventListeners.push_back(ChartJS::AddEventListener{
+        .windowEvent = ChartJS::windowEvent::click, 
+        .m_hWnd = nullptr, 
+        .callback = [](ChartJS::Event const event) {
+        // ... handle mouse move event
+    }});
+
+//
+
     // Example of setting up the g_config
     void setupConfig(std::map<std::string , ConfigValue>& g_config
         , const std::vector<Formants>& formants) {
