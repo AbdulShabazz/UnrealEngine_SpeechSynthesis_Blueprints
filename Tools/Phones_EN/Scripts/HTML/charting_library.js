@@ -1,3 +1,4 @@
+try {
 
 g_default_frequency = 40.0;
 g_default_amplitude = -6.0;
@@ -1989,3 +1990,8 @@ frequencyBtn.addEventListener('click', function() {
     amplitudeBtn.classList.remove('selected');
     g_formantChart.yAxisAmplitudeVisibleFlag = false;
 });
+
+
+} catch (e) {
+    console.info(`Unknown error: ${e}`);
+}
