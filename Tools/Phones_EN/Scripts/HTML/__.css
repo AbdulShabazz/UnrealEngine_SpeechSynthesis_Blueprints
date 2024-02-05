@@ -1,0 +1,52 @@
+#drop_zone {
+    border: 2px dashed #0087F7;
+    border-radius: 5px;
+    padding: 50px;
+    text-align: center;
+    color: #0087F7;
+    position: relative;
+    font-size: 12px;
+}
+ 
+#drop_zone:hover {
+    font-weight: bolder;
+    background-color: #efefef;
+}
+
+#success_message {
+    display: none;
+    font-size: 0px;
+    opacity: 0;
+    transition: all 2s;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+}
+
+#audioPlayer {
+    width: 100%;
+}
+
+#file_url {
+    font-size: 12px;
+    display: flex;
+    justify-content: center; /* Centers horizontally */
+    align-items: center; /* Centers vertically */
+}
+
+@keyframes successAnimation {
+    0% {
+        display: block;
+        font-size: 0px;
+        opacity: 0;
+    }
+    50% {
+        font-size: 50px;
+        opacity: 1;
+    }
+    100% {
+        font-size: 100px;
+        opacity: 0;
+    }
+}
