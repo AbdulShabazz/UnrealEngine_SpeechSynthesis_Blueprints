@@ -12,7 +12,7 @@ The editor includes an interactive viewer with color-coded combo/select dropdown
 
 The project consists of the following files, each serving a distinct purpose within the application:
 
-### `index.html`
+### `SpeechFormantEditor.html`
 
 - **Purpose**: Serves as the entry point of the application. Contains the markup for the interactive viewer and dropdown elements.
 - **Contents**: HTML elements for the graph container, formant control dropdowns, and references to external CSS and JavaScript files.
