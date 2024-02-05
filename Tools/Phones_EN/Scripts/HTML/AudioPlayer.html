@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Audio Player - Spectrum Analyzer</title>
+    <link rel="stylesheet" href="__.css">
+</head>
+<body>
+    <canvas id="myChart" width="1080px;" height="256px"></canvas>
+    <audio id="audioPlayer" controls>
+        <!--lossy-->    <source id="audioPlayerCTL" src="AE.b_a_t_EN_accent_ad.mp3" type="audio/mpeg">
+        <!--lossless--> <source src="AE.b_a_t_EN_accent_ad.wav" type="audio/wav">
+        <!--lossless--> <source src="AE.b_a_t_EN_accent_ad.flac" type="audio/flac">
+        <!--lossy-->    <source src="AE.b_a_t_EN_accent_ad.aac" type="audio/aac">
+        Your browser does not support the audio element.
+    </audio>
+    <div id="drop_zone">
+        <p id="original_text">Drop audio file here</p>
+        <p id="success_message">SUCCESS</p>
+    </div>
+    
+    </center><div id="file_url" readonly rows="1"></div></body>
+
+    <footer>
+        <script src="chart.js/dist/chart.umd.js"></script>
+        <script src="__.js"></script>
+    </footer>
+</body>
+</html>
