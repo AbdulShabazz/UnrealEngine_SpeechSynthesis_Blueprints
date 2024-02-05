@@ -1,6 +1,8 @@
 
 g_default_frequency = 40.0;
 g_default_amplitude = -6.0;
+g_default_lineTension = 0.0;
+g_bezier_lineTension = 0.3;
 
 function clamp(value, min, max) {
     return Math.min(Math.max(value, min), max);
@@ -138,12 +140,12 @@ class OSC_INTERVAL extends Object {
 
 class FORMANTS extends Array {
     constructor({ shape = "Sine"
-    , amplitude_bezierCurve_flag = false
-    , frequency_bezierCurve_flag = false } = {}) {
+    , amplitude_as_bezierCurve_flag = false
+    , frequency_as_bezierCurve_flag = false } = {}) {
         super(); // Calls the Array constructor
         this.shape = shape; // Adds the shape property
-        this.amplitude_bezierCurve_flag = amplitude_bezierCurve_flag;
-        this.frequency_bezierCurve_flag = frequency_bezierCurve_flag;
+        this.amplitude_as_bezierCurve_flag = amplitude_as_bezierCurve_flag;
+        this.frequency_as_bezierCurve_flag = frequency_as_bezierCurve_flag;
     }
 }
 
@@ -788,24 +790,29 @@ GaussBTN.addEventListener('click', function() {
 });
 
 function updateActiveBezierRadioButton(rButton, audioComponent) {
-    const activeStatus = rButton.activeFlag;
     if (rButton.activeFlag) {
         rButton.activeFlag = false;
+        rButton.style.backgroundColor = defaultColor;
     } else {
         rButton.activeFlag = true;
         rButton.style.backgroundColor = activeColor;
     }
 
+    const amplitudeCurve = 0;
+    const frequencyCurve = 1;
+    const activeFlag = rButton.activeFlag;
     switch (audioComponent) {
 
         case "amplitude":
-        Formants[g_lastSelectedFormantIndex].amplitude_bezierCurve_flag 
-            = rButton.activeFlag ? true : false;
+        g_formantChart.data.datasets[amplitudeCurve].lineTension = activeFlag ? g_bezier_lineTension : g_default_lineTension ;
+        Formants[g_lastSelectedFormantIndex].amplitude_as_bezierCurve_flag = activeFlag;
+        g_formantChart.update();
         break;
 
         case "frequency":
-        Formants[g_lastSelectedFormantIndex].frequency_bezierCurve_flag 
-            = rButton.activeFlag ? true : false;
+        g_formantChart.data.datasets[frequencyCurve].lineTension = activeFlag ? g_bezier_lineTension : g_default_lineTension ;
+        Formants[g_lastSelectedFormantIndex].frequency_as_bezierCurve_flag = activeFlag;
+        g_formantChart.update();
         break;
 
         default:
