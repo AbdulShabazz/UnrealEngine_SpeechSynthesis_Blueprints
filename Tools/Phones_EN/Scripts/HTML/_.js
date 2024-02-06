@@ -1998,5 +1998,5 @@ window.addEventListener('resize', () => {
 
 
 } catch (e) {
-    console.info(`Unknown error: ${e}`);
+    console.info(`Unexpected error: ${e}`);
 }
