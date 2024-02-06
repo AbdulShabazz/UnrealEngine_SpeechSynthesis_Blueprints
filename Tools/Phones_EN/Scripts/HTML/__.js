@@ -113,9 +113,10 @@ var bufferLength = analyser.frequencyBinCount;
 var dataArray = new Uint8Array(bufferLength);
 analyser.getByteTimeDomainData(dataArray);
 
-const frequencyBand = [5,10,20,40,80,160,320,640,1280,/*2560,/*5120,10240,20480*/];
+const frequencyBand = [5,10,20,40,80,160,320,640,/*1280,/*2560,/*5120,10240,20480*/];
 
 // Set up the initial chart
+//Chart.defaults.borderColor = '#333';
 var ctx = document.getElementById('myChart').getContext('2d');
 var myChart = new Chart(ctx, {
     type: 'bar',
@@ -142,7 +143,8 @@ var myChart = new Chart(ctx, {
                 beginAtzero: true,
                 position: 'left',
                 grid: {
-                    drawOnChartArea: true
+                    drawOnChartArea: true,
+                    color: '#555',
                 },
                 ticks: {
                     stepSize: .02, 
@@ -163,7 +165,8 @@ var myChart = new Chart(ctx, {
                 beginAtzero: true,
                 position: 'bottom',
                 grid: {
-                    drawOnChartArea: true
+                    drawOnChartArea: true,
+                    color: '#555',
                 },
                 ticks: {
                     stepSize: 4, 
@@ -180,13 +183,6 @@ var myChart = new Chart(ctx, {
         maintainAspectRatio: true
         }
 });
-
-const numberOfDataPoints = frequencyBand.length; // 24; // or use your data array length
-const pixelPerDataPoint = 256; // Adjust based on how much space you want for each data point
-
-// Set the width of the canvas
-const totalWidth = numberOfDataPoints * pixelPerDataPoint;
-myChart.style.width = totalWidth + 'px';
 
 function updateChart() {
     // Get the frequency data
@@ -209,8 +205,13 @@ function updateChart() {
     requestAnimationFrame(updateChart);
 }
 
+window.addEventListener('resize', () => {
+    // Update the chart
+    myChart.resize();
+});
+
 // Start the animation
-updateChart();
+//updateChart();
 
 } catch (e) {
     console.error(`Unexpected error: ${e}`);
