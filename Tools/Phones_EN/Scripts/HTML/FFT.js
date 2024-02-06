@@ -276,4 +276,4 @@ class FFT extends Object {
 }
 
 //module.exports = FFT;
-Math.FFT = FFT;
+Math.fft = FFT;
