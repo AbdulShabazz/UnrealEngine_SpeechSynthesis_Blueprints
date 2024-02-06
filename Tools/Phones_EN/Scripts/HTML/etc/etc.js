@@ -1,4 +1,16 @@
 
+function isLittleEndian() {
+    const buffer = new ArrayBuffer(4);
+    const uint8Array = new Uint8Array(buffer);
+    const uint32Array = new Uint32Array(buffer);
+
+    uint32Array[0] = 0x12345678;
+
+    if(uint8Array[0] === 0x78) {
+        return true; // Little endian
+    }
+    return false; // Big endian
+}
 
 ylabels = [-24.0];
 for (let i = -23.5; i < 0; i += 0.6) {
