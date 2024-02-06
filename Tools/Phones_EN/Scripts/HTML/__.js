@@ -101,6 +101,7 @@ function triggerSuccessAnimation() {
     }, 2000); // Corresponds to the animation duration
 }
 
+const soundFloor = 0.01; // Minimum amplitude to be considered as sound
 var audioContext = new (window.AudioContext || window.webkitAudioContext)();
 var analyser = audioContext.createAnalyser();
 var source = audioContext.createMediaElementSource(audioPlayer);
@@ -113,7 +114,35 @@ var bufferLength = analyser.frequencyBinCount;
 var dataArray = new Uint8Array(bufferLength);
 analyser.getByteTimeDomainData(dataArray);
 
-const frequencyBand = [5,10,20,40,80,160,320,640,/*1280,/*2560,/*5120,10240,20480*/];
+function linearAmplitudeFromdBFS(dBFS) {
+    return Math.pow(10, dBFS / 20);
+}
+
+function dBFSTolinearAmplitude(dBFS) {
+    return Math.pow(10, dBFS / 20);
+}
+
+function dBFSFromLinearAmplitude(amplitude) {
+    return 20 * Math.log10(amplitude);
+}
+
+function linearAmplitudeToDBFS (amplitude) {
+    return 20 * Math.log10(amplitude);
+}
+
+//const frequencyBand = [5,10,20,40,80,160,320,640,/*1280,/*2560,/*5120,10240,20480*/];
+class SpectrumSample extends Object {
+    constructor({ amplitude_rdBFS = soundFloor, frequency_hz = 0 }={}) {
+        super();
+        this.amplitude_rdBFS = amplitude_rdBFS;
+        this.frequency_hz = frequency_hz;
+    }
+}
+
+frequencyBand = [new SpectrumSample({ amplitude_rdBFS : soundFloor, frequency_hz : 0 })];
+for (let i = 4; i <= 652; i += 4) {
+    frequencyBand.push(new SpectrumSample({ amplitude_rdBFS : soundFloor, frequency_hz : i }));
+}
 
 // Set up the initial chart
 //Chart.defaults.borderColor = '#333';
@@ -121,42 +150,84 @@ var ctx = document.getElementById('myChart').getContext('2d');
 var myChart = new Chart(ctx, {
     type: 'bar',
     data: {
-        labels: [...Array(24).keys()], // 24 bands
-        datasets: [{
-            label: 'Amplitude (dBFS)',
-            data: frequencyBand.map((u) => ({ x: u, y: 0 })), // Initial empty data
-            backgroundColor: 'rgba(0, 123, 255, 0.5)',
-            borderWidth: 1,
-            yAxisID: 'y-axis-amplitude',
-            xAxisID: 'x-axis-frequency',
+        //labels: frequencyBand.map(u => {return u + ' Hz';}), 
+        datasets: [
+            {
+                label: 'Left Channel - Amplitude (rdBFS)',
+                data: frequencyBand.map(sample => ({ x: sample.frequency_hz, y: sample.amplitude_rdBFS })), // Initial empty data
+                borderColor: 'rgb(0, 123, 247)',
+                backgroundColor: 'rgb(0, 123, 247)',
+                borderWidth: 1,
+                yAxisID: 'y-axis-amplitude',
+                xAxisID: 'x-axis-frequency',
+            },
+            {
+                label: 'Right Channel - Amplitude (rdBFS)',
+                data: frequencyBand.map(sample => ({ x: sample.frequency_hz, y: sample.amplitude_rdBFS })), // Initial empty data
+                borderColor: 'rgb(255, 0, 255)',//'rgb(0,255,123)', 
+                backgroundColor: 'rgb(255, 0, 255)',//'rgb(0,255,123)', //
+                borderWidth: 1,
+                yAxisID: 'y-axis-amplitude-duo',
+                xAxisID: 'x-axis-frequency',
+                hidden: true // Avoid mixing Left-/Right-Channel data
             }]
-        },
+    },
     options: {
         scales: {
             'y-axis-amplitude': {
                 type: 'linear',
+                min: 0,
+                max: 1,
                 title: { 
-                    text: 'dBFS ( Decibels relative to Full Scale )',
+                    text: 'rdBFS ( Decibels relative to Full Scale )',
                     display: true,
                 },
                 display: true,
-                beginAtzero: true,
+                //beginAtzero: true,
                 position: 'left',
                 grid: {
                     drawOnChartArea: true,
-                    color: '#555',
+                    drawTicks: false, // Hide grid lines offchart
+                    color: '#444',
                 },
                 ticks: {
-                    stepSize: .02, 
-                    // Include dimensional units in the ticks
+                    stepSize: .02,
+                    // Include dimensional units in ticks
                     callback: function(value, index, ticks) {
                         // call the default formatter, forwarding `this`
-                        return Chart.Ticks.formatters.numeric.apply(this, [value, index, ticks]) + ' dBFS';
+                        return Chart.Ticks.formatters.numeric.apply(this, [value, index, ticks]) + ' rdBFS';
+                    }
+                }
+            },
+            'y-axis-amplitude-duo': {
+                type: 'linear',
+                min: 0,
+                max: 1,
+                title: { 
+                    text: 'rdBFS ( Decibels relative to Full Scale )',
+                    display: true,
+                },
+                display: true, 
+                //beginAtzero: true,
+                position: 'right',
+                grid: {
+                    drawOnChartArea: true, 
+                    drawTicks: false, // Hide grid lines offchart
+                    color: '#444',
+                },
+                ticks: {
+                    stepSize: .02,
+                    // Include dimensional units in ticks
+                    callback: function(value, index, ticks) {
+                        // call the default formatter, forwarding `this`
+                        return Chart.Ticks.formatters.numeric.apply(this, [value, index, ticks]) + ' rdBFS';
                     }
                 }
             },
             'x-axis-frequency': {
                 type: 'linear',
+                //min: 0,
+                //max: 652,
                 title: { 
                     text: 'Frequency Band (Hz)',
                     display: true,
@@ -166,11 +237,12 @@ var myChart = new Chart(ctx, {
                 position: 'bottom',
                 grid: {
                     drawOnChartArea: true,
-                    color: '#555',
+                    drawTicks: false, // Hide grid lines offchart
+                    color: '#444',
                 },
                 ticks: {
                     stepSize: 4, 
-                    // Include dimensional units in the ticks
+                    // Include dimensional units in ticks
                     callback: function(value, index, ticks) {
                         // call the default formatter, forwarding `this`
                         return Chart.Ticks.formatters.numeric.apply(this, [value, index, ticks]) + ' Hz';
@@ -178,10 +250,55 @@ var myChart = new Chart(ctx, {
                 }
             }
         },
+        plugins: {
+            legend: {
+                onHover: (event, legendItem, legend) => {
+                    event.native.target.style.cursor = 'pointer';
+                },
+                onLeave: (event, legendItem, legend) => {
+                    event.native.target.style.cursor = 'default';
+                }
+            },
+            tooltip: {
+                // Enable custom tooltips
+                enabled: true,
+                mode: 'index',
+                position: 'nearest',
+                bodyFontSize: 12, // Tooltip font size
+                callbacks: {
+                    title: function(tooltips, data) {
+                        // Assuming the first dataset is for amplitude and has complete frame and time_step data
+                        //const tt = tooltips[0];
+                        const tt2 = tooltips[0];
+                        //const tmpTimeStep = tt.label;
+                        const tmpFrame = tt2.label;
+                        /*
+                        const tmpAmplitude = tt.formattedValue;
+                        const tmpfrequency = tt2.formattedValue;
+                        */
+                        return `${tmpFrame} Hz`;
+                    },
+                    label: function(tooltipItem, data) {
+                        // tooltipItem is an object containing properties of the tooltip
+                        // data is an object containing all data passed to the chart
+                        let yLabel = tooltipItem.formattedValue;
+                        const xLabel = tooltipItem.dataset.label;
+                        //if (xLabel.match(/^Amplitude/)) {
+                            yLabel = (xLabel.match(/^L/) ? '(L) ' : '(R)')  + ` - Amplitude: ${yLabel} (rdBFS)`;
+                        //}
+                        return yLabel;
+                    }
+                }
+            },
+        },/*
+        onHover: (event, chartElement) => {
+            // Change the cursor to 'pointer' if hovering over a label
+            event.native.target.style.cursor = chartElement.length ? 'pointer' : 'default';
+        },*/
         animation: false, // Disable animation for performance
         responsive: true,
         maintainAspectRatio: true
-        }
+    }
 });
 
 function updateChart() {
