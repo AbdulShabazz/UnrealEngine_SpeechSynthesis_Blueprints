@@ -1,5 +1,10 @@
 
 
+ylabels = [-24.0];
+for (let i = -23.5; i < 0; i += 0.6) {
+    ylabels.push(i);
+}
+
 const numberOfDataPoints = frequencyBand.length; // 24; // or use your data array length
 const pixelPerDataPoint = 256; // Adjust based on how much space you want for each data point
 
