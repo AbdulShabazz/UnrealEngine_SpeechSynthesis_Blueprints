@@ -1991,6 +1991,11 @@ frequencyBtn.addEventListener('click', function() {
     g_formantChart.yAxisAmplitudeVisibleFlag = false;
 });
 
+window.addEventListener('resize', () => {
+    // Update the chart
+    g_formantChart.resize();
+});
+
 
 } catch (e) {
     console.info(`Unknown error: ${e}`);
