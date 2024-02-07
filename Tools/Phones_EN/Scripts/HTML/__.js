@@ -10,6 +10,37 @@ try {
     - .AAC
 */
 
+// Define the start value and the number of steps
+let startValue = 4;
+const step = 4;
+const valuesPerOption = 160; // Number of values in each range
+const totalValues = 20480; // Or any other end value you need
+
+// Clear existing options
+band_selector.innerHTML = '';
+
+// Generate options
+for (let value = startValue; value <= totalValues; value += valuesPerOption * step) {
+    // Calculate end value for the current range
+    let endValue = value + valuesPerOption * step - step;
+
+    // Ensure endValue does not exceed totalValues
+    if (endValue > totalValues) {
+        endValue = totalValues;
+    }
+
+    // Create the option element
+    const option = document.createElement('option');
+    option.value = `[${value},${endValue}]`;
+    option.textContent = `${value} Hz to ${endValue} Hz`;
+
+    // Append the option to the select element
+    band_selector.appendChild(option);
+
+    // Prepare the next startValue
+    startValue = endValue + step;
+}
+
 let isPlaying = false;
 
 //var audioPlayer = document.getElementById('audioPlayer');
@@ -283,7 +314,7 @@ class SpectrumSample extends Object {
 }
 
 frequencyBand = [];
-for (let i = 4; i <= 652; i += 4) {
+for (let i = 4; i < 652; i += 4) {
     frequencyBand.push(new SpectrumSample({ amplitude_rdBFS : soundFloor, frequency_hz : i }));
 }
 
