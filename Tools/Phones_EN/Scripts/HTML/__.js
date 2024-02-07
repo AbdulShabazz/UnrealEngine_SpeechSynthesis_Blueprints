@@ -20,6 +20,7 @@ const totalValues = 20480; // Or any other end value you need
 band_selector.innerHTML = '';
 
 // Generate options
+g_globalFrequencyBand = [];
 for (let value = startValue; value <= totalValues; value += valuesPerOption * step) {
     // Calculate end value for the current range
     let endValue = value + valuesPerOption * step - step;
@@ -31,7 +32,7 @@ for (let value = startValue; value <= totalValues; value += valuesPerOption * st
 
     // Create the option element
     const option = document.createElement('option');
-    option.value = `[${value},${endValue}]`;
+    g_globalFrequencyBand.push({ start: value, end: endValue });
     option.textContent = `${value} Hz to ${endValue} Hz`;
 
     // Append the option to the select element
@@ -304,7 +305,7 @@ function linearAmplitudeToDBFS (amplitude) {
     return 20 * Math.log10(amplitude);
 }
 
-//const frequencyBand = [5,10,20,40,80,160,320,640,/*1280,/*2560,/*5120,10240,20480*/];
+
 class SpectrumSample extends Object {
     constructor({ amplitude_rdBFS = soundFloor, frequency_hz = 0 }={}) {
         super();
@@ -313,9 +314,9 @@ class SpectrumSample extends Object {
     }
 }
 
-frequencyBand = [];
-for (let i = 4; i < 652; i += 4) {
-    frequencyBand.push(new SpectrumSample({ amplitude_rdBFS : soundFloor, frequency_hz : i }));
+currentFrequencyBand = [];
+for (let i = g_globalFrequencyBand[0].start; i < g_globalFrequencyBand[0].end; i += 4) {
+    currentFrequencyBand.push(new SpectrumSample({ amplitude_rdBFS : soundFloor, frequency_hz : i }));
 }
 
 // Set up the initial chart
@@ -324,11 +325,11 @@ ctx = myChart.getContext('2d');
 myChart = new Chart(ctx, {
     type: 'bar',
     data: {
-        //labels: frequencyBand.map(u => {return u + ' Hz';}), 
+        //labels: currentFrequencyBand.map(u => {return u + ' Hz';}), 
         datasets: [
             {
                 label: 'Left Channel - Amplitude (rdBFS)',
-                data: frequencyBand.map(sample => ({ x: sample.frequency_hz, y: sample.amplitude_rdBFS })), // Initial empty data
+                data: currentFrequencyBand.map(sample => ({ x: sample.frequency_hz, y: sample.amplitude_rdBFS })), // Initial empty data
                 borderColor: 'rgb(0, 123, 247)',
                 backgroundColor: 'rgb(0, 123, 247)',
                 borderWidth: 1,
@@ -337,7 +338,7 @@ myChart = new Chart(ctx, {
             },
             {
                 label: 'Right Channel - Amplitude (rdBFS)',
-                data: frequencyBand.map(sample => ({ x: sample.frequency_hz, y: sample.amplitude_rdBFS })), // Initial empty data
+                data: currentFrequencyBand.map(sample => ({ x: sample.frequency_hz, y: sample.amplitude_rdBFS })), // Initial empty data
                 borderColor: 'rgb(255, 0, 255)',//'rgb(0,255,123)', 
                 backgroundColor: 'rgb(255, 0, 255)',//'rgb(0,255,123)', //
                 borderWidth: 1,
@@ -479,11 +480,10 @@ myChart = new Chart(ctx, {
 function generateValuePairs() {
     // Extract the value from the option element
     const selectedIndex = band_selector.selectedIndex;
-    const optionValue = band_selector.options[selectedIndex].value;
 
     // Extract the range from the option value
-    const range = optionValue.match(/\[(\d+),(\d+)\]/).slice(1).map(Number);
-    const [start, end] = range;
+    currentFrequencyBand = []
+    const { start, end } = g_globalFrequencyBand[selectedIndex];
 
     // Initialize the array to hold the value-pairs
     const valuePairs = [];
@@ -492,6 +492,7 @@ function generateValuePairs() {
     for (let x = start; x <= end; x += 4) {
         // Push the value-pair object to the array
         valuePairs.push({ x: x, y: soundFloor });
+        currentFrequencyBand.push(new SpectrumSample({ amplitude_rdBFS : soundFloor, frequency_hz : x }));
     }
 
     return valuePairs;
@@ -528,7 +529,7 @@ function updateChart() {
 let peakAmplitudes = []; 
 const decayRate = 0.005; // Adjust as necessary for your desired decay speed
 
-for (let sample of frequencyBand) {
+for (let sample of currentFrequencyBand) {
     peakAmplitudes.push(new SpectrumSample({ amplitude_rdBFS : soundFloor, frequency_hz : sample.frequency_hz }));
 }
 
