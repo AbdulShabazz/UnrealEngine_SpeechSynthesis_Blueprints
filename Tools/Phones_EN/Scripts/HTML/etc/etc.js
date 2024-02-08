@@ -1,4 +1,286 @@
 
+
+
+offlineAudioCtx = {};
+
+function uploadFileForAnimation(file) {
+    const fileSizeInKB = audioPlayer.size; /* file size in kilobytes (kB) */
+    const durationInSeconds = audioElement.duration; // as obtained from the audio element
+
+    const bitrateInKbps = (fileSizeInKB * 8) / durationInSeconds;
+
+    // 1. Create OfflineAudioContext
+    offlineAudioCtx = new OfflineAudioContext(2, 44100 * audioPlayer.duration, 44100);
+
+    // 2. Fetch the audio file
+    fetch(audioPlayer.src) //'path/to/your/audio/file.mp3'
+        .then(response => response.arrayBuffer())
+        .then(arrayBuffer => offlineAudioCtx.decodeAudioData(arrayBuffer))
+        .then(audioBuffer => {
+            // 3. Decode the audio data and create an AnalyserNode
+            const source = offlineAudioCtx.createBufferSource();
+            source.buffer = audioBuffer;
+
+            const analyser = offlineAudioCtx.createAnalyser();
+            analyser.fftSize = 2048;
+            const bufferLength = analyser.frequencyBinCount;
+            const dataArray = new Uint8Array(bufferLength);
+
+            source.connect(analyser);
+            analyser.connect(offlineAudioCtx.destination); // Connect to the destination
+
+            source.start();
+
+            // 4. Render the data
+            offlineAudioCtx.startRendering().then(renderedBuffer => {
+                // Here you can process the renderedBuffer, but you won't have real-time data
+                // You might have to process the data in chunks and update the chart accordingly
+            });
+        });
+}
+
+function linearAmplitudeFromdBFS(dBFS) {
+    return Math.pow(10, dBFS / 20);
+}
+
+function dBFSTolinearAmplitude(dBFS) {
+    return Math.pow(10, dBFS / 20);
+}
+
+function dBFSFromLinearAmplitude(amplitude) {
+    return 20 * Math.log10(amplitude);
+}
+
+function linearAmplitudeToDBFS (amplitude) {
+    return 20 * Math.log10(amplitude);
+}
+
+/**
+@brief Compute the endianness of the operating system.
+@details Compute the endianness of the operating system. */
+function verifyPlatformIsLittleEndian() {
+    let buffer = new ArrayBuffer(2);
+    let uint8Array = new Uint8Array(buffer);
+    let uint16array = new Uint16Array(buffer);
+    uint8Array[0] = 0xAA; // set first byte
+    uint8Array[1] = 0xBB; // set second byte
+    if (uint16array[0] === 0xBBAA) {
+        return true; /* 'little-endian' */;
+    } else if (uint16array[0] === 0xAABB) {
+        return false; /* 'big-endian' */;
+    } else throw new Error( "Unknown endianness.");
+}
+
+// Custom function to read 3 bytes as 24-bit integer
+DataView.prototype.getUint24 = function(offset, isLittleEndian) {
+    const bytes = isLittleEndian
+        ? [this.getUint8(offset), this.getUint8(offset + 1), this.getUint8(offset + 2)]
+        : [this.getUint8(offset + 2), this.getUint8(offset + 1), this.getUint8(offset)];
+    return (bytes[0] << 16) + (bytes[1] << 8) + bytes[2];
+};
+
+// Custom function to read 36 bits as integer (considering JavaScript Number precision)
+DataView.prototype.getUint36 = function(offset, isLittleEndian) {
+    const bytes = isLittleEndian
+        ? [this.getUint8(offset), this.getUint8(offset + 1), this.getUint8(offset + 2), this.getUint8(offset + 3), this.getUint8(offset + 4)]
+        : [this.getUint8(offset + 4), this.getUint8(offset + 3), this.getUint8(offset + 2), this.getUint8(offset + 1), this.getUint8(offset)];
+    // Combine the 36 bits. Note: JavaScript bitwise operations are 32-bit, hence the separation
+    return (bytes[0] * Math.pow(2, 28)) + (bytes[1] << 20) + (bytes[2] << 12) + (bytes[3] << 4) + (bytes[4] >> 4);
+};
+
+/** 
+@brief extracts the .FLAC metadata from a buffer.
+@details extracts the .FLAC metadata from a buffer.
+@param arrayBuffer - The buffer to convert.
+@returns The .FLAC file Metadata.*/
+function extractFlacMetadata(arrayBuffer) {
+    const isLittleEndian = verifyPlatformIsLittleEndian();
+    const dataView = new DataView(arrayBuffer);
+    let offset = 4; // Usually, metadata starts after the 'fLaC' marker
+
+    // Read STREAMINFO block header (assuming it's the first block)
+    const blockHeader = dataView.getUint32(offset, isLittleEndian);
+    offset += 4;
+    
+    const blockType = blockHeader >> 24; // First byte is block type
+    const blockSize = blockHeader & 0x00FFFFFF; // Last three bytes are block size
+
+    if (blockType !== 0) { // 0 is the type for STREAMINFO
+        throw new Error("First metadata block is not STREAMINFO");
+    }
+
+    // Read STREAMINFO block data
+    const minBlockSize = dataView.getUint16(offset, isLittleEndian);
+    offset += 2;
+
+    const maxBlockSize = dataView.getUint16(offset, isLittleEndian);
+    offset += 2;
+
+    const minFrameSize = dataView.getUint24(offset, isLittleEndian); // Custom function needed to read 3 bytes
+    offset += 3;
+
+    const maxFrameSize = dataView.getUint24(offset, isLittleEndian); // Custom function needed to read 3 bytes
+    offset += 3;
+
+    const sampleRate = dataView.getUint24(offset, isLittleEndian);
+    offset += 3;
+
+    const channelSampleDepth = dataView.getUint8(offset);
+    const channels = (channelSampleDepth >> 4) + 1;
+    const bitsPerSample = ((channelSampleDepth & 0x0F) << 1) + 1;
+    offset += 1;
+
+    const totalSamples = dataView.getUint36(offset, isLittleEndian); // Custom function needed to read 36 bits (4.5 bytes)
+    offset += 4.5;
+
+    // You can calculate duration like this
+    const duration = totalSamples / sampleRate;
+
+    return {
+        minBlockSize,
+        maxBlockSize,
+        minFrameSize,
+        maxFrameSize,
+        sampleRate,
+        channels,
+        bitsPerSample,
+        totalSamples,
+        duration
+    };
+}
+
+/** 
+@brief converts a buffer to WAV audio.
+@details Converts a buffer to WAV audio.
+@param buffer - The buffer to convert.
+@returns The WAV file as a Uint8Array.*/
+function etractWAVMetadata(buffer) {
+    const numberOfChannels = buffer.length;
+    const sampleRate = buffer[0].sampleRate;
+    const totalFrames = buffer[0].length;
+    const bitsPerSample = buffer[0].bitsPerSample;
+    const byteOffset = buffer[0].bitsPerSample / 8; // Calculate byte offset based on bits per sample
+    const maxIntN = Math.pow(2, bitsPerSample - 1) - 1; // 2^23 - 1 = 8_388_607; preserve the sign bit
+    const littleEndianFlag = verifyPlatformIsLittleEndian(); // true for little-endian, false for big-endian
+
+    const blockAlign = numberOfChannels * byteOffset;
+
+    const dataChunkSize = totalFrames * numberOfChannels * byteOffset;
+    const byteRate = sampleRate * blockAlign;
+    const pcm_header_offset = 44;
+
+    // Create a buffer to hold the WAV file data
+    let wavBuffer = new ArrayBuffer(pcm_header_offset + dataChunkSize);
+
+    // Write WAV container headers; (code to write the 'RIFF', 'WAVE', 'fmt ', 'data' chunk headers, etc.)
+    const pcm_wav_header = 44;
+    let current_byte_offset = 0;
+    let view = new DataView(wavBuffer);
+
+    // Write the PCM chunk data
+    let writeChunk = writeInt8;
+    switch (buffer[0].bitsPerSample) {
+        case 8:
+            writeChunk = writeInt8;
+            break;
+        case 16:
+            writeChunk = writeInt16;
+            break;
+        case 24:
+            writeChunk = writeInt24;
+            break;
+        case 32:
+            writeChunk = writeInt32;
+            break;
+        case 64:
+            writeChunk = writeInt64;
+            break;
+    }
+
+    // Write the 'RIFF' audio
+    let nextChunk = 0;
+    for (let i = 0; i < totalFrames; i++) {
+        for (let channel = 0; channel < numberOfChannels; channel++) {
+            let sample = Math.max(-maxIntN, Math.min(maxIntN, buffer[channel][i])); // clamp
+            writeChunk(view, pcm_wav_header + nextChunk, sample, littleEndianFlag);
+            nextChunk += byteOffset;
+        }
+    }
+
+    // Writing the 'RIFF' chunk descriptor
+    current_byte_offset = writeString(view, current_byte_offset, 'RIFF', littleEndianFlag); // ChunkID 'RIFF' (big-endian)
+    //view.setUint32(4, 36 + dataChunkSize, true); // File size - 8 bytes
+    current_byte_offset = writeUint32(view, current_byte_offset, pcm_header_offset - current_byte_offset + dataChunkSize, littleEndianFlag); // File size - 8 bytes
+    //writeString(view, 8, 'WAVE');
+    current_byte_offset = writeString(view, current_byte_offset, 'WAVE', littleEndianFlag);
+    //writeString(view, 12, 'fmt '); // Writing the 'fmt ' sub-chunk
+    current_byte_offset = writeString(view, current_byte_offset, 'fmt ', littleEndianFlag);
+    //view.setUint32(16, 16, true); // Sub-chunk size (16 for PCM)
+    current_byte_offset = writeUint32(view, current_byte_offset, 16, littleEndianFlag); // Sub-chunk size (16 for PCM)
+    //view.setUint16(20, 1, true); // Audio format (1 for PCM)
+    current_byte_offset = writeUint16(view, current_byte_offset, 1, littleEndianFlag); // Audio format (1 for PCM)
+    //view.setUint16(22, numberOfChannels, true);
+    current_byte_offset = writeUint16(view, current_byte_offset, numberOfChannels, littleEndianFlag);
+    //view.setUint32(24, sampleRate, true);
+    current_byte_offset = writeUint32(view, current_byte_offset, sampleRate, littleEndianFlag);
+    //view.setUint32(28, byteRate, true);
+    current_byte_offset = writeUint32(view, current_byte_offset, byteRate, littleEndianFlag);
+    //view.setUint16(32, blockAlign, true);
+    current_byte_offset = writeUint16(view, current_byte_offset, blockAlign, littleEndianFlag);
+    //view.setUint16(34, bitsPerSample, true);
+    current_byte_offset = writeUint16(view, current_byte_offset, bitsPerSample, littleEndianFlag);
+
+    // Writing the 'data' sub-chunk.. //
+
+    //writeString(view, 36, 'data');
+    current_byte_offset = writeString(view, current_byte_offset, 'data', littleEndianFlag);
+    //view.setUint32(40, dataChunkSize, true);
+    current_byte_offset = writeUint32(view, current_byte_offset, dataChunkSize, littleEndianFlag);
+
+    return {
+        minBlockSize,
+        maxBlockSize,
+        minFrameSize,
+        maxFrameSize,
+        sampleRate,
+        channels,
+        bitsPerSample,
+        totalSamples,
+        duration,
+        wavBuffer
+    };
+}
+
+function isSpectrumParsable(buffer) {
+    switch (audioPlayer.type) {
+    
+    }
+}
+
+function parseSpectrum(buffer) {
+    let format = "-";
+    let spectrumAvailable = true;
+    let buff = new Float32Array(0);
+    switch (isSpectrumParsable(buffer)) {
+        case 'wav':
+            format = 'wav';
+            buff = extractWAVMetadata(buffer);
+        case 'flac':
+            format = 'flac';
+            buff = extractFlacMetadata(buffer);
+        default:
+            spectrumAvailable = false;
+    }
+
+    return {
+        spectrumAvailable, 
+        format,
+        buff
+    };
+}
+
+///////////////////////////////////////////////////
+
 function isLittleEndian() {
     const buffer = new ArrayBuffer(4);
     const uint8Array = new Uint8Array(buffer);
