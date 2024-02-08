@@ -1592,7 +1592,7 @@ function writeString(view, offset, string, littleEndianFlag) {
         const codeUnit = string.charCodeAt(i);
 
         // Write the code unit to the DataView as a 16-bit integer
-        view.setUint16(offset + i, codeUnit, littleEndianFlag); // using little-endian format
+        view.setUint8(offset + i, codeUnit, littleEndianFlag); // using little-endian format
     }
 
     // Return the new offset, which is the initial offset plus twice the string's length
