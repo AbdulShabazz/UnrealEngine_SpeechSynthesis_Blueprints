@@ -362,7 +362,7 @@ function triggerSuccessAnimation() {
     let successMessage = document.getElementById('success_message');
   
     // Hide original text and show success message
-    originalText.style.display = 'none';
+    originalText.style.visibility = 'hidden';
     successMessage.style.display = 'block';
     successMessage.style.animation = 'successAnimation 2s forwards';
   
