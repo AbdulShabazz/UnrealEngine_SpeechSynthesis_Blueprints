@@ -1,5 +1,9 @@
 
 
+                    /*
+                    fLaC is designed for streaming, so its 3-bit (PCM) 
+                    bit depth field is encoded in the frame header of the audio packet */
+                    const bitsPerSampleFlag = audioHeader.getUint8(16, platformEndianness);
 
 offlineAudioCtx = {};
 
