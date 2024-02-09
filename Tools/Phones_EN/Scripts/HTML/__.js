@@ -94,6 +94,9 @@ function swapOutFrequencyBands() {
 // REM: Bitrate = Sample Rate * Bit Depth * Number of Channels
 // REM: Sample Rate = Bitrate / (Bit Depth * Number of Channels)
 
+const supportedBitDepthEncodings = [8, 16, 24, 32];
+
+g_bitDepth = supportedBitDepthEncodings[3]; // 32-bit floating point audio (
 g_audioBuffer = [];
 
 var audioContext = new (window.AudioContext || window.webkitAudioContext)();
@@ -104,7 +107,7 @@ var source = audioContext.createMediaElementSource(audioPlayer);
 source.connect(analyser);
 analyser.connect(audioContext.destination);
 // Set up the analyzer
-analyser.fftSize = 2048; // Change this if needed (Must be a power of 2)
+analyser.fftSize = 2048; // default (Must be a power of 2)
 var bufferLength = analyser.frequencyBinCount;
 
 var dataArray = new Uint8Array(bufferLength);
@@ -116,12 +119,34 @@ function updateSpectrum() {
     // Get new amplitude data and update `currentFrequencyBandAmplitudes`...
     const audioBuffer = g_audioBuffer;
 
+    audioBuffer.bitDepth = g_bitDepth;
+
     const getByteFrequencyData = audioBuffer.getByteFrequencyData(audioBuffer);
 
     const duration = audioBuffer.duration;
     const sampleRate = audioBuffer.sampleRate;
     const numberOfChannels = audioBuffer.numberOfChannels;
     const lengthInSeconds = audioBuffer.length;
+
+    // REM: Desired Number of Frequencies per Band or Bin(4) = number_of_bins(160) * Sample Rate(?) / FFT_Size(?); thus solve for FFT_Size -=>
+    // REM: FFT_Size = number_of_bins(160) * Sample Rate(?) / number_of_frequencies_per_bin(4) => 40 * sampleRateconst fftCutOff = 40 * sampleRate;
+    let fftCap = 32; // Minimum fftSize
+
+    // Ensure fftCutOff is within a reasonable range to avoid underflow/overflow
+    const maxFftCutOff = 32768; // Maximum fftSize
+
+    const effectiveFFTCutOff = Math.min(Math.max(fftCutOff, fftCap), maxFftCutOff);
+
+    // Find the nearest power of 2 greater than or equal to effectiveFFTCutOff
+    let mantissa = Math.ceil(Math.log(effectiveFFTCutOff) / Math.log(2));
+
+    fftCap = 1 << mantissa;
+
+    // Ensure fftCap does not exceed the maximum allowed fftSize
+    fftCap = Math.min(fftCap, maxFftCutOff);
+
+    // Set the fftSize
+    analyser.fftSize = fftCap;
 
     let currentFrequencyBandAmplitudes = [];
     if (peakAmplitudes[0].frequency_hz != currentFrequencyBand[0].frequency_hz) {
@@ -158,6 +183,27 @@ function isLittleEndian() {
     } else throw new Error( "Unknown endianness.");
 }
 
+// Helper functions to write strings as 8-bit integers (bytes)
+function writeString(view, offset, string, littleEndianFlag) {
+    for (let i = 0; i < string.length; ++i) {
+        // Get the UTF-16 code unit for each character
+        const codeUnit = string.charCodeAt(i);
+
+        // Write the code unit to the DataView as a 16-bit integer
+        view.setUint8(offset + i, codeUnit, littleEndianFlag); // using little-endian format
+    }
+
+    // Return the new offset, which is the initial offset plus twice the string's length
+    return offset + string.length;
+}
+
+const platformEndianness = isLittleEndian();
+let wavHeader = new DataView(new ArrayBuffer(4), 0, 4);
+let flacHeader = new DataView(new ArrayBuffer(4), 0, 4);
+
+writeString(wavHeader, 0, 'RIFF', platformEndianness); // 0x52494646 {"46464952" little-endian}
+writeString(flacHeader, 0, 'fLaC', platformEndianness); // 0x664C6143 {"664C6143" little-endian}
+
 /** 
 @brief: The audioPlayer object is a reference to the audio element that is currently playing.
 @details: REM:: The AudioContext object is a builtin object. Its functionality can only be invoked fom within an HTML audio control element.*/
@@ -167,12 +213,68 @@ audioPlayer.addEventListener('play', function() {
     fetch(audioPlayer.src)
         .then(response => response.arrayBuffer())
         .then(arrayBuffer => {
-            const platformIsLittleEndian = isLittleEndian();
-            // Create a DataView for reading the MetaData
-            const view = new DataView(arrayBuffer);
+            // Create DataViews for reading the audio (metatable) header
+            const audioHeader = new DataView(arrayBuffer);
 
-            // decode the audio data
-            audioContext.decodeAudioData(arrayBuffer);
+            const headerIntro = audioHeader.getUint32(0, platformEndianness)
+
+            /*
+            Get the bit depth for the supported audio frmats (eg. .WAV), assuming PCM encoding, 
+            for appropriate (amplitude) dynamic range decoding of animations
+
+            Note: The AudioContext actually reads all of these audio attributes 
+            from the metatable file header, except bit-depth, 
+            which we need to know in advance for the animation */
+            if (headerIntro == wavHeader.getUint32(0, platformEndianness) // "RIFF"
+                && (audioHeader.getUint8(20, platformEndianness) & 0x03) == 1) { // No Compression (ie. PCM)
+                    g_bitDepth = audioHeader.getUint16(34, platformEndianness);
+            } else if (headerIntro == flacHeader.getUint32(0, platformEndianness)) { // "fLaC"
+                    /*
+                    fLaC is designed for streaming, so its 3-bit (PCM) 
+                    bit depth field is encoded in the frame header of the audio packet */
+                    const HEADER_OFFSET = 8; // Offset for the HEADERINFO block
+                    const SAMPLE_RATE_OFFSET = 18; // Offset for the sample rate portion in the HEADERINFO block
+
+                    const BIT_FLAG_OFFSET = SAMPLE_RATE_OFFSET + 3; // Offset for the Bit flag (3 bits) after the sample rate
+
+                    // Calculate the start position of the sample rate portion
+                    let sampleRateStartPosition = HEADER_OFFSET + BIT_FLAG_OFFSET;
+
+                    // If endiannessFlag indicates big-endian, swap the byte order
+                    if (platformEndianness === false) { // (big-endian)
+                        sampleRateStartPosition += 1; // Adjust the position to skip the first byte
+                    }
+
+                    // Read the 3-bit Bit flag from the calculated offset
+                    const bitsPerSampleFlag = audioHeader.getUint8(sampleRateStartPosition, 
+                        platformEndianness) & 0b00000111;
+
+                    switch (bitsPerSampleFlag) {
+                        case 0x01: // 8-bit
+                            g_bitDepth = 8;
+                            break;
+                        case 0x02: // 12-bit
+                            g_bitDepth = 12;
+                            break;
+                        case 0x04: // 16-bit
+                            g_bitDepth = 16;
+                            break;
+                        case 0x05: // 20-bit
+                            g_bitDepth = 20;
+                            break;
+                        case 0x06: // 24-bit
+                            g_bitDepth = 24;
+                            break;
+                        case 0x03: // reserved
+                        case 0x07: // 32-bit
+                        default:
+                            g_bitDepth = 32;
+                            break;
+                    }
+            }
+
+            // next step, decode the audio data
+            return audioContext.decodeAudioData(arrayBuffer);
         })
         .then(audioBuffer => {
             //console.info(audioBuffer);
@@ -183,7 +285,7 @@ audioPlayer.addEventListener('play', function() {
             const lengthInSeconds = audioBuffer.length;
             */
             g_audioBuffer = audioBuffer;
-            updateSpectrum();
+            //updateSpectrum();
             //const bitsPerSample = audioBuffer.bitsPerSample;
             // You now have access to the audioBuffer
             // which you can manipulate or play as needed
@@ -510,5 +612,5 @@ window.addEventListener('resize', () => {
 //updateChart();
 
 } catch (e) {
-    console.error(`Unexpected error: ${e}`);
+    console.info(`Unexpected error: ${e.message}\n${e.fileName}: line ${e.lineNumber}: col ${e.columnNumber}\nTrace:\n${e.stack}`);
 }
