@@ -43,7 +43,7 @@ div {
     font-size: 12px;
 }
  
-#drop_zone:hover {
+#drop_zone:hover, .highlight {
     font-weight: bolder;
     background-color: #444;
 }
