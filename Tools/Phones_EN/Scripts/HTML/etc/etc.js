@@ -1,4 +1,9 @@
 
+wavHeader.getUint32(0,true).toString(16);
+
+    
+                    const startPos = 0 + 4; // Position of sample rate in the STREAMINFO FLAC header (a 32-bit field)
+                    const bitsPerSampleFlag = (audioHeader.getUint8(startPos, platformEndianness)  & 0x70) >> 4;
 
                     /*
                     fLaC is designed for streaming, so its 3-bit (PCM) 
