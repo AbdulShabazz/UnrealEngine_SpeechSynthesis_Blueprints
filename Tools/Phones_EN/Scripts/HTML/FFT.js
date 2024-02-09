@@ -3,6 +3,7 @@
  * https://github.com/lamejs/lamejs
  * COPYRIGHT 2009-2013 Gabriel Bouvigne, Krzysztof Nikiel, Nikolaus Voss, Robert Hegemann
  * ALL RIGHTS RESERVED
+ * Creative Commons License v2.0 
  */
 
 // common.js...
