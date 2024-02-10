@@ -273,16 +273,17 @@ audioPlayer.addEventListener('play', function() {
                     }
             }
 
-            // next step, decode the audio data
+            // next step, decode audio
             return audioContext.decodeAudioData(arrayBuffer);
         })
         .then(audioBuffer => {
             //console.info(audioBuffer);
             /*
-            const duration = audioBuffer.duration;
-            const sampleRate = audioBuffer.sampleRate;
-            const numberOfChannels = audioBuffer.numberOfChannels;
-            const lengthInSeconds = audioBuffer.length;
+            const durationInSeconds = audioContext.duration = audioBuffer.duration;
+            const sampleRate = audioContext.sampleRate = audioBuffer.sampleRate;
+            const numberOfChannels = audioContext.numberOfChannels = audioBuffer.numberOfChannels;
+            const lengthInBytes = audioContext.lengthIInBytes = audioBuffer.length;
+            const dynamicRange = audioContext.dynamicRange = Math.pow(2, g_bitDepth - 1) - 1;
             */
             g_audioBuffer = audioBuffer;
             //updateSpectrum();
@@ -355,6 +356,7 @@ function uploadFile(file) {
     audioPlayer.src = url;
     triggerSuccessAnimation();
     file_url.textContent = `${file.name} [ ${file.size} bytes ] -- [ ${url}/${file.name} ]`;
+    info_window.style.display = 'inline';
 }
 
 function triggerSuccessAnimation() {
@@ -404,7 +406,7 @@ myChart = new Chart(ctx, {
         //labels: currentFrequencyBand.map(u => {return u + ' Hz';}), 
         datasets: [
             {
-                label: 'Left Channel - Amplitude (rdBFS)',
+                label: 'Left Channel - Amplitude (ndBFS)',
                 data: currentFrequencyBand.map(sample => ({ x: sample.frequency_hz, y: sample.amplitude_rdBFS })), // Initial empty data
                 borderColor: 'rgb(0, 123, 247)',
                 backgroundColor: 'rgb(0, 123, 247)',
@@ -413,7 +415,7 @@ myChart = new Chart(ctx, {
                 xAxisID: 'x-axis-frequency',
             },
             {
-                label: 'Right Channel - Amplitude (rdBFS)',
+                label: 'Right Channel - Amplitude (ndBFS)',
                 data: currentFrequencyBand.map(sample => ({ x: sample.frequency_hz, y: sample.amplitude_rdBFS })), // Initial empty data
                 borderColor: 'rgb(255, 0, 255)',//'rgb(0,255,123)', 
                 backgroundColor: 'rgb(255, 0, 255)',//'rgb(0,255,123)', //
@@ -430,7 +432,7 @@ myChart = new Chart(ctx, {
                 min: 0,
                 max: 1,
                 title: { 
-                    text: 'rdBFS ( Decibels relative to Full Scale )',
+                    text: 'ndBFS ( Normalized Decibels relative to Full Scale )',
                     display: true,
                 },
                 display: true,
@@ -446,7 +448,7 @@ myChart = new Chart(ctx, {
                     // Include dimensional units in ticks
                     callback: function(value, index, ticks) {
                         // call the default formatter, forwarding `this`
-                        return Chart.Ticks.formatters.numeric.apply(this, [value, index, ticks]) + ' rdBFS';
+                        return Chart.Ticks.formatters.numeric.apply(this, [value, index, ticks]) + ' ndBFS';
                     }
                 }
             },
@@ -455,7 +457,7 @@ myChart = new Chart(ctx, {
                 min: 0,
                 max: 1,
                 title: { 
-                    text: 'rdBFS ( Decibels relative to Full Scale )',
+                    text: 'ndBFS ( Normalized Decibels relative to Full Scale )',
                     display: true,
                 },
                 display: true, 
@@ -471,7 +473,7 @@ myChart = new Chart(ctx, {
                     // Include dimensional units in ticks
                     callback: function(value, index, ticks) {
                         // call the default formatter, forwarding `this`
-                        return Chart.Ticks.formatters.numeric.apply(this, [value, index, ticks]) + ' rdBFS';
+                        return Chart.Ticks.formatters.numeric.apply(this, [value, index, ticks]) + ' ndBFS';
                     }
                 }
             },
@@ -535,7 +537,7 @@ myChart = new Chart(ctx, {
                         let yLabel = tooltipItem.formattedValue;
                         const xLabel = tooltipItem.dataset.label;
                         //if (xLabel.match(/^Amplitude/)) {
-                            yLabel = (xLabel.match(/^L/) ? '(L) ' : '(R)')  + ` - Amplitude: ${yLabel} (rdBFS)`;
+                            yLabel = (xLabel.match(/^L/) ? '(L) ' : '(R)')  + ` - Amplitude: ${yLabel} (ndBFS)`;
                         //}
                         return yLabel;
                     }
@@ -602,6 +604,24 @@ function updateChart() {
 }
 
 // Todo: Call `updateSpectrum` at your desired frame rate
+
+// Sample metadata extraction function
+function getMetadata(file) {
+    // Assuming file contains metadata information
+    // Here, we're just providing a mock response
+    return {
+        duration: "5:32" // Example duration
+    };
+}
+
+document.addEventListener("DOMContentLoaded", function() {
+    // Extract metadata when DOM is loaded
+    var file = "your_audio_file.mp3"; // Replace with your file
+    var metadata = getMetadata(file);
+
+    // Update tooltip with metadata
+    document.getElementById("duration").textContent = metadata.duration;
+});
 
 window.addEventListener('resize', () => {
     // Update the chart
