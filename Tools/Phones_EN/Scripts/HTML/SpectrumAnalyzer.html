@@ -16,9 +16,9 @@
         <canvas id="myChart" width="2160px;" height="660px;"></canvas>
     </div>
     <audio id="audioPlayer" controls>
-        <!--lossy-->    <source id="audioPlayerCTL" src="AE.b_a_t_EN_accent_ad.mp3" type="audio/mpeg">
-        <!--lossless--> <source src="AE.b_a_t_EN_accent_ad.wav" type="audio/wav">
+        <!--lossless--> <source id="audioPlayerCTL" src="AE.b_a_t_EN_accent_ad.wav" type="audio/wav">
         <!--lossless--> <source src="AE.b_a_t_EN_accent_ad.flac" type="audio/flac">
+        <!--lossy-->    <source src="AE.b_a_t_EN_accent_ad.mp3" type="audio/mpeg">
         <!--lossy-->    <source src="AE.b_a_t_EN_accent_ad.aac" type="audio/aac">
         Your browser does not support the audio element.
     </audio>
@@ -26,8 +26,20 @@
         <p id="original_text">Drop audio file here</p>
         <p id="success_message">SUCCESS</p>
     </div>
-    
-    </center><div id="file_url" readonly rows="1"></div></body>
+
+    <div class="container">
+        <div class="flex-item">
+            <div id="file_url" class="file-url" readonly rows="1"></div>
+            <div id="info_window" class="info-window">
+                <div class="info-icon">i</div>
+                <div class="audio-tooltip">
+                    <span class="tooltip">Playback Information<br>Duration: <span id="duration"></span></span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</body>
 
     <footer>
         <script src="chart.js/dist/chart.umd.js"></script>
