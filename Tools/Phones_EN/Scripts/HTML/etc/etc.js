@@ -1,4 +1,19 @@
 
+for (let channel = 0; channel < audioContext.numberOfChannels; ++channel) {
+    const getFloatFrequencyData = analyser.getFloatFrequencyData(LChannelAudio);
+
+    let currentFrequencyBandAmplitudes = [];
+    if (peakAmplitudes[0].frequency_hz != currentFrequencyBand[0].frequency_hz) {
+        swapOutFrequencyBands();
+        populateFrequencyBandAmplitudes(currentFrequencyBandAmplitudes);
+    } else {
+        // Update peakAmplitudes and or apply decay
+        for (let i = 0; i < nextAmplitudes.length; ++i) {
+            updatePeak(peakAmplitudes[i], currentFrequencyBandAmplitudes[i], dynamicRange);
+            currentFrequencyBandAmplitudes.push({ x: nextAmplitudes[i].frequency_hz, y: nextAmplitudes[i].amplitude_rdBFS });
+        }
+    }
+}
 
 function updateChart() {
     requestAnimationFrame(updateChart);
