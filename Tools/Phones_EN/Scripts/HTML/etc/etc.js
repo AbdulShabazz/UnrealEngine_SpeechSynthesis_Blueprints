@@ -1,5 +1,49 @@
 
 
+function updateChart() {
+    requestAnimationFrame(updateChart);
+    // Get the frequency data
+    analyser.getByteFrequencyData(dataArray);
+
+    // Normalize and reduce the array to 24 bands
+    let step = Math.floor(dataArray.length / 24);
+    for (let i = 0; i < 24; ++i) {
+        let value = 0;
+        for (let j = 0; j < step; j++) {
+            value += dataArray[(i * step) + j];
+        }
+        value = value / step;
+        myChart.data.datasets[0].data[i] = value;
+    }
+
+    // Update the chart
+    myChart.update();
+}
+
+// Start the animation
+//updateChart();
+
+// Todo: Call `updateSpectrum` at your desired frame rate
+
+//audioContext.bitDepth = g_bitDepth;
+
+            //console.info(audioBuffer);
+            //g_audioBuffer = audioBuffer;
+            //const bitsPerSample = audioBuffer.bitsPerSample;
+            // You now have access to the audioBuffer
+            // which you can manipulate or play as needed
+            //const op = parseSpectrum(audioPlayer.src);
+            /*
+            let op = {};
+            op.spectrumAvailable = true;
+            op.buffer = audioBuffer.get;
+            if (op.spectrumAvailable) {
+                updateSpectrum(op.buffer);
+            }
+            */
+
+/////////////////////////////////////////////////////
+
 border-width: 5px;
 border-style: solid;
 border-color: #333 transparent transparent transparent transparent;
