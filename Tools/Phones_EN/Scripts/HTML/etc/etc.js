@@ -1,4 +1,9 @@
 
+                //populateFrequencyBandAmplitudes(updatedFrequencyBands);
+                for (const fband of currentFrequencyBand) {
+                    updatedFrequencyBands.push({ x: fband.frequency_hz, y: fband.amplitude_rdBFS });
+                }
+
 for (let channel = 0; channel < audioContext.numberOfChannels; ++channel) {
     const getFloatFrequencyData = analyser.getFloatFrequencyData(LChannelAudio);
 
