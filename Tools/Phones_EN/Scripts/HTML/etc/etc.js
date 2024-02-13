@@ -1,3 +1,42 @@
+
+    //return (amplitude + dynamicRange) / (2 * dynamicRange);
+
+// Sample metadata extraction function
+function getMetadata(file) {
+    // Assuming file contains metadata information
+    // Here, we're just providing a mock response
+    return {
+        duration: "5:32" // Example duration
+    };
+}
+
+document.addEventListener("DOMContentLoaded", function() {
+    // Extract metadata when DOM is loaded
+    var file = "your_audio_file.mp3"; // Replace with your file
+    var metadata = getMetadata(file);
+
+    // Update tooltip with metadata
+    document.getElementById("duration").textContent = metadata.duration;
+});
+
+for (let sample of currentFrequencyBand) {
+    tmpPeakAmplitudes.push(new SpectrumSample({ amplitude_rdBFS : soundFloor, frequency_hz : sample.frequency_hz }));
+}
+
+//let isPlaying = false;
+
+//var audioPlayer = document.getElementById('audioPlayer');
+    //var audioPlayer = document.getElementById('audioPlayer');
+    
+//g_audioBuffer = [];
+    //const bitDepth = audioBuffer.bitDepth;
+
+    //const dynamicRange = Math.pow(2, bitDepth) - 1;
+
+//var bufferLength = analyzer.frequencyBinCount;
+//var dataArray = new Uint8Array(bufferLength);
+//analyzer.getByteTimeDomainData(dataArray);
+
 // Math.pow(10, current.amplitude_rdBFS / 20);
 
                 //populateFrequencyBandAmplitudes(updatedFrequencyBands);
