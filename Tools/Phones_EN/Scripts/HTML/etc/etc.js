@@ -1,3 +1,4 @@
+// Math.pow(10, current.amplitude_rdBFS / 20);
 
                 //populateFrequencyBandAmplitudes(updatedFrequencyBands);
                 for (const fband of currentFrequencyBand) {
