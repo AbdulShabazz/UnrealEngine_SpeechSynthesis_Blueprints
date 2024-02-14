@@ -1,5 +1,46 @@
 
 
+    //const start = selectedIndex * valuesPerOption;
+    //const tmpEnd = selectedIndex * valuesPerOption + valuesPerOption;
+
+const LBANDS = tmpEnd-start;
+const RBANDS = tmpEnd-start;
+/*
+if(currentBand > LBANDS) {
+    break;
+}
+*/
+/*
+if(currentBand > RBANDS) {
+    break;
+}
+*/
+
+// Function to extract range and generate value-pairs
+function generateValuePairs() {
+    // Extract the value from the option element
+    const selectedIndex = band_selector.selectedIndex;
+
+    // Extract the range from the option value
+    let tmpFrequncyBands = [];
+    const { start, end } = g_globalFrequencyBand[selectedIndex];
+
+    // Initialize the array to hold the value-pairs
+    const valuePairs = [];
+
+    // Loop from start to end in steps of 4
+    for (let x = start; x <= end; x += step) {
+        // Push the value-pair object to the array
+        valuePairs.push({ x: x, y: soundFloor });
+        tmpFrequncyBands.push(new SpectrumSample({ amplitude_rdBFS : soundFloor, frequency_hz : x }));
+    }
+
+    currentFrequencyBand.LChannel = [...tmpFrequncyBands]; // Left Channel
+    currentFrequencyBand.RChannel = [...tmpFrequncyBands]; // Right Channel
+
+    return valuePairs;
+}
+
     // 'channels' now contains all channel data arrays from the AudioBuffer
     if (audioBuffer.instanceofFloat32Array) {
         let tmpLChannelDataArray = new Float32Array(LChannelAnalyzer.frequencyBinCount);
