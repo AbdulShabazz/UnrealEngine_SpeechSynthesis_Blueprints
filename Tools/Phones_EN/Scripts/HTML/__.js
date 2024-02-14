@@ -10,43 +10,51 @@ try {
     - .AAC
 */
 
-// Define the start value and the number of steps
-let startValue = 4;
+// globals //
+peakAmplitudes = {}; 
+currentFrequencyBand = {};
+
+// DOM elements
 const step = 4;
-const valuesPerOption = 160; // Number of values in each range
+const soundFloor = 0.01; // Minimum amplitude to be considered as sound
 const totalValues = 20480; // Or any other end value you need
+const valuesPerOption = 160; // Number of values in each range
+const negativeDynamicThreshold = -150; // dBFS
 
 // Clear existing options
 band_selector.innerHTML = '';
 
-// Generate options
+// Build options
 g_globalFrequencyBand = [];
-for (let value = startValue; value <= totalValues; value += valuesPerOption * step) {
-    // Calculate end value for the current range
-    let endValue = value + valuesPerOption * step - step;
 
-    // Ensure endValue does not exceed totalValues
-    if (endValue > totalValues) {
-        endValue = totalValues;
+function buildOptionsElement() {
+    // Define the start value and the number of steps
+    let startValue = 4;
+    for (let value = startValue; value <= totalValues; value += valuesPerOption * step) {
+        // Calculate end value for the current range
+        let endValue = value + valuesPerOption * step - step;
+
+        // Ensure endValue does not exceed totalValues
+        if (endValue > totalValues) {
+            endValue = totalValues;
+        }
+
+        // Create the option element
+        const option = document.createElement('option');
+        g_globalFrequencyBand.push({ start: value, end: endValue });
+        option.textContent = `${value} Hz to ${endValue} Hz`;
+
+        // Append the option to the select element
+        band_selector.appendChild(option);
+
+        // Prepare the next startValue
+        startValue = endValue + step;
     }
-
-    // Create the option element
-    const option = document.createElement('option');
-    g_globalFrequencyBand.push({ start: value, end: endValue });
-    option.textContent = `${value} Hz to ${endValue} Hz`;
-
-    // Append the option to the select element
-    band_selector.appendChild(option);
-
-    // Prepare the next startValue
-    startValue = endValue + step;
 }
 
-//let isPlaying = false;
+buildOptionsElement();
 
-//var audioPlayer = document.getElementById('audioPlayer');
 audioPlayer.addEventListener('onclick', function() {
-    //var audioPlayer = document.getElementById('audioPlayer');
 
     // Change volume (0.0 to 1.0)
     audioPlayer.volume = 0.5;
@@ -68,27 +76,45 @@ audioPlayer.addEventListener('onclick', function() {
 
 });
 
+function clamp(value, min, max) {
+    return Math.min(Math.max(value, min), max);
+}
+
+function normalizeAmplitude(amplitude, dynamicRange) {
+    return (dynamicRange-amplitude) / dynamicRange;
+}
+
 const decayRate = 0.005; // Adjust as necessary for your desired decay speed
 
-function updatePeakAt(peak, current) {
-    if (current.amplitude_rdBFS > peak.amplitude_rdBFS) {
-        peak.amplitude_rdBFS = current.amplitude_rdBFS;
+function updatePeak(peak, dbFS, dynamicRange) {
+    if (dbFS > peak.amplitude_rdBFS) {
+        peak.amplitude_rdBFS = dbFS;
     } else {
         peak.amplitude_rdBFS -= decayRate;
     }
 }
 
 function populateCurrentFrequencyBandAmplitudes(currentFrequencyBandAmplitudes) {
-    for (const fband of currentFrequencyBand) {
+    for (const fband of currentFrequencyBand.LChannel) {
         currentFrequencyBandAmplitudes.push({ x: fband.frequency_hz, y: fband.amplitude_rdBFS });
     }
 }
 
-function swapOutFrequencyBands() {
-    peakAmplitudes = [];
-    for (const fband of currentFrequencyBand) {
-        peakAmplitudes.push( new SpectrumSample({ amplitude_rdBFS : fband.amplitude_rdBFS, frequency_hz : fband.frequency_hz }) );
+function swapOutFrequencyBands(targetFrequency, targetFrequencyEnd) {
+    peakAmplitudes.LChannel = [];
+    peakAmplitudes.RChannel = [];
+    currentFrequencyBand.LChannel = [];
+    currentFrequencyBand.RChannel = [];
+    for (let band = targetFrequency; band <= targetFrequencyEnd; band += step) {
+        peakAmplitudes.LChannel.push( new SpectrumSample({ amplitude_rdBFS : soundFloor, frequency_hz : band }) );
+        peakAmplitudes.RChannel.push( new SpectrumSample({ amplitude_rdBFS : soundFloor, frequency_hz : band }) );
+        currentFrequencyBand.LChannel.push( new SpectrumSample({ amplitude_rdBFS : soundFloor, frequency_hz : band }) );
+        currentFrequencyBand.RChannel.push( new SpectrumSample({ amplitude_rdBFS : soundFloor, frequency_hz : band }) );
     }
+}
+
+function outOfBandFrequencyPairing(targetFrequency, currentFrequency) {
+    return (targetFrequency != currentFrequency);
 }
 
 // REM: Bitrate = Sample Rate * Bit Depth * Number of Channels
@@ -96,75 +122,180 @@ function swapOutFrequencyBands() {
 
 const supportedBitDepthEncodings = [8, 16, 24, 32];
 
-g_bitDepth = supportedBitDepthEncodings[3]; // 32-bit floating point audio (
-g_audioBuffer = [];
+g_bitDepth = supportedBitDepthEncodings[3]; // default 32-bit floating point audio
 
-var audioContext = new (window.AudioContext || window.webkitAudioContext)();
+audioContext = new (window.AudioContext || window.webkitAudioContext)();
 
-var analyser = audioContext.createAnalyser();
-var source = audioContext.createMediaElementSource(audioPlayer);
+LChannelAnalyzer = audioContext.createAnalyser();
+RChannelAnalyzer = audioContext.createAnalyser();
 
-source.connect(analyser);
-analyser.connect(audioContext.destination);
+LChannelAnalyzer.connect(audioContext.destination);
+RChannelAnalyzer.connect(audioContext.destination);
+
+source = audioContext.createMediaElementSource(audioPlayer);
+
+source.connect(LChannelAnalyzer);
+source.connect(RChannelAnalyzer);
+
 // Set up the analyzer
-analyser.fftSize = 2048; // default (Must be a power of 2)
-var bufferLength = analyser.frequencyBinCount;
-
-var dataArray = new Uint8Array(bufferLength);
-
-analyser.getByteTimeDomainData(dataArray);
+LChannelAnalyzer.fftSize = 2048; // default (Should be a power of 2)
+RChannelAnalyzer.fftSize = 2048; // default (Should be a power of 2)
 
 function updateSpectrum() {
     requestAnimationFrame(updateSpectrum);
-    // Get new amplitude data and update `currentFrequencyBandAmplitudes`...
-    const audioBuffer = g_audioBuffer;
+    const audioBuffer = audioContext.audioBufferFloat32Array;
 
-    audioBuffer.bitDepth = g_bitDepth;
-
-    const getByteFrequencyData = audioBuffer.getByteFrequencyData(audioBuffer);
-
-    const duration = audioBuffer.duration;
-    const sampleRate = audioBuffer.sampleRate;
+    // Assuming audioBuffer is your AudioBuffer object
     const numberOfChannels = audioBuffer.numberOfChannels;
-    const lengthInSeconds = audioBuffer.length;
+    // The sample rate of the audio track
+    const sampleRate = audioBuffer.sampleRate; // This should be set to your actual audio track's sample rate
+    const dynamicRange = audioBuffer.dynamicRange; // This should be set to your actual audio track's dynamic range
+    // Desired bandwidth per frequency bin
+    const desiredBandwidthPerBin = step; // 4Hz
 
-    // REM: Desired Number of Frequencies per Band or Bin(4) = number_of_bins(160) * Sample Rate(?) / FFT_Size(?); thus solve for FFT_Size -=>
-    // REM: FFT_Size = number_of_bins(160) * Sample Rate(?) / number_of_frequencies_per_bin(4) => 40 * sampleRateconst fftCutOff = 40 * sampleRate;
-    let fftCap = 32; // Minimum fftSize
+    // Calculate initial fftSize to achieve the desired bandwidth
+    // Define minimum and maximum fftSize constraints
+    // Note: FrequencyBinCount = fftSize / 2
+    const minFFT_CutOff = 32; // Minimum fftSize
+    const maxFFT_CutOff = 32768; // Maximum fftSize 
 
-    // Ensure fftCutOff is within a reasonable range to avoid underflow/overflow
-    const maxFftCutOff = 32768; // Maximum fftSize
+    // Now, analyzer.fftSize is set to a value that provides a 4Hz bandwidth per each frequency bin,
+    // while also being a power of 2 and within the specified constraints.
+    let fftSize = sampleRate / desiredBandwidthPerBin;
 
-    const effectiveFFTCutOff = Math.min(Math.max(fftCutOff, fftCap), maxFftCutOff);
+    // Find the nearest power of 2 greater than or equal to calculated fftSize
+    let mantissa = Math.ceil(Math.log(fftSize) / Math.log(2));
 
-    // Find the nearest power of 2 greater than or equal to effectiveFFTCutOff
-    let mantissa = Math.ceil(Math.log(effectiveFFTCutOff) / Math.log(2));
+    fftSize = 1 << mantissa;
 
-    fftCap = 1 << mantissa;
+    // Ensure fftSize is within constraints
+    fftSize = Math.max(minFFT_CutOff, Math.min(fftSize, maxFFT_CutOff));
 
-    // Ensure fftCap does not exceed the maximum allowed fftSize
-    fftCap = Math.min(fftCap, maxFftCutOff);
+    // Set the fftSize for the analyzer
+    LChannelAnalyzer.fftSize = fftSize;
+    RChannelAnalyzer.fftSize = fftSize;
 
-    // Set the fftSize
-    analyser.fftSize = fftCap;
+    let LChannelDataArray = new Float32Array(LChannelAnalyzer.frequencyBinCount);
+    let RChannelDataArray = new Float32Array(RChannelAnalyzer.frequencyBinCount);
 
-    let currentFrequencyBandAmplitudes = [];
-    if (peakAmplitudes[0].frequency_hz != currentFrequencyBand[0].frequency_hz) {
-        swapOutFrequencyBands();
-        populateFrequencyBandAmplitudes(currentFrequencyBandAmplitudes);
-    } else {
-        // Update peakAmplitudes and apply decay
-        for (let i = 0; i < nextAmplitudes.length; ++i) {
-            updatePeakAt(peakAmplitudes[i], currentFrequencyBandAmplitudes[i]);
-            currentFrequencyBandAmplitudes.push({ x: nextAmplitudes[i].frequency_hz, y: nextAmplitudes[i].amplitude_rdBFS });
-        }
+    LChannelAnalyzer.getFloatFrequencyData(LChannelDataArray); // write in-place to LChannelDataArray
+    RChannelAnalyzer.getFloatFrequencyData(RChannelDataArray); // write in-place to RChannelDataArray
+
+    // Extract the value from the option element's index
+    const selectedIndex = band_selector.selectedIndex;
+
+    //const start = selectedIndex * valuesPerOption;
+    //const tmpEnd = selectedIndex * valuesPerOption + valuesPerOption;
+
+    const start = g_globalFrequencyBand[selectedIndex].start;
+    const tmpEnd = g_globalFrequencyBand[selectedIndex].end;
+
+    if (outOfBandFrequencyPairing(start, currentFrequencyBand.LChannel[0].frequency_hz)) {
+        swapOutFrequencyBands(start, tmpEnd);
     }
 
-    // Update your ChartJS chart with the new `currentFrequencyBandAmplitudes` and `peakAmplitudes`
-    myChart.data.datasets[0].data = currentFrequencyBandAmplitudes; // Current levels LHS
-    myChart.data.datasets[1].data = currentFrequencyBandAmplitudes;  // Current levels RHS
+    const LBANDS = start + Math.min(LChannelDataArray.length, tmpEnd-start);
+    const RBANDS = start + Math.min(RChannelDataArray.length, tmpEnd-start);
+
+    // Update the peak amplitudes and current frequency bands for LHS channel
+    if (numberOfChannels > 0) {
+        const channel = 0;
+        let idx = 0;
+        let currentBand = start;
+        let updatedFrequencyBands = [];
+        for (let band of currentFrequencyBand.LChannel) {
+
+            if(currentBand > LBANDS) {
+                break;
+            }
+
+            const value = LChannelDataArray[currentBand];
+            const clampedValue = clamp(value, negativeDynamicThreshold, 0); // dBFS
+            const currentAmplitude = normalizeAmplitude(Math.abs(clampedValue), Math.abs(negativeDynamicThreshold));// adjusted range from 0.0 to 1.0 
+
+            // Update the amplitude a the current band
+            band.amplitude_rdBFS = currentAmplitude;
+
+            // Update peakAmplitudes and or apply decay
+            updatePeak(peakAmplitudes.LChannel[idx], currentAmplitude, dynamicRange);
+
+            // Since you're working with 32-bit floating-point audio, your values will range from -1.0 to 1.0. //
+            updatedFrequencyBands.push({ x: band.frequency_hz, y: currentAmplitude })
+
+            ++idx;
+            ++currentBand;
+        }
+
+        // Update the ChartJS chart with the new `updatedFrequencyBands` and `peakAmplitudes`
+        myChart.data.datasets[channel].data = updatedFrequencyBands; // Current levels LHS/RHS
+    } // end for (channel of LChannelAudio)
+
+    // Update the peak amplitudes and current frequency bands for RHS channel
+    if (numberOfChannels > 1) {
+        const channel = 1;
+        
+        let idx = 0;
+        let currentBand = start;
+        let updatedFrequencyBands = [];
+        for (let band of currentFrequencyBand.RChannel) {
+
+            if(currentBand > RBANDS) {
+                break;
+            }
+
+            const value = RChannelDataArray[currentBand];
+            const clampedValue = clamp(value, negativeDynamicThreshold, 0); // dBFS
+            const currentAmplitude = normalizeAmplitude(Math.abs(clampedValue), Math.abs(negativeDynamicThreshold));// adjusted range from 0.0 to 1.0 
+
+            // Update the amplitude a the current band
+            band.amplitude_rdBFS = currentAmplitude;
+
+            // Update peakAmplitudes and or apply decay
+            updatePeak(peakAmplitudes.RChannel[idx], currentAmplitude, dynamicRange);
+
+            // Since you're working with 32-bit floating-point audio, your values will range from -1.0 to 1.0. //
+            updatedFrequencyBands.push({ x: band.frequency_hz, y: currentAmplitude })
+
+            ++idx;
+            ++currentBand;
+        }
+
+        // Update the ChartJS chart with the new `updatedFrequencyBands` and `peakAmplitudes`
+        myChart.data.datasets[channel].data = updatedFrequencyBands; // Current levels LHS/RHS
+    } // end for (channel of RChannelAudio)
+
     myChart.update();
 }
+
+function showAudioAttributes(audioBuffer) {
+    const duration = audioBuffer.duration;
+    const bitDepth = audioBuffer.bitDepth;
+    const lengthInBytes = audioBuffer.length;
+    const sampleRate = audioBuffer.sampleRate;
+    const numberOfChannels = audioBuffer.numberOfChannels;
+
+    if (duration) {
+        audio_attributes.appendChild(document.createElement('span')).textContent = `Duration: ${duration} seconds`;
+    }
+
+    if (numberOfChannels) {
+        audio_attributes.appendChild(document.createElement('span')).textContent = `Audio Channels: ${numberOfChannels}`;
+    }
+
+    if (bitDepth) {
+        audio_attributes.appendChild(document.createElement('span')).textContent = `PCM Resolution: ${bitDepth}-Bit`;
+    }
+
+    if (sampleRate) {
+        audio_attributes.appendChild(document.createElement('span')).textContent = `PCM Sample Rate: ${sampleRate} Hz`;
+    }
+
+    if (lengthInBytes) {
+        audio_attributes.appendChild(document.createElement('span')).textContent = `Length: ${lengthInBytes} bytes`;
+    }
+    info_window.style.display = 'inline';
+}
+
 
 /**
 @brief Compute the endianness of the operating system.
@@ -198,8 +329,8 @@ function writeString(view, offset, string, littleEndianFlag) {
 }
 
 const platformEndianness = isLittleEndian();
-let wavHeader = new DataView(new ArrayBuffer(4), 0, 4);
-let flacHeader = new DataView(new ArrayBuffer(4), 0, 4);
+wavHeader = new DataView(new ArrayBuffer(4), 0, 4);
+flacHeader = new DataView(new ArrayBuffer(4), 0, 4);
 
 writeString(wavHeader, 0, 'RIFF', platformEndianness); // 0x52494646 {"46464952" little-endian}
 writeString(flacHeader, 0, 'fLaC', platformEndianness); // 0x664C6143 {"664C6143" little-endian}
@@ -208,6 +339,7 @@ writeString(flacHeader, 0, 'fLaC', platformEndianness); // 0x664C6143 {"664C6143
 @brief: The audioPlayer object is a reference to the audio element that is currently playing.
 @details: REM:: The AudioContext object is a builtin object. Its functionality can only be invoked fom within an HTML audio control element.*/
 audioPlayer.addEventListener('play', function() {
+    let instanceofFloat32Array_ = false;
     audioPlayer.paused = false;
     
     fetch(audioPlayer.src)
@@ -277,28 +409,18 @@ audioPlayer.addEventListener('play', function() {
             return audioContext.decodeAudioData(arrayBuffer);
         })
         .then(audioBuffer => {
-            //console.info(audioBuffer);
-            /*
-            const durationInSeconds = audioContext.duration = audioBuffer.duration;
-            const sampleRate = audioContext.sampleRate = audioBuffer.sampleRate;
-            const numberOfChannels = audioContext.numberOfChannels = audioBuffer.numberOfChannels;
-            const lengthInBytes = audioContext.lengthIInBytes = audioBuffer.length;
-            const dynamicRange = audioContext.dynamicRange = Math.pow(2, g_bitDepth - 1) - 1;
-            */
-            g_audioBuffer = audioBuffer;
-            //updateSpectrum();
-            //const bitsPerSample = audioBuffer.bitsPerSample;
-            // You now have access to the audioBuffer
-            // which you can manipulate or play as needed
-            //const op = parseSpectrum(audioPlayer.src);
-            /*
-            let op = {};
-            op.spectrumAvailable = true;
-            op.buffer = audioBuffer.get;
-            if (op.spectrumAvailable) {
-                updateSpectrum(op.buffer);
-            }
-            */
+
+            const durationInSeconds = audioBuffer.duration;
+            const sampleRate = audioBuffer.sampleRate;
+            const numberOfChannels = audioBuffer.numberOfChannels;
+            const lengthInBytes = audioBuffer.lengthInBytes = audioBuffer.length;
+            const dynamicRange = audioBuffer.dynamicRange = Math.pow(2, g_bitDepth) - 1;
+            const bitDepth = audioBuffer.bitDepth = g_bitDepth;
+            audioContext.audioBufferFloat32Array = audioBuffer;
+
+            showAudioAttributes(audioBuffer);
+            updateSpectrum();
+
         })
     .catch(e => console.error(e));
 
@@ -342,8 +464,10 @@ dropZone.addEventListener('drop', handleDrop, false);
 
 function handleDrop(e) {
     let dt = e.dataTransfer;
+
     let files = dt.files;
 
+    info_window.style.display = 'none';
     handleFiles(files);
 }
 
@@ -356,7 +480,6 @@ function uploadFile(file) {
     audioPlayer.src = url;
     triggerSuccessAnimation();
     file_url.textContent = `${file.name} [ ${file.size} bytes ] -- [ ${url}/${file.name} ]`;
-    info_window.style.display = 'inline';
 }
 
 function triggerSuccessAnimation() {
@@ -371,6 +494,7 @@ function triggerSuccessAnimation() {
     // After animation, show original text and hide success message
     setTimeout(() => {
       successMessage.style.display = 'none';
+      originalText.style.visibility = 'visible';
       originalText.style.display = 'block';
       successMessage.style.animation = 'none'; // Reset animation
     }, 2000); // Corresponds to the animation duration
@@ -384,18 +508,27 @@ class SpectrumSample extends Object {
     }
 }
 
-// globals //
-const soundFloor = 0.01; // Minimum amplitude to be considered as sound
-peakAmplitudes = []; 
-currentFrequencyBand = [];
+function populateFrequencyBands() {
+    let tmpFrequncyBands = [];
+    let tmpPeakAmplitudes = [];
+    const defaultSelectedIndex = 0;
 
-for (let sample of currentFrequencyBand) {
-    peakAmplitudes.push(new SpectrumSample({ amplitude_rdBFS : soundFloor, frequency_hz : sample.frequency_hz }));
+    const selectedOption = g_globalFrequencyBand[defaultSelectedIndex];
+
+    const BAND = selectedOption.end;
+
+    for (let band = selectedOption.start; band <= BAND; band += step) {
+        tmpFrequncyBands.push(new SpectrumSample({ amplitude_rdBFS : soundFloor, frequency_hz : band }));
+        tmpPeakAmplitudes.push(new SpectrumSample({ amplitude_rdBFS : soundFloor, frequency_hz : band }));
+    }
+
+    peakAmplitudes.LChannel = [...tmpPeakAmplitudes]; // Left Channel
+    peakAmplitudes.RChannel = [...tmpPeakAmplitudes]; // Right Channel
+    currentFrequencyBand.LChannel = [...tmpFrequncyBands]; // Left Channel
+    currentFrequencyBand.RChannel = [...tmpFrequncyBands]; // Right Channel
 }
 
-for (let i = g_globalFrequencyBand[0].start; i < g_globalFrequencyBand[0].end; i += 4) {
-    currentFrequencyBand.push(new SpectrumSample({ amplitude_rdBFS : soundFloor, frequency_hz : i }));
-}
+populateFrequencyBands();
 
 // Set up the initial chart
 //Chart.defaults.borderColor = '#333';
@@ -407,7 +540,7 @@ myChart = new Chart(ctx, {
         datasets: [
             {
                 label: 'Left Channel - Amplitude (ndBFS)',
-                data: currentFrequencyBand.map(sample => ({ x: sample.frequency_hz, y: sample.amplitude_rdBFS })), // Initial empty data
+                data: currentFrequencyBand.LChannel.map(sample => ({ x: sample.frequency_hz, y: sample.amplitude_rdBFS })), // Initial empty data
                 borderColor: 'rgb(0, 123, 247)',
                 backgroundColor: 'rgb(0, 123, 247)',
                 borderWidth: 1,
@@ -416,7 +549,7 @@ myChart = new Chart(ctx, {
             },
             {
                 label: 'Right Channel - Amplitude (ndBFS)',
-                data: currentFrequencyBand.map(sample => ({ x: sample.frequency_hz, y: sample.amplitude_rdBFS })), // Initial empty data
+                data: currentFrequencyBand.RChannel.map(sample => ({ x: sample.frequency_hz, y: sample.amplitude_rdBFS })), // Initial empty data
                 borderColor: 'rgb(255, 0, 255)',//'rgb(0,255,123)', 
                 backgroundColor: 'rgb(255, 0, 255)',//'rgb(0,255,123)', //
                 borderWidth: 1,
@@ -560,7 +693,7 @@ function generateValuePairs() {
     const selectedIndex = band_selector.selectedIndex;
 
     // Extract the range from the option value
-    currentFrequencyBand = []
+    let tmpFrequncyBands = [];
     const { start, end } = g_globalFrequencyBand[selectedIndex];
 
     // Initialize the array to hold the value-pairs
@@ -570,8 +703,11 @@ function generateValuePairs() {
     for (let x = start; x <= end; x += 4) {
         // Push the value-pair object to the array
         valuePairs.push({ x: x, y: soundFloor });
-        currentFrequencyBand.push(new SpectrumSample({ amplitude_rdBFS : soundFloor, frequency_hz : x }));
+        tmpFrequncyBands.push(new SpectrumSample({ amplitude_rdBFS : soundFloor, frequency_hz : x }));
     }
+
+    currentFrequencyBand.LChannel = [...tmpFrequncyBands]; // Left Channel
+    currentFrequencyBand.RChannel = [...tmpFrequncyBands]; // Right Channel
 
     return valuePairs;
 }
@@ -583,53 +719,10 @@ band_selector.addEventListener('change', function(e) {
     myChart.update();
 });
 
-function updateChart() {
-    requestAnimationFrame(updateChart);
-    // Get the frequency data
-    analyser.getByteFrequencyData(dataArray);
-
-    // Normalize and reduce the array to 24 bands
-    let step = Math.floor(dataArray.length / 24);
-    for (let i = 0; i < 24; ++i) {
-        let value = 0;
-        for (let j = 0; j < step; j++) {
-            value += dataArray[(i * step) + j];
-        }
-        value = value / step;
-        myChart.data.datasets[0].data[i] = value;
-    }
-
-    // Update the chart
-    myChart.update();
-}
-
-// Todo: Call `updateSpectrum` at your desired frame rate
-
-// Sample metadata extraction function
-function getMetadata(file) {
-    // Assuming file contains metadata information
-    // Here, we're just providing a mock response
-    return {
-        duration: "5:32" // Example duration
-    };
-}
-
-document.addEventListener("DOMContentLoaded", function() {
-    // Extract metadata when DOM is loaded
-    var file = "your_audio_file.mp3"; // Replace with your file
-    var metadata = getMetadata(file);
-
-    // Update tooltip with metadata
-    document.getElementById("duration").textContent = metadata.duration;
-});
-
 window.addEventListener('resize', () => {
     // Update the chart
     myChart.resize();
 });
-
-// Start the animation
-//updateChart();
 
 } catch (e) {
     console.info(`Unexpected error: ${e.message}\n${e.fileName}: line ${e.lineNumber}: col ${e.columnNumber}\nTrace:\n${e.stack}`);
