@@ -1,4 +1,27 @@
 
+
+    // 'channels' now contains all channel data arrays from the AudioBuffer
+    if (audioBuffer.instanceofFloat32Array) {
+        let tmpLChannelDataArray = new Float32Array(LChannelAnalyzer.frequencyBinCount);
+        let tmpRChannelDataArray = new Float32Array(RChannelAnalyzer.frequencyBinCount);
+        LChannelAnalyzer.getFloatFrequencyData(tmpLChannelDataArray);
+        RChannelAnalyzer.getFloatFrequencyData(tmpRChannelDataArray);
+        LChannelDataArray = tmpLChannelDataArray;
+        RChannelDataArray = tmpRChannelDataArray;
+    } else {
+        let tmpLChannelDataArray = new Uint8Array(LChannelAnalyzer.frequencyBinCount);
+        let tmpRChannelDataArray = new Uint8Array(RChannelAnalyzer.frequencyBinCount);
+        LChannelAnalyzer.getByteFrequencyData(LChannelDataArray);
+        RChannelAnalyzer.getByteFrequencyData(RChannelDataArray);
+        LChannelDataArray = tmpLChannelDataArray;
+        RChannelDataArray = tmpRChannelDataArray;
+    } // end if (ChannelAudio[0] instanceof Float32Array)
+    
+var ChannelAudio = [];
+for (var i = 0; i < numberOfChannels; i++) {
+    ChannelAudio.push(audioBuffer.getChannelData(i));
+}
+
     //return (amplitude + dynamicRange) / (2 * dynamicRange);
 
 // Sample metadata extraction function
