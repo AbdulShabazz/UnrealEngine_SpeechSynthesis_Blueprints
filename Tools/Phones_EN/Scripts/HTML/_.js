@@ -5,6 +5,9 @@ g_default_amplitude = -6.0;
 g_default_lineTension = 0.0;
 g_bezier_lineTension = 0.3;
 
+// Javascript supports up to 16 decimal places of precision (ie. 3.14159265358979323)
+//Math.PI_HiRes = 3.14159265358979323846264338327950288419716939937510582097494459230781640628620899862803482534211706798214808651328230664709384460955058223172535940812848111745028410270193852110555964462294895493038196;
+
 function clamp(value, min, max) {
     return Math.min(Math.max(value, min), max);
 }
@@ -918,7 +921,7 @@ RemoveFramesBTN.addEventListener('click', function() {
     }
 });
 
-// Show/Hide JSON Text Area
+// Show/Hide JSON Text Area Element
 function showTAElement({ jsonINDIR = 'out' }={})
 {
     popupContainer.style.display = 'flex';
@@ -943,7 +946,7 @@ function showTAElement({ jsonINDIR = 'out' }={})
     }
 }
 
-// Show/Hide JSON Text Area
+// Show/Hide JSON Text Area Element
 function hideTAElement()
 {
     popupContainer.style.display = 'none';
@@ -1352,62 +1355,175 @@ class FWaveform extends Object {
 /**
 @brief linear spline (interpolation) function.
 @details linear spline (interpolation) function.
-@param formant - The formant object.
-@param the_interpolation_frame - The frame to interpolate.
+@param pts - The formant object.
+@param dt - The frame to interpolate.
 @param audio_component - The audio component to interpolate (eg. 'amplitude' or 'frequency').
 @returns point */
-function linear_spline_interpolation (formant,the_interpolation_frame,audio_component)
+function linear_spline_interpolation (pts,dt,audio_component)
 {
-    if (formant.length == 0 )
+    if (pts.length == 0 )
         throw ("runtime_error: Not enough frames for linear interpolation within the specified oscillator interval.");
 
     // Find the interval [x_i, x_i+1] that contains x
-    const I = formant.length-1;
-    const II = formant.length-2;
+    const I = pts.length-1;
+    const II = pts.length-2;
     for (let i = 0; i < II; ++i) {
-        const frame_1 = formant[i].frame;
-        const frame_2 = formant[i+1].frame;
-        const audio_component_1 = audio_component === "amplitude" ? formant[i].amplitude : formant[i].frequency ;
-        const audio_component_2 = audio_component === "amplitude" ? formant[i+1].amplitude : formant[i+1].frequency ;
-        if (the_interpolation_frame > frame_1 && the_interpolation_frame < frame_2) {
-            const dt = (the_interpolation_frame - audio_component_1) / (audio_component_1 - frame_2);
+        const frame_1 = pts[i].frame;
+        const frame_2 = pts[i+1].frame;
+        const audio_component_1 = audio_component === "amplitude" ? pts[i].amplitude : pts[i].frequency ;
+        const audio_component_2 = audio_component === "amplitude" ? pts[i+1].amplitude : pts[i+1].frequency ;
+        if (dt > frame_1 && dt < frame_2) {
+            const dt = (dt - audio_component_1) / (audio_component_1 - frame_2);
             return (1 - dt) * audio_component_1 + dt * audio_component_2;
         }
     }
 
     // Handle extrapolation cases
-    const frame_1 = formant[0].frame;
-    const frame_2 = formant[I].frame;
-    const audio_component_1 = audio_component === "amplitude" ? formant[0].amplitude : formant[0].frequency ;
-    const audio_component_2 = audio_component === "amplitude" ? formant[I].amplitude : formant[I].frequency ;
-    if (the_interpolation_frame <= frame_1) {
+    const frame_1 = pts[0].frame;
+    const frame_2 = pts[I].frame;
+    const audio_component_1 = audio_component === "amplitude" ? pts[0].amplitude : pts[0].frequency ;
+    const audio_component_2 = audio_component === "amplitude" ? pts[I].amplitude : pts[I].frequency ;
+    if (dt <= frame_1) {
         return  audio_component_1;
-    } else if (the_interpolation_frame >= frame_2) {
+    } else if (dt >= frame_2) {
         return  audio_component_2;
     }
 
-    throw ("runtime_error: unspecfied linear spline interpolation error.");
+    throw ("runtime_error: unspecfied (linear) spline interpolation error.");
 } // end of linear_spline_interpolation
+
+/**
+@brief Sine interpolation function.
+@details Sine interpolation function.
+@param pts  The formant object.
+@param idx  The index of the formant.
+@param dt  The frame to interpolate.
+@param audio_component  The audio component to interpolate (eg. 'amplitude' or 'frequency'). 
+@returns p_result: The oscillator signal at frame (dt) */
+function sinusoidal_spline_interpolation(pts, idx, dt, audio_component)
+{
+    if (!((idx + 2) in pts) || dt > 1) {
+        throw ("runtime_error: Not enough inter-frame interpolation \
+        steps for sinusoidal interpolation within the specified oscillator interval: [0, 1]");
+    }
+
+    let amplitude_retval = 0;
+
+    switch (audio_component) {
+        case "amplitude":
+        if (pts[idx + 0].amplitude < pts[idx + 1].amplitude 
+         && pts[idx + 1].amplitude > pts[idx + 2].amplitude)
+        {
+            // construct a sine arc from the 1st quadrant [0, pi/2(0.5)])
+            const ts = 1.0 / (pts[idx + 2].amplitude - pts[idx + 0].amplitude);
+            amplitude_retval = pts[idx + 1].amplitude * Math.cos(2 * Math.PI * (dt * ts));
+        }
+        else if (pts[idx + 0].amplitude < pts[idx + 1].amplitude 
+        && pts[idx + 1].amplitude < pts[idx + 2].amplitude)
+        {
+            // construct a sine arc from the 2nd quadrant [pi/4(0.25), 3*pi/4(0.75)])
+            const ts = 1.0 / (pts[idx + 2].amplitude - pts[idx + 0].amplitude);
+            amplitude_retval = pts[idx + 1].amplitude * Math.cos(2 * Math.PI * (dt * ts));
+        }
+        else if (pts[idx + 0].amplitude > pts[idx + 1].amplitude 
+        && pts[idx + 1].amplitude < pts[idx + 2].amplitude)
+        {
+            // construct a sine arc from the 3rd quadrant [pi/2(0.5), pi(1)])
+            const ts = 1.0 / (pts[idx + 2].amplitude - pts[idx + 0].amplitude);
+            amplitude_retval = pts[idx + 1].amplitude * Math.cos(2 * Math.PI * (dt * ts));
+        }
+        else if (pts[idx + 0].amplitude < pts[idx + 1].amplitude 
+        && pts[idx + 1].amplitude < pts[idx + 2].amplitude)
+        {
+            // construct a sine arc from the 4th quadrant [3*pi/4(0.57), 3*pi/2(1.25)])
+            const ts = 1.0 / (pts[idx + 2].amplitude - pts[idx + 0].amplitude);
+            amplitude_retval = pts[idx + 1].amplitude * Math.cos(2 * Math.PI * (dt * ts));
+        }
+        break;
+
+        case "frequency":
+        break;
+
+        default:
+        break;
+    }
+
+    return amplitude_retval;
+}
 
 /**
  * @brief Bezier spline (interpolation) function.
  * @details Bezier spline (interpolation) function.
- * @param formant - The formant object.
- * @param the_interpolation_frame - The frame to interpolate.
+ * @param pts - The formant object.
+ * @param dt - The frame to interpolate. Normalized to the range [0.0, 1.0].
  * @param audio_component - The audio component to interpolate (eg. 'amplitude' or 'frequency').
- * @returns point
- */
-function bezier_spline_interpolation (formant,the_interpolation_frame,audio_component)
+ * @returns point */
+function bezier_spline_interpolation (pts, idx, dt, audio_component)
 {
-    if (formant.length < 4 || the_interpolation_frame > 1)
-        return pts;
+    if (dt > 1) {
+        throw ("runtime_error: Not enough inter-frame interpolation \
+        steps for Bezier interpolation within the specified oscillator interval [0, 1]");
+    }
+    
+    let n = 0;
+    let amplitude_retval = 0;
+    const dt_i = 1 - dt;
 
-    const p0 = pts[0].mult_scalar(Math.pow(1 - the_interpolation_frame, 3));
-    const p1 = pts[1].mult_scalar(3 * Math.pow(1 - the_interpolation_frame, 2) * the_interpolation_frame);
-    const p2 = pts[2].mult_scalar(3 * (1 - the_interpolation_frame) * Math.pow(the_interpolation_frame, 2));
-    const p3 = pts[3].mult_scalar(Math.pow(the_interpolation_frame, 3));
+    if (((idx + 1) in formant)) {
+        ++n;
+    }
 
-    return p0.add_point(p1.add_point(p2.add_point(p3)));
+    if (((idx + 2) in formant)) {
+        ++n;
+    }
+
+    if (((idx + 3) in formant)) {
+        ++n;
+    }
+
+    if (((idx + 4) in formant)) {
+        ++n;
+    }
+    
+    switch (audio_component) {
+        case "amplitude":
+        if (n === 0) {
+            // Single point
+            amplitude_retval = pts[idx + 0].amplitude;
+        } else if (n === 1) {
+            // Linear Bezier curve
+            amplitude_retval = (dt_i) * pts[idx + 0].amplitude + dt * pts[idx + 1].amplitude;
+        } else if (n === 2) {
+            // Quadratic Bezier curve
+            amplitude_retval = Math.pow(dt_i, 2) 
+                * pts[idx + 0].amplitude + 2 * (dt_i) * dt * pts[idx + 1].amplitude 
+                + Math.pow(dt, 2) * pts[idx + 2].amplitude;
+        } else if (n === 3) {
+            // Cubic Bezier curve
+            amplitude_retval = Math.pow(dt_i, 3) 
+                * pts[idx + 0].amplitude + 3 * Math.pow(dt_i, 2) * dt 
+                * pts[idx + 1].amplitude + 3 * (dt_i) * Math.pow(dt, 2) 
+                * pts[idx + 2].amplitude + Math.pow(dt, 3) * pts[idx + 3].amplitude;
+        } else {
+            // Quartic Bezier curve
+            amplitude_retval = pts[idx + 0].amplitude * (Math.pow(dt_i, 3));
+                + pts[idx + 1].amplitude * (3 * Math.pow(dt_i, 2) * dt);
+                + pts[idx + 2].amplitude * (3 * (dt_i) * Math.pow(dt, 2));
+                + pts[idx + 3].amplitude * (Math.pow(dt, 3));
+        }
+        break;
+
+        case "frequency":
+            
+        break;
+
+        default:
+        // pts;
+        break;
+
+    }
+
+    return amplitude_retval;
 }
 
 function has_shape(a,b)
@@ -1425,12 +1541,11 @@ function generateComplexSignal(shapes_oscilatorParamsVec
     , customUpdateCallback) {
 
     let frame_idx = 0;
+    let waveform = new FWaveform();
     let audioFrames_float64Vec = [];
 
-    let waveform = new FWaveform();
-
     for (const shape_oscillatorParams of shapes_oscilatorParamsVec) {
-        var outShape = 0;
+        let outShape = 0;
 
         // Custom updates using the lambda function
         if (customUpdateCallback) {
@@ -1868,11 +1983,11 @@ AudioBTN.addEventListener('click', function() {
     // Bard: Here's the JavaScript code to generate a sinusoidal audio wveform of 1s duration at PCM 24 bit/48 kHz sampling:
 
     // Define desired .WAV audio parameters 
-    // (largest file decode: 768000 Hz @ 32-bit PCM)
-    // (largest file playback: 192000 Hz @ 32-bit PCM)
-    const sampleRate = 192000; // Unlimited Rate, though 384000 Hz Max decodable playback @ 32-bit PCM
+    // (largest PCM decode: PCM 768000 Hz @ 32-bit)
+    // (largest Javascript PCM encoded file playback: PCM 192000 Hz @ 32-bit)
+    const sampleRate = 192000; // Unlimited Rate supported, though Javascript supports up to PCM 384000 Hz Max decodable @ 32-bit
     const bitsPerSample = 32; // 32-bit MAX
-    const frequency = 440; // Hz (e.g., 440 Hz for A4)
+    const frequency = 440; // Hz (Tone A4)
     const duration = 1; // 1 second
     const amplitude = 0.4; // 0.5 for a comfortable volume
 
