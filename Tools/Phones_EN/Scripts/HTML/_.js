@@ -1393,62 +1393,85 @@ function linear_spline_interpolation (pts,dt,audio_component)
 } // end of linear_spline_interpolation
 
 /**
-@brief Sine interpolation function.
-@details Sine interpolation function.
-@param pts  The formant object.
-@param idx  The index of the formant.
-@param dt  The frame to interpolate.
-@param audio_component  The audio component to interpolate (eg. 'amplitude' or 'frequency'). 
-@returns p_result: The oscillator signal at frame (dt) */
-function sinusoidal_spline_interpolation(pts, idx, dt, audio_component)
-{
-    if (!((idx + 2) in pts) || dt > 1) {
-        throw ("runtime_error: Not enough inter-frame interpolation \
-        steps for sinusoidal interpolation within the specified oscillator interval: [0, 1]");
-    }
+@brief Utility module for sinusoidal spline interpolation
+@details Utility module for sinusoidal spline interpolation  */
+const interpolationUtils = {
+    ensureEnoughPoints: function(pts, idx) {
+        if (!(idx + 2 in pts)) {
+            throw new Error("runtime_error: Not enough inter-frame interpolation\
+            steps for sinusoidal interpolation within the specified oscillator interval: [0, 1]");
+        }
+    },
 
-    let amplitude_retval = 0;
+    calculateSinusoidalValue: function(amp, freq, ts) {
+        return amp * Math.cos(2 * Math.PI * (freq * ts));
+    },
+
+    getInterpolationFactor: function(frameStart, frameEnd, iframe) {
+        return (frameStart + iframe) / (frameStart + frameEnd);
+    },
+
+    // Linear Interpolation (LERP) function
+    LERP: function(start, end, factor) {
+        return (1 - factor) * start + factor * end;
+    }
+};
+
+/**
+@brief Sine interpolation function.
+@details Sine interpolation function.  Using the sinusoidal approach to produce arcs between specified quadrants based on the trend of amplitude changes across three points.
+@param pts  The formant object.
+@param idx  The index of the formant object.
+@param iframe  The frame to interpolate. Normalized to the range [0.0, 1.0].
+@param amp  The amplitude of the oscillator signal.
+@param freq  The frequency of the oscillator signal.
+@param audio_component  The audio component to interpolate (eg. 'amplitude' or 'frequency'). 
+@returns p_result: The oscillator signal at frame (frame) */
+function sinusoidal_spline_interpolation(pts, idx, iframe, amp, freq, audio_component) {
+    interpolationUtils.ensureEnoughPoints(pts, idx);
+
+    let retval = 0;
+    let saturated = false; // Assuming 'saturated' should be false to indicate active interpolation
+
+    const ddf1 = idx + 1 in pts ? interpolationUtils.getInterpolationFactor(pts[idx].frame, pts[idx + 1].frame, iframe) : 0;
+    const ddf2 = idx + 2 in pts ? interpolationUtils.getInterpolationFactor(pts[idx + 1].frame, pts[idx + 2].frame, iframe) : 0;
 
     switch (audio_component) {
         case "amplitude":
-        if (pts[idx + 0].amplitude < pts[idx + 1].amplitude 
-         && pts[idx + 1].amplitude > pts[idx + 2].amplitude)
-        {
-            // construct a sine arc from the 1st quadrant [0, pi/2(0.5)])
-            const ts = 1.0 / (pts[idx + 2].amplitude - pts[idx + 0].amplitude);
-            amplitude_retval = pts[idx + 1].amplitude * Math.cos(2 * Math.PI * (dt * ts));
-        }
-        else if (pts[idx + 0].amplitude < pts[idx + 1].amplitude 
-        && pts[idx + 1].amplitude < pts[idx + 2].amplitude)
-        {
-            // construct a sine arc from the 2nd quadrant [pi/4(0.25), 3*pi/4(0.75)])
-            const ts = 1.0 / (pts[idx + 2].amplitude - pts[idx + 0].amplitude);
-            amplitude_retval = pts[idx + 1].amplitude * Math.cos(2 * Math.PI * (dt * ts));
-        }
-        else if (pts[idx + 0].amplitude > pts[idx + 1].amplitude 
-        && pts[idx + 1].amplitude < pts[idx + 2].amplitude)
-        {
-            // construct a sine arc from the 3rd quadrant [pi/2(0.5), pi(1)])
-            const ts = 1.0 / (pts[idx + 2].amplitude - pts[idx + 0].amplitude);
-            amplitude_retval = pts[idx + 1].amplitude * Math.cos(2 * Math.PI * (dt * ts));
-        }
-        else if (pts[idx + 0].amplitude < pts[idx + 1].amplitude 
-        && pts[idx + 1].amplitude < pts[idx + 2].amplitude)
-        {
-            // construct a sine arc from the 4th quadrant [3*pi/4(0.57), 3*pi/2(1.25)])
-            const ts = 1.0 / (pts[idx + 2].amplitude - pts[idx + 0].amplitude);
-            amplitude_retval = pts[idx + 1].amplitude * Math.cos(2 * Math.PI * (dt * ts));
-        }
-        break;
+            // Assuming amplitude should also follow a sinusoidal interpolation for smooth transitions
+            // aplitude interpolation might not require quadrant-based logic but rather a smooth transition across the defined range
+            if (pts[idx].frame <= iframe && iframe <= pts[idx + 1].frame) {
+                // For simplicity, interpolate frequency linearly across the entire range, then apply sinusoidal modulation
+                const linearAmpInterpolation = interpolationUtils.LERP(pts[idx].amplitude, pts[idx + 1].amplitude, ddf1);
+                // Apply a sinusoidal modulation based on linearly interpolated frequency
+                retval = interpolationUtils.calculateSinusoidalValue(linearAmpInterpolation, freq, iframe);
+            } else if (pts[idx + 1].frame <= iframe && iframe <= pts[idx + 2].frame) {
+                const linearAmpInterpolation = interpolationUtils.LERP(pts[idx + 1].amplitude, pts[idx + 2].amplitude, ddf2);
+                // Apply a sinusoidal modulation based on linearly interpolated frequency
+                retval = interpolationUtils.calculateSinusoidalValue(linearAmpInterpolation, freq, iframe);
+            }
+            break;
 
         case "frequency":
-        break;
+            // Assuming frequency should also follow a sinusoidal interpolation for smooth transitions
+            // Frequency interpolation might not require quadrant-based logic but rather a smooth transition across the defined range
+            if (pts[idx].frame <= iframe && iframe <= pts[idx + 1].frame) {
+                // For simplicity, interpolate frequency linearly across the entire range, then apply sinusoidal modulation
+                const linearFreqInterpolation = interpolationUtils.LERP(pts[idx].frequency, pts[idx + 1].frequency, ddf1);
+                // Apply a sinusoidal modulation based on linearly interpolated frequency
+                retval = interpolationUtils.calculateSinusoidalValue(amp, linearFreqInterpolation, iframe);
+            } else if (pts[idx + 1].frame <= iframe && iframe <= pts[idx + 2].frame) {
+                const linearFreqInterpolation = interpolationUtils.LERP(pts[idx + 1].frequency, pts[idx + 2].frequency, ddf2);
+                // Apply a sinusoidal modulation based on linearly interpolated frequency
+                retval = interpolationUtils.calculateSinusoidalValue(amp, linearFreqInterpolation, iframe);
+            }
+            break;
 
         default:
-        break;
+            throw new Error(`Unsupported audio component: ${audio_component}`);
     }
 
-    return amplitude_retval;
+    return { retval, saturated };
 }
 
 /**
@@ -1547,7 +1570,7 @@ function generateComplexSignal(shapes_oscilatorParamsVec
     for (const shape_oscillatorParams of shapes_oscilatorParamsVec) {
         let outShape = 0;
 
-        // Custom updates using the lambda function
+        // Custom updates using lambda
         if (customUpdateCallback) {
             outShape = customUpdateCallback(
                 this,
@@ -1560,7 +1583,9 @@ function generateComplexSignal(shapes_oscilatorParamsVec
                 const startingShape = outShape;
                 /*
                 const hz = bezier_spline_interpolation(shape_oscillatorParams, frame_idx, "frequency");
-                const db = bezier_spline_interpolation(shape_oscillatorParams, frame_idx, "amplitude");*/
+                const db = bezier_spline_interpolation(shape_oscillatorParams, frame_idx, "amplitude");
+                const hz = sinusoidal_spline_interpolation(shape_oscillatorParams, frame_idx, "frequency");
+                const db = sinusoidal_spline_interpolation(shape_oscillatorParams, frame_idx, "amplitude");*/
                 const hz = linear_spline_interpolation(shape_oscillatorParams, frame_idx, "frequency");
                 const db = linear_spline_interpolation(shape_oscillatorParams, frame_idx, "amplitude");
                 
