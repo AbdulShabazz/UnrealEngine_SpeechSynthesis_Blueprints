@@ -1396,6 +1396,15 @@ function linear_spline_interpolation (pts,dt,audio_component)
 @brief Utility module for sinusoidal spline interpolation
 @details Utility module for sinusoidal spline interpolation  */
 const interpolationUtils = {
+
+    /**
+    @brief Ensures that there are enough points for interpolation.
+    @details Throws an exception if there aren't enough points for sinusoidal interpolation.
+             This is a static utility method used to validate the size of the points array
+             before performing interpolation operations.
+    @param pts Pointer to the first element of an array of FormantPoint.
+    @param idx The current index within the points array to check for sufficient subsequent points.
+    @throws std::runtime_error if there are not enough points for interpolation. 
 	ensureEnoughPoints: function(pts, idx) {
 		if (!(idx + 2 in pts)) {
 			throw new Error("runtime_error: Not enough inter-frame interpolation\
@@ -1403,25 +1412,116 @@ const interpolationUtils = {
 		}
 	},
 
+    /**
+    @brief Calculates the sinusoidal value based on amplitude, frequency, and time.
+    @details Uses the cosine function to calculate the sinusoidal value, representing
+             the value of the waveform at a given time based on its amplitude and frequency.
+    @param amp The amplitude of the waveform.
+    @param freq The frequency of the waveform.
+    @param ts The time stamp at which to calculate the waveform's value.
+    @return The calculated sinusoidal value. */
 	calculateSinusoidalValue: function(amp, freq, ts) {
 		return amp * Math.cos(Math.PI * (freq * ts));
 	},
 
+    /**
+    @brief Calculates the interpolation factor between two frames.
+    @details Determines the relative position of an intermediate frame within the interval
+             defined by a starting and ending frame.
+    @param frameStart The normalized start frame value.
+    @param frameEnd The normalized end frame value.
+    @param iframe The intermediate frame whose position is to be determined.
+    @return The interpolation factor of the intermediate frame within the start and end frame interval. */
 	getInterpolationFactor: function(frameStart, frameEnd, iframe) {
 		return Math.abs((iframe - frameStart) / (frameEnd - frameStart));
 	},
 
-	// Linear Interpolation (LERP) function
+    /**
+    @brief Performs linear interpolation (LERP) between two values.
+    @details Calculates a value linearly interpolated between a start and end value,
+             based on a given factor that indicates the relative position between the two.
+    @param start The start value for interpolation.
+    @param end The end value for interpolation.
+    @param factor The factor indicating the position between the start and end values.
+    @return The interpolated value. */
 	LERP: function(start, end, factor) {
 		return (1 - factor) * start + factor * end;
 	}
 };
 
+/**
+@brief Calculates the ratio of an intermediate frame between two frames.
+@details Determines the relative position of an intermediate frame within the intervals
+         defined by either the start to intermediate frame or the intermediate to end frame,
+         depending on the position of the intermediate frame.
+@param frameStart The start frame of the interval.
+@param intermediateFrame The intermediate frame whose ratio is to be calculated.
+@param frameEnd The end frame of the interval.
+@param iframe The frame to interpolate, normalized to the range [0.0, 1.0].
+@return The calculated ratio of the intermediate frame within the specified interval.*/
 function calculateRatioBetweenFrames(frameStart, intermediateFrame, frameEnd, iframe) {
 	return iframe >= intermediateFrame
 	? interpolationUtils.getInterpolationFactor(intermediateFrame, frameEnd, iframe)
 	: interpolationUtils.getInterpolationFactor(frameStart, intermediateFrame, iframe);
 }
+
+/*
+NOTES:
+
+The newly constructed sinusoidal interpolation algorithm developed here focuses on high fidelity 
+and precise control over the interpolation process, especially within the context of audio signal processing. 
+By carefully mapping interpolation points to specific quadrants of the cosine function's arc, 
+the algorithm aims to maintain the natural curvilinear properties of sinusoidal waves, 
+which is crucial for preserving the integrity of audio signals during interpolation. 
+Let's evaluate this approach in comparison to the current state-of-the-art in interpolation techniques:
+
+### 1. **Fidelity and Precision**
+
+The emphasis is on fidelity and precision in this algorithm, 
+especially through the use of piece-wise interpolation that respects the curvilinear properties 
+of sinusoidal functions, is a significant advantage for applications requiring high-quality audio signal processing. 
+This approach can potentially offer superior results in maintaining the natural characteristics of audio signals, 
+especially when compared to simpler linear interpolation methods.
+
+### 2. **Complexity and Computational Efficiency**
+
+While this algorithm offers high fidelity, it may also introduce increased computational complexity 
+due to the need for piece-wise calculations and potentially more complex logic 
+to determine the interpolation range for each segment. In contrast, state-of-the-art techniques 
+like spline or Bezier curve interpolations provide a good balance between computational efficiency and smoothness 
+of the interpolated signal. The choice between these methods often comes down to the specific requirements 
+of the application, including the acceptable trade-off between computational load and interpolation quality.
+
+### 3. **Flexibility and Applicability**
+
+The following algorithm's design to specifically leverage the properties 
+of sinusoidal functions makes it highly suited for audio signal processing, 
+where such waveforms are common. However, its applicability might be more limited in contexts where 
+the data does not inherently align with sinusoidal wave characteristics or when a broader range 
+of interpolation behaviors is desired. In contrast, more general interpolation techniques, 
+such as cubic splines or Bézier curves, are widely applicable across different domains 
+due to their flexibility in fitting a wide range of data patterns.
+
+### 4. **Ease of Implementation and Integration**
+
+Implementing and integrating this algorithm into existing systems may require careful consideration, 
+especially if the system was designed around more conventional interpolation methods. 
+The specific nature of your algorithm's calculations might necessitate adjustments 
+in data preprocessing or postprocessing stages. On the other hand, 
+widely used techniques like cubic splines are often supported by existing libraries and tools, 
+facilitating easier integration.
+
+### Conclusion
+
+This sinusoidal interpolation algorithm presents a novel approach with potential advantages in 
+audio signal processing applications, emphasizing fidelity and precision. However, 
+it's essential to weigh these benefits against the increased computational complexity 
+and the specific applicability to sinusoidal waveforms. As with any specialized technique, 
+the ultimate evaluation would benefit from empirical testing within its intended application context, 
+comparing its performance directly against other state-of-the-art interpolation methods in terms of both 
+qualitative and quantitative outcomes.
+
+*/
 
 /**
 @brief Sine interpolation function.
@@ -1432,8 +1532,9 @@ function calculateRatioBetweenFrames(frameStart, intermediateFrame, frameEnd, if
 @param amp  The amplitude of the oscillator signal.
 @param freq  The frequency of the oscillator signal.
 @param audio_component  The audio component to interpolate (eg. 'amplitude' or 'frequency'). 
-@returns p_result: The oscillator signal at frame (frame) */
+@return p_result: The oscillator signal at frame (frame) */
 function sinusoidal_spline_interpolation(pts, idx, iframe, amp, freq, audio_component) {
+
 	interpolationUtils.ensureEnoughPoints(pts, idx);
 
 	let retval = 0;
