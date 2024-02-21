@@ -1475,17 +1475,17 @@ function sinusoidal_spline_interpolation(pts, idx, iframe, amp, freq, audio_comp
 				// Interpolate the appropraite cosine interval for the amplitude value at the frame (iframe) between the range [0, pi/2]
 				// Available ranges are [0, pi/4] and [pi/4, pi/2]
 				if (amplitudeIsMonotonicallyIncreasing) {
-					tsRangeStart = !iframeIsBeyondTheMidpoint ? 0 : Math.PI / 4;
-					tsRangeEnd = !iframeIsBeyondTheMidpoint ? Math.PI / 4 : Math.PI / 2;
-				} else if (amplitudeIsCresting) {
-					tsRangeStart = !iframeIsBeyondTheMidpoint ? 0 : Math.PI / 4;
-					tsRangeEnd = !iframeIsBeyondTheMidpoint ? Math.PI / 4 : Math.PI / 2;
-				} else if (amplitudeIsTroughing) {
-					tsRangeStart = !iframeIsBeyondTheMidpoint ? 0 : Math.PI / 4;
-					tsRangeEnd = !iframeIsBeyondTheMidpoint ? Math.PI / 4 : Math.PI / 2;
+					tsRangeStart = !iframeIsBeyondTheMidpoint ? Math.PI : 3 * Math.PI/4;
+					tsRangeEnd = !iframeIsBeyondTheMidpoint ? 3 * Math.PI/4: 2 * Math.PI;
+				} else if (amplitudeIsCresting) { // non-sign preseerving
+					tsRangeStart = !iframeIsBeyondTheMidpoint ? Math.PI / 2 : Math.PI;
+					tsRangeEnd = !iframeIsBeyondTheMidpoint ? Math.PI : 2 * Math.PI;
+				} else if (amplitudeIsTroughing) { // sign preserving
+					tsRangeStart = !iframeIsBeyondTheMidpoint ? Math.PI / 2 : Math.PI;
+					tsRangeEnd = !iframeIsBeyondTheMidpoint ? Math.PI : 2 * Math.PI;
 				} else if (amplitudeIsMonotonicallyDecreasing) {
-					tsRangeStart = !iframeIsBeyondTheMidpoint ? 0 : Math.PI / 4;
-					tsRangeEnd = !iframeIsBeyondTheMidpoint ? Math.PI / 4 : Math.PI / 2;
+					tsRangeStart = !iframeIsBeyondTheMidpoint ? 0 : Math.PI / 2;
+					tsRangeEnd = !iframeIsBeyondTheMidpoint ? Math.PI / 2 : Math.PI;
 				}
 
 				// Which frame interval? Calculate ratio between the current frame and the next frame
@@ -1494,7 +1494,7 @@ function sinusoidal_spline_interpolation(pts, idx, iframe, amp, freq, audio_comp
 					, pts[idx + 2].frame
 					, iframe);
 
-				// Interpolate the amplitude at the frame (iframe) between the range [0, pi/2]
+				// Interpolate an amplitude for the frame at iframe, between the range [0, pi/2]
 				const A = ddf <= 0.5
 					? interpolationUtils.LERP(pts[idx + 0].amplitude, pts[idx + 1].amplitude, ddf)
 					: interpolationUtils.LERP(pts[idx + 1].amplitude, pts[idx + 2].amplitude, ddf);
@@ -1506,7 +1506,59 @@ function sinusoidal_spline_interpolation(pts, idx, iframe, amp, freq, audio_comp
 			break;
 
 		case "frequency":
-			break;
+
+            const frequencyIsMonotonicallyIncreasing =
+                (pts[idx].frequency <= pts[idx + 1].frequency
+                && pts[idx + 1].frequency <= pts[idx + 2].frequency);
+
+            const frequencyIsCresting =
+                (pts[idx].frequency <= pts[idx + 1].frequency
+                && pts[idx + 1].frequency >= pts[idx + 2].frequency);
+
+            const frequencyIsTroughing =
+                (pts[idx].frequency >= pts[idx + 1].frequency
+                && pts[idx + 1].frequency <= pts[idx + 2].frequency);
+
+            const frequencyIsMonotonicallyDecreasing =
+                (pts[idx].frequency >= pts[idx + 1].frequency
+                && pts[idx + 1].frequency >= pts[idx + 2].frequency);
+
+            const iframeIsBeyondTheMidpoint2 = iframe > pts[idx + 1].frame;
+
+            let tsRangeStart2, tsRangeEnd2;
+
+            // Interpolate the appropraite cosine interval for the frequency value at the frame (iframe) between the range [0, pi/2]
+            // Available ranges are [0, pi/4] and [pi/4, pi/2]
+            if (frequencyIsMonotonicallyIncreasing) {
+                tsRangeStart2 = !iframeIsBeyondTheMidpoint2 ? Math.PI : 3 * Math.PI/4;
+                tsRangeEnd2 = !iframeIsBeyondTheMidpoint2 ? 3 * Math.PI/4: 2 * Math.PI;
+            } else if (frequencyIsCresting) { // non-sign preseerving
+                tsRangeStart2 = !iframeIsBeyondTheMidpoint2 ? Math.PI / 2 : Math.PI;
+                tsRangeEnd2 = !iframeIsBeyondTheMidpoint2 ? Math.PI : 2 * Math.PI;
+            } else if (frequencyIsTroughing) { // sign preserving
+                tsRangeStart2 = !iframeIsBeyondTheMidpoint2 ? Math.PI / 2 : Math.PI;
+                tsRangeEnd2 = !iframeIsBeyondTheMidpoint2 ? Math.PI : 2 * Math.PI;
+            } else if (frequencyIsMonotonicallyDecreasing) {
+                tsRangeStart2 = !iframeIsBeyondTheMidpoint2 ? 0 : Math.PI / 2;
+                tsRangeEnd2 = !iframeIsBeyondTheMidpoint2 ? Math.PI / 2 : Math.PI;
+            }
+
+            // Which frame interval? Calculate ratio between the current frame and the next frame
+            const ddf2 = calculateRatioBetweenFrames(pts[idx + 1].frame
+                , pts[idx + 1].frame
+                , pts[idx + 2].frame
+                , iframe);
+
+            // Interpolate a frequency for the frame at iframe, between the range [0, pi/2]
+            const F = ddf2 <= 0.5
+                ? interpolationUtils.LERP(pts[idx + 0].frequency, pts[idx + 1].frequency, ddf2)
+                : interpolationUtils.LERP(pts[idx + 1].frequency, pts[idx + 2].frequency, ddf2);
+
+            const ts2 = interpolationUtils.LERP(tsRangeStart2, tsRangeEnd2, ddf2);
+
+            retval = interpolationUtils.calculateSinusoidalValue(amp, F, ts2);
+
+        break;
 
 		default:
 			throw new Error(`Unsupported audio component: ${audio_component}`);
