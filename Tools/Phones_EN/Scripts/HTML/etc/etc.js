@@ -1,5 +1,11 @@
 
 
+// Javascript supports up to 16 decimal places of precision (ie. 3.14159265358979323)
+//Math.PI_HiRes = 3.14159265358979323846264338327950288419716939937510582097494459230781640628620899862803482534211706798214808651328230664709384460955058223172535940812848111745028410270193852110555964462294895493038196;
+
+
+//
+
     //const start = selectedIndex * valuesPerOption;
     //const tmpEnd = selectedIndex * valuesPerOption + valuesPerOption;
 
@@ -219,7 +225,7 @@ border-color: #333 transparent transparent transparent transparent;
 
 wavHeader.getUint32(0,true).toString(16);
 
-    
+
                     const startPos = 0 + 4; // Position of sample rate in the STREAMINFO FLAC header (a 32-bit field)
                     const bitsPerSampleFlag = (audioHeader.getUint8(startPos, platformEndianness)  & 0x70) >> 4;
 
