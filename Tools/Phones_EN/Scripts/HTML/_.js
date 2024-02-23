@@ -1447,6 +1447,7 @@ const interpolationUtils = {
 	LERP: function(start, end, factor) {
 		return (1 - factor) * start + factor * end;
 	}
+
 };
 
 /**
