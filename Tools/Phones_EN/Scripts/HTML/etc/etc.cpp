@@ -1,4 +1,29 @@
 
+/* 
+    if (blendParams == BLEND_COMPONENT::amplitude
+        && time >= blendStart
+        && time <= blendEnd ) 
+    {
+        const double b_bandwidth = blendEnd - blendStart;
+        const double a_bandwidth = std::abs(amplitudeEnd - amplitudeStart);
+
+        if (amplitudeStart >= amplitudeEnd) 
+        {
+            const double bl_step = a_bandwidth / b_bandwidth;
+
+            amplitude = amplitudeStart - bl_step * (time - blendStart);
+        } else {
+            const double bl_step = a_bandwidth / b_bandwidth;
+
+            amplitude = amplitudeStart + bl_step * (time - blendStart);
+        }
+    } else if (blendParams == BLEND_COMPONENT::amplitude
+        && time >= blendEnd) {
+
+        amplitude = amplitudeEnd;
+    }
+*/
+
 //#include <unordered_map>
 //#include <functional>
 
