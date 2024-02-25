@@ -1,4 +1,7 @@
 
+
+	//waveform_container.appendChild(waveform_viewer_canvas);
+    
 /*
 	var waveform_viewer_canvas = document.createElement('canvas');
 
