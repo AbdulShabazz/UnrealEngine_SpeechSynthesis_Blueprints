@@ -1,4 +1,9 @@
 
+	//document.getElementById('waveform_container').style.wdith = 'fit-content'; // Show the overlay
+	//document.getElementById('waveform_container').style.height = '600px'; // Show the overlay
+	//document.getElementById('waveform_container').style.display = 'flex'; // Show the overlay
+	//document.getElementById('waveform_viewer_canvas').style.wdith = '1200px'; // Show the overlay
+    
 	//document.getElementById('waveform_container').classList.add('formant-graph-canvas');
 /*
 const chart_ctx = waveform_viewer_canvas.getContext('2d');
