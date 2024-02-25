@@ -2379,6 +2379,7 @@ var chart_viewer_config = {
 		},
 		responsive: true, // Makes the chart responsive to window resizing
         animation: false, // Disable chart animations ( performance)
+		maintainAspectRatio: true, // Maintain aspect ratio
 		plugins: {
 			legend: {
 				labels: {
@@ -2478,7 +2479,8 @@ Cpp20BTN.addEventListener('click', function() {
 function showOverlayWithData(data) {
 	var ctx = document.getElementById('waveform_viewer_canvas').getContext('2d');
 
-	if (!window.overlayChart) { // Check if the chart instance already exists
+	// Check if the chart instance already exists
+	if (!window.overlayChart) {
 		// Initialize the chart if it doesn't exist
 		window.overlayChart = new Chart(ctx, chart_viewer_config);
 	}
@@ -2489,19 +2491,23 @@ function showOverlayWithData(data) {
 	window.overlayChart.data.datasets[leftChannelData].data = data[leftChannelData]; // Update L-Channel data
 	window.overlayChart.data.datasets[rightChannelData].data = data[rightChannelData]; // Update R-Channel data
 
-	document.getElementById('popupContainer').style.display = 'block'; // Show the overlay
-	document.getElementById('waveform_container').style.wdith = 'fit-content'; // Show the overlay
-	document.getElementById('waveform_container').style.height = '600px'; // Show the overlay
-	document.getElementById('waveform_container').style.display = 'flex'; // Show the overlay
-	document.getElementById('waveform_viewer_canvas').style.wdith = '1200px'; // Show the overlay
+	waveform_viewer_canvas.style.width = '1200px'; // Show the overlay
+	waveform_viewer_canvas.style.height = '1000px'; // Show the overlay
 
 	window.overlayChart.update(); // Update the chart
+
+	popupContainer.style.display = 'block'; // Show the overlay
+	json_form_class.style.display = 'block'; // Hide the overlay
+
+	JsonTA.style.display = 'none';
+	jsonFORM.style.display = 'none';
+	slider_container.style.display = 'none';
 }
 
 function closeOverlay() {
-	document.getElementById('popupContainer').style.display = 'none'; // Show the overlay
-	document.getElementById('waveform_container').style.display = 'none'; // Show the overlay
-	//document.getElementById('waveform_container').classList.remove('formant-graph-canvas');
+	popupContainer.style.display = 'none'; // Show the overlay
+	json_form_class.style.display = 'none'; // Hide the overlay
+	waveform_container.style.display = 'none'; // Show the overlay
 }
 
 okBTN.addEventListener('click', function(e) {
