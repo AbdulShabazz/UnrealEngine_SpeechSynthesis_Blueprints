@@ -15,7 +15,7 @@ select:hover {
     color: #eee;
 }
 
-#editor-container {
+#editor-container, .waveform-container {
     position: relative;
     display: grid;
     background-color: #333; /* Adjust to match the image */
@@ -94,8 +94,14 @@ select:hover {
 
 /* Color-coding for dropdowns */
 
-#formant-graph {
+#formant-graph, .formant-graph-canvas {
     background-color: rgb(50, 50, 50); /* Set your desired color */
+}
+
+.formant-graph-canvas {
+    width: fit-content;
+    height: 600px;
+    display: contents;
 }
 
   /* Container style */
