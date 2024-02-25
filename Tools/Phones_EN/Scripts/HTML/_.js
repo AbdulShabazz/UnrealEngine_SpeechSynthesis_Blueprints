@@ -924,13 +924,13 @@ RemoveFramesBTN.addEventListener('click', function() {
 // Show/Hide JSON Text Area Element
 function showTAElement({ jsonINDIR = 'out' }={})
 {
-	popupContainer.style.display = 'flex';
 	switch (jsonINDIR) {
 		case 'in':
 		JsonTA.style.display = 'block';
 		json_form_class.style.display = 'block';
 		jsonFORM.style.display = 'inline-block';
 		jsonFORM.jsonIndirection = jsonINDIR;
+		waveform_container.style.display = 'none';
 		break;
 
 		case 'out':
@@ -938,12 +938,25 @@ function showTAElement({ jsonINDIR = 'out' }={})
 		json_form_class.style.display = 'block';
 		jsonFORM.style.display = 'none';
 		jsonFORM.jsonIndirection = jsonINDIR;
+		waveform_container.style.display = 'none';
 		break;
 
 		case 'slider':
 		slider_container.style.display = 'inline-block';
+		waveform_container.style.display = 'none';
+		JsonTA.style.display = 'none';
+		break;
+
+		case 'waveform':
+		JsonTA.style.display = 'none';
+		jsonFORM.style.display = 'none';
+		slider_container.style.display = 'none';
+		waveform_container.style.display = 'inline-block';
 		break;
 	}
+
+	// Show the popup container
+	popupContainer.style.display = 'flex';
 }
 
 // Show/Hide JSON Text Area Element
@@ -955,6 +968,7 @@ function hideTAElement()
 	jsonFORM.jsonIndirection = 'none';
 	JsonTA.style.display = 'none';
 	slider_container.style.display = 'none';
+	waveform_container.style.display = 'none';
 }
 
 CloseJsonBTN.addEventListener('click', function() {
@@ -2262,9 +2276,232 @@ AudioBTN.addEventListener('click', function() {
 	const audio_frames = generateComplexSignal(Formants, null);
 });
 
+// Create a new CurveViewer chart instance
+var chart_viewer_config = {
+	type: 'line',
+	data: {
+		datasets: [{
+			label: 'Left Channel',
+			data: [0].map((chart_amplitude/* item */, chart_frame /* idx*/) => ({y:chart_amplitude, x:chart_frame})),
+			borderColor: 'blue',
+			backgroundColor: 'rgb(0, 0, 255)',
+			yAxisID: 'y-axis-amplitude-L',
+			xAxisID: 'x-axis-frame',
+			showLine: false, // Prevents drawing the line
+		}, {
+			label: 'Right Channel',
+			data: [0].map((chart_amplitude/* item */, chart_frame /* idx*/) => ({y:chart_amplitude, x:chart_frame})),
+			borderColor: 'green',
+			backgroundColor: 'rgb(0, 140, 0)',
+			yAxisID: 'y-axis-amplitude-R',
+			xAxisID: 'x-axis-frame-dupl',
+			showLine: false, // Prevents drawing the line
+		}]
+	},
+	options: {
+		scales: {
+			'y-axis-amplitude-L': {
+				type: 'linear',
+				title: { 
+					text: 'dBFS ( Decibels relative to Full Scale )',
+					display: true,
+				},
+				display: true,
+				position: 'left',
+				grid: {
+					drawOnChartArea: true
+				},
+				ticks: {
+					// Include a UNITS placeholder in the ticks
+					callback: function(value, index, ticks) {
+						// call the default formatter, forwarding `this`
+						return Chart.Ticks.formatters.numeric.apply(this, [value, index, ticks]) + ' dBFS';
+					}
+				}
+			},
+			'y-axis-amplitude-R': {
+				type: 'linear',
+				title: { 
+					text: 'dBFS ( Decibels relative to Full Scale )',
+					display: true,
+				},
+				display: true,
+				position: 'right',
+				grid: {
+					drawOnChartArea: false
+				},
+				ticks: {
+					// Include a UNITS placeholder in the ticks
+					callback: function(value, index, ticks) {
+						// call the default formatter, forwarding `this`
+						return Chart.Ticks.formatters.numeric.apply(this, [value, index, ticks]) + ' dBFS';
+					}
+				}
+			},
+			'x-axis-frame': {
+				type: 'linear',
+				title: { 
+					text: 'Audio Sample ( Frame ) ',
+					display: true,
+				},
+				display: true,
+				position: 'bottom',
+				grid: {
+					drawOnChartArea: false
+				},
+				ticks: {
+					// Include a dollar sign in the ticks
+					callback: function(value, index, ticks) {
+						// call the default formatter, forwarding `this`
+						return Chart.Ticks.formatters.numeric.apply(this, [value, index, ticks]);
+					}
+				}
+			},
+			'x-axis-frame-dupl': {
+				type: 'linear',
+				title: { 
+					text: 'Audio Sample ( Frame ) ',
+					display: true,
+				},
+				display: true,
+				position: 'top',
+				grid: {
+					drawOnChartArea: false
+				},
+				ticks: {
+					// Include a dollar sign in the ticks
+					callback: function(value, index, ticks) {
+						// call the default formatter, forwarding `this`
+						return Chart.Ticks.formatters.numeric.apply(this, [value, index, ticks]);
+					}
+				}
+			}
+		},
+		responsive: true, // Makes the chart responsive to window resizing
+		plugins: {
+			legend: {
+				labels: {
+					fontSize: 14 // Legend font size
+				}
+			},
+			tooltip: {
+				// Enable custom tooltips
+				enabled: true,
+				mode: 'index',
+				position: 'nearest',
+				bodyFontSize: 12, // Tooltip font size
+				callbacks: {
+					title: function(tooltips, data) {
+						// Assuming the first dataset is for amplitude and has complete frame and time_step data
+						const tt = tooltips[0];
+						//const tt2 = tooltips[1];
+						//const tmpTimeStep = tt.label;
+						const tmpFrame = tt.label;
+						//const tmpFrame = tt2.label;
+						/*
+						const tmpAmplitude = tt.formattedValue;
+						const tmpfrequency = tt2.formattedValue;
+						*/
+						return `Frame: ${tmpFrame}`;
+					},
+					label: function(tooltipItem, data) {
+						// tooltipItem is an object containing properties of the tooltip
+						// data is an object containing all data passed to the chart
+						let yLabel = tooltipItem.formattedValue;
+						const xLabel = tooltipItem.dataset.label;
+						if (xLabel.match(/^Left/)) {
+							yLabel = `Amplitude: ${yLabel} dBFS`;
+						} else if (xLabel.match(/^Right/)) {
+							yLabel = `Amplitude: ${yLabel} dBFS`;
+						}
+						return yLabel;
+					}
+				}
+			},
+		},
+	}
+};
+
+//waveform_viewer_canvas.style.width = "600px";
+//waveform_viewer_canvas.style.height  = "200px";
+
 Cpp20BTN.addEventListener('click', function() {
-	OutJsonBTN.click();
+
+	// Bard: Here's the JavaScript code to generate a sinusoidal audio wveform of 1s duration at PCM 24 bit/48 kHz sampling:
+
+	// Define desired .WAV audio parameters 
+	// (largest PCM decode: PCM 768000 Hz @ 32-bit)
+	// (largest Javascript PCM encoded file playback: PCM 192000 Hz @ 32-bit)
+	const sampleRate = 192000; // Unlimited Rate supported, though Javascript supports up to PCM 384000 Hz Max decodable @ 32-bit
+	const bitsPerSample = 32; // 32-bit MAX
+	const frequency = 440; // Hz (Tone A4)
+	const duration = 1; // 1 second
+	const amplitude = 0.4; // 0.5 for a comfortable volume
+
+	const I = Math.min(20000, duration * sampleRate);
+
+	// Create an audio buffer with appropriate settings
+	let channelDataLeft = new Float64Array (I);
+	let channelDataRight = new Float64Array (I);
+
+	channelDataLeft.sampleRate = sampleRate;
+	channelDataLeft.bitsPerSample = bitsPerSample;
+
+	channelDataRight.sampleRate = sampleRate;
+	channelDataRight.bitsPerSample = bitsPerSample;
+
+	// Generate the sine wave data
+	//const maxInt24 = Math.pow(2, bitsPerSample - 1) - 1; // 2^23 - 1 = 8_388_607; preserve the sign bit
+	for (let i = 0; i < I; ++i) {
+		const time = i / sampleRate; // returns a value between 0 and 1
+		const value = Math.sin(2 * Math.PI * frequency * time) * amplitude;
+
+		// Ensure the value is positive for dBFS conversion
+		const absValue = Math.abs(value);
+
+		// Convert to dBFS and consider the case when absValue is 0
+		//const dBFS = absValue > 0 ? 20 * Math.log10(absValue) : -Infinity;
+
+		const nsample = value; //value * maxInt24; // Scale for eg. 24-bit audio
+
+		channelDataLeft[i] = nsample;
+		channelDataRight[i] = (i > 0) ? channelDataLeft[i-1] : 0;  // offset channel samples by 1 for a perceived stereo signal
+	}
+
+	showOverlayWithData( [
+		Array.from(channelDataLeft, (chart_amplitude/* item */, chart_frame /* idx*/) => ({ y:chart_amplitude, x:chart_frame }))
+		, Array.from(channelDataRight, (chart_amplitude/* item */, chart_frame /* idx*/) => ({ y:chart_amplitude, x:chart_frame }))] );
+
 });
+
+function showOverlayWithData(data) {
+	var ctx = document.getElementById('waveform_viewer_canvas').getContext('2d');
+
+	if (!window.overlayChart) { // Check if the chart instance already exists
+		// Initialize the chart if it doesn't exist
+		window.overlayChart = new Chart(ctx, chart_viewer_config);
+	}
+
+	const leftChannelData = 0;
+	const rightChannelData = 1;
+
+	window.overlayChart.data.datasets[leftChannelData].data = data[leftChannelData]; // Update L-Channel data
+	window.overlayChart.data.datasets[rightChannelData].data = data[rightChannelData]; // Update R-Channel data
+
+	document.getElementById('popupContainer').style.display = 'block'; // Show the overlay
+	document.getElementById('waveform_container').style.wdith = 'fit-content'; // Show the overlay
+	document.getElementById('waveform_container').style.height = '600px'; // Show the overlay
+	document.getElementById('waveform_container').style.display = 'flex'; // Show the overlay
+	document.getElementById('waveform_viewer_canvas').style.wdith = '1200px'; // Show the overlay
+
+	window.overlayChart.update(); // Update the chart
+}
+
+function closeOverlay() {
+	document.getElementById('popupContainer').style.display = 'none'; // Show the overlay
+	document.getElementById('waveform_container').style.display = 'none'; // Show the overlay
+	//document.getElementById('waveform_container').classList.remove('formant-graph-canvas');
+}
 
 okBTN.addEventListener('click', function(e) {
 	e.preventDefault();
