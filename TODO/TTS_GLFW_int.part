@@ -1,0 +1,361 @@
+#pragma once
+
+#ifndef SPECTRUMANALYZER_H
+#define SPECTRUMANALYZER_H
+
+#include <GLFW/glfw3.h>
+#include <vector>
+#include <cmath>
+
+class SpectrumAnalyzer {
+public:
+    SpectrumAnalyzer(int width, int height) : m_width(width), m_height(height) {
+        if (!glfwInit()) {
+            // Initialization failed
+            throw std::runtime_error("GLFW initialization failed");
+        }
+
+        m_window = glfwCreateWindow(m_width, m_height, "Spectrum Analyzer", nullptr, nullptr);
+        if (!m_window) {
+            // Window creation failed
+            glfwTerminate();
+            throw std::runtime_error("Window creation failed");
+        }
+
+        glfwMakeContextCurrent(m_window);
+
+        glEnable(GL_BLEND);
+        glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+
+        glClearColor(0.2f, 0.2f, 0.2f, 1.0f);
+
+        glfwSetFramebufferSizeCallback(m_window, framebuffer_size_callback);
+    }
+
+    ~SpectrumAnalyzer() {
+        glfwTerminate();
+    }
+
+    void render() {
+        while (!glfwWindowShouldClose(m_window)) {
+            glClear(GL_COLOR_BUFFER_BIT);
+
+            drawGrid();
+            drawAxes();
+            
+            glfwSwapBuffers(m_window);
+            glfwPollEvents();
+        }
+    }
+
+private:
+    GLFWwindow* m_window;
+    int m_width;
+    int m_height;
+
+    void drawGrid() {
+        glColor4f(0.4f, 0.4f, 0.4f, 1.0f);
+        glBegin(GL_LINES);
+        for (int i = 0; i <= 10; ++i) {
+            // Horizontal lines
+            glVertex2f(-1.0f, -0.8f + 0.16f * i);
+            glVertex2f(1.0f, -0.8f + 0.16f * i);
+
+            // Vertical lines
+            glVertex2f(-1.0f + 0.16f * i, -1.0f);
+            glVertex2f(-1.0f + 0.16f * i, 1.0f);
+        }
+        glEnd();
+    }
+
+    void drawAxes() {
+        glColor4f(1.0f, 1.0f, 1.0f, 1.0f);
+        glBegin(GL_LINES);
+        // Horizontal axis
+        glVertex2f(-1.0f, -0.8f);
+        glVertex2f(1.0f, -0.8f);
+
+        // Vertical axis
+        glVertex2f(-1.0f, -1.0f);
+        glVertex2f(-1.0f, 1.0f);
+        glEnd();
+
+        // Draw labels
+        glRasterPos2f(-1.05f, -0.8f);
+        drawString("Frequency (Hz)");
+
+        glRasterPos2f(-1.2f, -0.8f);
+        for (int i = 0; i <= 10; ++i) {
+            drawString(std::to_string(i * 64));
+            glTranslatef(0.16f, 0.0f, 0.0f);
+        }
+
+        glRasterPos2f(-1.25f, 0.0f);
+        drawString("Normalized Amplitude");
+
+        glRasterPos2f(-1.3f, -0.8f);
+        for (int i = 0; i <= 10; ++i) {
+            drawString(std::to_string(i * 0.1));
+            glTranslatef(0.0f, 0.16f, 0.0f);
+        }
+    }
+
+    void drawString(const std::string& str) {
+        for (char c : str) {
+            glutBitmapCharacter(GLUT_BITMAP_HELVETICA_10, c);
+        }
+    }
+
+    static void framebuffer_size_callback(GLFWwindow* window, int width, int height) {
+        glViewport(0, 0, width, height);
+    }
+};
+
+#endif // SPECTRUMANALYZER_H
+
+///////////////////////////////////////////////////////////////
+
+#ifndef TEXTRENDERER_H
+#define TEXTRENDERER_H
+
+#include <ft2build.h>
+#include FT_FREETYPE_H
+
+#include <GLFW/glfw3.h>
+#include <iostream>
+#include <map>
+#include <glm/glm.hpp>
+
+class TextRenderer {
+public:
+    enum class FontWeight {
+        Normal = 0,
+        Bold = 1
+    };
+
+    enum class FontStyle {
+        Normal = 0,
+        Italic = 1
+    };
+
+    TextRenderer(const char* fontPath, unsigned int fontSize, int width, int height)
+        : m_fontSize(fontSize), m_width(width), m_height(height), m_fontWeight(FontWeight::Normal), m_fontStyle(FontStyle::Normal), m_fontColor(1.0f, 1.0f, 1.0f) {
+        if (FT_Init_FreeType(&m_ft)) {
+            std::cerr << "Error: Could not initialize FreeType Library" << std::endl;
+            throw std::runtime_error("FreeType initialization failed");
+        }
+
+        if (FT_New_Face(m_ft, fontPath, 0, &m_face)) {
+            std::cerr << "Error: Could not load font " << fontPath << std::endl;
+            throw std::runtime_error("Font loading failed");
+        }
+
+        setFontWeight(m_fontWeight);
+        setFontStyle(m_fontStyle);
+
+        FT_Set_Pixel_Sizes(m_face, 0, m_fontSize);
+
+        if (!glfwInit()) {
+            std::cerr << "Error: GLFW initialization failed" << std::endl;
+            throw std::runtime_error("GLFW initialization failed");
+        }
+
+        m_window = glfwCreateWindow(m_width, m_height, "Text Renderer", nullptr, nullptr);
+        if (!m_window) {
+            std::cerr << "Error: Window creation failed" << std::endl;
+            glfwTerminate();
+            throw std::runtime_error("Window creation failed");
+        }
+
+        glfwMakeContextCurrent(m_window);
+
+        glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
+
+        glEnable(GL_BLEND);
+        glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+
+        glEnable(GL_TEXTURE_2D);
+
+        glGenTextures(128, m_textures);
+
+        for (unsigned char c = 0; c < 128; c++) {
+            if (FT_Load_Char(m_face, c, FT_LOAD_RENDER)) {
+                std::cerr << "Error: Failed to load glyph for character " << static_cast<char>(c) << std::endl;
+                continue;
+            }
+
+            glBindTexture(GL_TEXTURE_2D, m_textures[c]);
+            glTexImage2D(GL_TEXTURE_2D, 0, GL_RED, m_face->glyph->bitmap.width, m_face->glyph->bitmap.rows, 0, GL_RED, GL_UNSIGNED_BYTE, m_face->glyph->bitmap.buffer);
+
+            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+
+            Character character = {
+                m_textures[c],
+                {m_face->glyph->bitmap.width, m_face->glyph->bitmap.rows},
+                {m_face->glyph->bitmap_left, m_face->glyph->bitmap_top},
+                m_face->glyph->advance.x
+            };
+
+            m_characters.insert(std::pair<char, Character>(c, character));
+        }
+
+        glBindTexture(GL_TEXTURE_2D, 0);
+    }
+
+    ~TextRenderer() {
+        FT_Done_Face(m_face);
+        FT_Done_FreeType(m_ft);
+        glfwTerminate();
+    }
+
+    void renderText(const std::string& text, float x, float y, float scale) {
+        glMatrixMode(GL_PROJECTION);
+        glLoadIdentity();
+        glOrtho(0, m_width, 0, m_height, -1, 1);
+
+        glMatrixMode(GL_MODELVIEW);
+        glLoadIdentity();
+
+        glEnable(GL_BLEND);
+        glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+
+        glDisable(GL_DEPTH_TEST);
+
+        glColor3f(m_fontColor.x, m_fontColor.y, m_fontColor.z);
+
+        for (auto c : text) {
+            Character ch = m_characters[c];
+
+            float xpos = x + ch.Bearing.x * scale;
+            float ypos = y - (ch.Size.y - ch.Bearing.y) * scale;
+
+            float w = ch.Size.x * scale;
+            float h = ch.Size.y * scale;
+
+            GLfloat vertices[6][4] = {
+                {xpos, ypos + h, 0.0, 0.0},
+                {xpos, ypos, 0.0, 1.0},
+                {xpos + w, ypos, 1.0, 1.0},
+
+                {xpos, ypos + h, 0.0, 0.0},
+                {xpos + w, ypos, 1.0, 1.0},
+                {xpos + w, ypos + h, 1.0, 0.0}
+            };
+
+            glBindTexture(GL_TEXTURE_2D, ch.TextureID);
+
+            glEnableClientState(GL_VERTEX_ARRAY);
+            glEnableClientState(GL_TEXTURE_COORD_ARRAY);
+            glVertexPointer(2, GL_FLOAT, 4 * sizeof(GLfloat), vertices);
+            glTexCoordPointer(2, GL_FLOAT, 4 * sizeof(GLfloat), &vertices[0][2]);
+            glDrawArrays(GL_TRIANGLES, 0, 6);
+
+            glBindTexture(GL_TEXTURE_2D, 0);
+
+            x += (ch.Advance >> 6) * scale;
+        }
+
+        glDisable(GL_BLEND);
+        glEnable(GL_DEPTH_TEST);
+    }
+
+    void setFontWeight(FontWeight weight) {
+        if (weight == FontWeight::Bold)
+            FT_Set_Pixel_Sizes(m_face, 0, m_fontSize * 2);
+        else
+            FT_Set_Pixel_Sizes(m_face, 0, m_fontSize);
+        m_fontWeight = weight;
+    }
+
+    void setFontStyle(FontStyle style) {
+        FT_Set_Bold(m_face, style == FontStyle::Italic);
+        m_fontStyle = style;
+    }
+
+    void setFontColor(const glm::vec3& color) {
+        m_fontColor = color;
+    }
+
+private:
+    struct Character {
+        GLuint TextureID;
+        glm::ivec2 Size;
+        glm::ivec2 Bearing;
+        GLuint Advance;
+    };
+
+    FT_Library m_ft;
+    FT_Face m_face;
+    GLFWwindow* m_window;
+    std::map<GLchar, Character> m_characters;
+    unsigned int m_fontSize;
+    int m_width;
+    int m_height;
+    GLuint m_textures[128];
+    FontWeight m_fontWeight;
+    FontStyle m_fontStyle;
+    glm::vec3 m_fontColor;
+};
+
+#endif // TEXTRENDERER_H
+
+///////////////////////////////////////////////////////////////
+
+#include <GLFW/glfw3.h>
+#include <iostream>
+#include <cmath>
+
+void drawGridAndAxes() {
+    // Set color for grid lines
+    glColor3f(0.5f, 0.5f, 0.5f); // Grey color
+
+    // Draw vertical grid lines for frequency bands
+    glBegin(GL_LINES);
+    for (int i = 0; i <= 160; ++i) {
+        float x = (float)i / 160.0f * 2.0f - 1.0f; // Scale to -1 to 1
+        glVertex2f(x, -1.0f);
+        glVertex2f(x, 1.0f);
+    }
+    glEnd();
+
+    // Draw horizontal grid lines for amplitude
+    glBegin(GL_LINES);
+    for (int i = 0; i <= 100; ++i) { // 0 to 1.0 in steps of 0.01
+        float y = (float)i / 100.0f * 2.0f - 1.0f; // Scale to -1 to 1
+        glVertex2f(-1.0f, y);
+        glVertex2f(1.0f, y);
+    }
+    glEnd();
+}
+
+int main() {
+    if (!glfwInit()) {
+        std::cerr << "Failed to initialize GLFW\n";
+        return -1;
+    }
+
+    GLFWwindow* window = glfwCreateWindow(640, 480, "Spectrum Analyzer", nullptr, nullptr);
+    if (!window) {
+        glfwTerminate();
+        std::cerr << "Failed to create GLFW window\n";
+        return -1;
+    }
+
+    glfwMakeContextCurrent(window);
+    glClearColor(0.1f, 0.1f, 0.1f, 1.0f); // Dark gray background
+
+    while (!glfwWindowShouldClose(window)) {
+        glClear(GL_COLOR_BUFFER_BIT);
+
+        drawGridAndAxes(); // Draw the grid and axes
+
+        glfwSwapBuffers(window);
+        glfwPollEvents();
+    }
+
+    glfwTerminate();
+    return 0;
+}
