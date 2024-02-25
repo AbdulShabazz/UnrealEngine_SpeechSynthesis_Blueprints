@@ -1,4 +1,6 @@
 
+	//document.getElementById('waveform_container').classList.remove('formant-graph-canvas');
+    
 	//document.getElementById('waveform_container').style.wdith = 'fit-content'; // Show the overlay
 	//document.getElementById('waveform_container').style.height = '600px'; // Show the overlay
 	//document.getElementById('waveform_container').style.display = 'flex'; // Show the overlay
