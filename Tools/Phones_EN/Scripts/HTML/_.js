@@ -2378,6 +2378,7 @@ var chart_viewer_config = {
 			}
 		},
 		responsive: true, // Makes the chart responsive to window resizing
+        animation: false, // Disable chart animations ( performance)
 		plugins: {
 			legend: {
 				labels: {
@@ -2438,7 +2439,7 @@ Cpp20BTN.addEventListener('click', function() {
 	const duration = 1; // 1 second
 	const amplitude = 0.4; // 0.5 for a comfortable volume
 
-	const I = Math.min(20000, duration * sampleRate);
+	const I = Math.min(25000, duration * sampleRate);
 
 	// Create an audio buffer with appropriate settings
 	let channelDataLeft = new Float64Array (I);
