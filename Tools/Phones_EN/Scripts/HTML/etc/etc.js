@@ -1,5 +1,17 @@
 
 
+	//const audio_frames = generateComplexSignal(Formants, null);
+
+	//const leftChannelData = 0;
+	//const rightChannelData = 1;
+
+	//localCurveViewer.data.datasets[leftChannelData].data = Array.from(channelDataLeft, (chart_amplitude/* item */, chart_frame /* idx*/) => ({ y:chart_amplitude, x:chart_frame }));
+	//localCurveViewer.data.datasets[rightChannelData].data = Array.from(channelDataRight, (chart_amplitude/* item */, chart_frame /* idx*/) => ({ y:chart_amplitude, x:chart_frame }));
+
+	//localCurveViewer.update();
+
+	//showTAElement({ jsonINDIR: 'waveform' });
+
 	//waveform_container.appendChild(waveform_viewer_canvas);
     
 /*
