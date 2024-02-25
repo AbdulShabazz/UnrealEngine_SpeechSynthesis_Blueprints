@@ -1,4 +1,9 @@
 
+/*
+const chart_ctx = waveform_viewer_canvas.getContext('2d');
+
+localCurveViewer = new Chart(chart_ctx, chart_viewer_config);
+*/
 
 	//const audio_frames = generateComplexSignal(Formants, null);
 
