@@ -1,4 +1,5 @@
 
+	//document.getElementById('waveform_container').classList.add('formant-graph-canvas');
 /*
 const chart_ctx = waveform_viewer_canvas.getContext('2d');
 
