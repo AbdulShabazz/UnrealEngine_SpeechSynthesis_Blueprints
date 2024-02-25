@@ -1,4 +1,17 @@
 
+/*
+	var waveform_viewer_canvas = document.createElement('canvas');
+
+	waveform_viewer_canvas.id = 'waveform_viewer_canvas';
+	waveform_viewer_canvas.classList.add('formant-graph-canvas');
+*/
+/*
+	var waveform_viewer_canvas = document.getElementById('waveform_viewer_canvas');
+
+	waveform_viewer_canvas.style.display = 'flex';
+	waveform_viewer_canvas.width = '1200px;';
+	waveform_viewer_canvas.height = '600px;';
+*/
 
 // Javascript supports up to 16 decimal places of precision (ie. 3.14159265358979323)
 //Math.PI_HiRes = 3.14159265358979323846264338327950288419716939937510582097494459230781640628620899862803482534211706798214808651328230664709384460955058223172535940812848111745028410270193852110555964462294895493038196;
