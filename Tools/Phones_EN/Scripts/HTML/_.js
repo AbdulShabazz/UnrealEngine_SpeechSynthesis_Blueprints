@@ -2480,7 +2480,11 @@ function showOverlayWithData(data) {
 	var ctx = document.getElementById('waveform_viewer_canvas').getContext('2d');
 
 	// Check if the chart instance already exists
-	if (!window.overlayChart) {
+	if (!window.overlayChart) {	
+		waveform_viewer_canvas.style.marginBottom = "12px";
+		waveform_viewer_canvas.style.borderRight = "24px";
+		waveform_viewer_canvas.style.borderRightStyle = "solid";
+		waveform_viewer_canvas.style.borderColor = "black";
 		// Initialize the chart if it doesn't exist
 		window.overlayChart = new Chart(ctx, chart_viewer_config);
 	}
@@ -2491,13 +2495,14 @@ function showOverlayWithData(data) {
 	window.overlayChart.data.datasets[leftChannelData].data = data[leftChannelData]; // Update L-Channel data
 	window.overlayChart.data.datasets[rightChannelData].data = data[rightChannelData]; // Update R-Channel data
 
-	waveform_viewer_canvas.style.width = '1200px'; // Show the overlay
-	waveform_viewer_canvas.style.height = '1000px'; // Show the overlay
+	//waveform_viewer_canvas.style.width = '1200px'; // Show the overlay
+	//waveform_viewer_canvas.style.height = '1000px'; // Show the overlay
 
 	window.overlayChart.update(); // Update the chart
 
 	popupContainer.style.display = 'block'; // Show the overlay
 	json_form_class.style.display = 'block'; // Hide the overlay
+	waveform_container.style.display = 'block'; // Show the overlay
 
 	JsonTA.style.display = 'none';
 	jsonFORM.style.display = 'none';
