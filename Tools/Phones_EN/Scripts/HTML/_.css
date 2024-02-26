@@ -20,7 +20,12 @@ select:hover {
     display: grid;
     background-color: #333; /* Adjust to match the image */
 }
-
+/*
+#waveform_container {
+    position: relative; /* Or absolute/fixed/sticky depending on your layout needs * /
+    z-index: 10; /* Adjust this value as needed to be higher than other elements * /
+}
+*/
 .corner-dropdown {
     color: #888;
     background-color: #333;
