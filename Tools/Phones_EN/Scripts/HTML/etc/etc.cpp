@@ -1,4 +1,31 @@
 
+
+    //double amplitude = interpolate(amplitudeStart, amplitudeEnd, t);
+    //const double frequency = interpolate(frequencyStart, frequencyEnd, t);
+    //double phase = interpolate(phaseStart, phaseEnd, t);
+/* 
+    if (blendParams == BLEND_COMPONENT::frequency
+        && blendStart <= time
+        && blendEnd >= time ) 
+    {
+        const double b_bandwidth = blendEnd - blendStart;
+
+        if (frequencyStart >= frequencyEnd) 
+        {
+            const double f_bandwidth = frequencyEnd - frequencyStart;
+
+            const double bl_step = f_bandwidth / b_bandwidth;
+
+            frequency = frequencyStart - bl_step * (time - blendStart);
+        } else {
+            const double f_bandwidth = frequencyStart - frequencyEnd;
+
+            const double bl_step = f_bandwidth / b_bandwidth;
+
+            frequency = frequencyStart + bl_step * (time - blendStart);
+        }
+    }
+*/
 /* 
     if (blendParams == BLEND_COMPONENT::amplitude
         && time >= blendStart
