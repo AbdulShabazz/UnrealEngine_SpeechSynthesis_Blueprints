@@ -8,6 +8,8 @@ The editor includes an interactive viewer with color-coded combo/select dropdown
 
 ![Artificial Speech Formant Editor](../../../../IMG/Amplitude_vs_Frequency_vs_Time_Curve_UE.png)
 
+![Artificial Speech Formant Curve](../../../../IMG/FormantEditor_Firefox_PCM32Bit_384kHz_40Hz_downto_5Hz_Amplitude_1_to_2_Ramp_Curve.png)
+
 ## Project Structure
 
 The project consists of the following files, each serving a distinct purpose within the application:
