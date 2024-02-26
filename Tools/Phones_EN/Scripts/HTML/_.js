@@ -2575,6 +2575,13 @@ frequencyBtn.addEventListener('click', function() {
 	g_formantChart.yAxisAmplitudeVisibleFlag = false;
 });
 
+window.addEventListener('keydown', function(e) {
+	// Close popup on escape key press
+	if (e.key === 'Escape') {
+		closeOverlay();
+	}
+});
+
 window.addEventListener('resize', () => {
 	// Update the chart
 	g_formantChart.resize();
