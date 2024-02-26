@@ -1,5 +1,23 @@
 
-	//document.getElementById('waveform_container').classList.remove('formant-graph-canvas');
+
+
+	// Check if the chart instance already exists
+	if (!window.overlayChart) {
+		const zIndex = 1000; // Set the z-index for the overlay
+		// Initialize the chart if it doesn't exist
+		window.overlayChart = new Chart(ctx, chart_viewer_config);
+		var waveformContainer = document.getElementById('waveform_container');
+		waveformContainer.style.position = 'relative'; // Ensure position is not static
+		waveformContainer.style.zIndex = zIndex;
+		waveformContainer.addEventListener('keyup', function(e) {
+			// Close the overlay if the ESC key is pressed
+			if (e.key === 'Escape') {
+				closeOverlay();
+			}
+		});
+	}	
+    
+    //document.getElementById('waveform_container').classList.remove('formant-graph-canvas');
     
 	//document.getElementById('waveform_container').style.wdith = 'fit-content'; // Show the overlay
 	//document.getElementById('waveform_container').style.height = '600px'; // Show the overlay
