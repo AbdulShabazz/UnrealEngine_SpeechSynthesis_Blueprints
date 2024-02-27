@@ -1,4 +1,12 @@
 
+/*
+enum class BLEND_COMPONENT : unsigned long long
+{
+    amplitude = 1 << 1,
+    frequency = 1 << 2,
+    phase = 1 << 3,
+};
+*/
 
     //double amplitude = interpolate(amplitudeStart, amplitudeEnd, t);
     //const double frequency = interpolate(frequencyStart, frequencyEnd, t);
