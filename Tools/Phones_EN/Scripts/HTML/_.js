@@ -311,7 +311,9 @@ formant_graph_canvas = document.getElementById('formant-graph');
 formant_graph_canvas.addEventListener('mousemove', updateCrossHair);
 
 const ctx = formant_graph_canvas.getContext('2d');
+
 g_formantChart = new Chart(ctx, g_config);
+
 g_formantChart.yAxisAmplitudeVisibleFlag = true;
 
 function createSlider(id, label, value, min, max, step, callback) {
@@ -359,24 +361,26 @@ function createSlider(id, label, value, min, max, step, callback) {
 }
 
 function getMaxFrame(i, formant) {
+	// TODO: Implement logic to determine the maximum frame allowed based on adjacent points
 	// Implement logic to determine the maximum frequency allowed based on adjacent points
 	// Placeholder return value
 	return formant[i + 1].frame;
 }
 
 function getMaxFrequency(i, formant) {
+	// TODO: Implement logic to determine the maximum frequency allowed based on adjacent points
 	// Implement logic to determine the maximum frequency allowed based on adjacent points
 	// Placeholder return value
 	return 500.00;
 }
 
 function getMaxAmplitude(i, formant) {
-	// Implement logic to determine the maximum amplitude allowed based on adjacent points
+	// TODO :Implement logic to determine the maximum amplitude allowed based on adjacent points
 	// Placeholder return value
 	return 0.00;
 }
 
-// Function to find and remove the nearest element
+// Function to find and remove the nearest element //
 function removeNearest(audio_frame, remove_element) {
 	let nearestAudioFrameIndex  = 0;
 	let nearestValue = audio_frame[0];
@@ -405,7 +409,7 @@ function removeDatapoint(audio_frame, remove_element) {
 	// Remove the data point from the chart //
 	let chart = g_formantChart;
 	if (chart.crosshair) {
-		// Prevent the crosshair from inserting new points outside the plot area
+		// Prevent the crosshair from inserting new points outside the plot area! //
 		const chartArea = chart.chartArea;
 		const minX = chartArea.left;
 		const maxX = chartArea.right;
@@ -429,16 +433,16 @@ function removeDatapoint(audio_frame, remove_element) {
 }
 
 function displaySliders(i, formant) {
-	// Reference to the container where sliders will be added
+	// Reference to the container where sliders will be added //
 	var container = slider_container;
 
-	// Clear previous sliders
+	// Clear previous sliders //
 	container.innerHTML = '';
 
 	const minFrame = i - 1 in formant ? formant[i-1].frame : formant[i].frame;
 	const maxFrame = i + 1 in formant ? formant[i+1].frame : formant[i].frame;
 
-	// Create a slider for the frame index
+	// Create a slider for the frame index //
 	var frameIndexSlider = createSlider('frameIndex'
 		, 'Adjust Frame Index'
 		, formant[i].frame
@@ -446,7 +450,7 @@ function displaySliders(i, formant) {
 		, maxFrame
 		, "1"
 		, function(value) {
-			// Update the chart data and re-render
+			// Update the chart data and re-render //
 			let formant = Formants[g_lastSelectedFormantIndex];
 			formant[i].frame = value;
 			updateChart(formant);
@@ -2515,6 +2519,121 @@ function closeOverlay() {
 	waveform_container.style.display = 'none'; // Show the overlay
 }
 
+/**
+	// Example Usage for linearStep ratio //
+	// smoothly interpolated value between 0 and 1. //
+
+	value = linearStep(x, min, max);
+*/
+
+/**
+ * Calculates a smooth transition between 0 and 1 using a linear interpolation.
+ * This function can be used to apply linear effects to your values.
+ * 
+ * @brief Usage example for linear
+ * @param {number} x - The input value for which to calculate the smoothstep, typically time or a normalized parameter.
+ * @param {number} min - The lower bound of the input range.
+ * @param {number} max - The upper bound of the input range.
+ * @returns {number} - The smoothly interpolated stepRatio between 0 and 1. */
+function linearStep(x, min, max)
+{
+    if (x <= min) return 0;
+    if (x >= max) return 1;
+    const stepRatio = (x - min) / (max - min);
+    return stepRatio;
+}
+
+/**
+ * Performs quartic ease-in interpolation.
+ * Starts with a slow acceleration and then speeds up.
+ * @param {number} t - The interpolation factor, between 0.0 (start) and 1.0 (end).
+ * @returns {number} The interpolated value at the factor t, assuming start value is 0 and end value is 1. */
+function quarticEaseIn(t) {
+    return t * t * t * t;
+}
+
+/**
+ * Performs quartic ease-out interpolation.
+ * Starts fast and decelerates to a stop.
+ * @param {number} t - The interpolation factor, between 0.0 (start) and 1.0 (end).
+ * @returns {number} The interpolated value at the factor t, assuming start value is 0 and end value is 1. */
+function quarticEaseOut(t) {
+    return 1 - (--t) * t * t * t;
+}
+
+/*
+	// Example usage for quarticEaseInOut
+	const double ii = 0; // Starting value //
+	const double II = 100;   // Ending value //
+
+	std::cout << "[ ";
+
+	for(double i = ii; i < II; i += 0.01)
+	{
+		const double stepRatio = linearStep(i,ii,II); // Current time as a normalized between [0, 1] //
+		
+		const double interpolatedValue = quarticEaseInOut(stepRatio, ii, II);
+		
+		std::cout << interpolatedValue << ", ";
+	}
+
+	std::cout << " ]";
+*/
+
+/**
+ * Combines quartic ease-in and ease-out into a single function.
+ * Accelerates from start and decelerates to stop.
+ * @param {number} startValue - The starting value of the parameter to interpolate.
+ * @param {number} endValue - The ending value of the parameter to interpolate.
+ * @param {number} t - The interpolation factor, between 0.0 (start) and 1.0 (end).
+ * @returns {number} The interpolated value. */
+function quarticEaseInOut(startValue, endValue, t) {
+    t = Math.max(0, Math.min(1, t)); // Clamp t to the range [0, 1] //
+    if (t < 0.5) {
+        return startValue + (endValue - startValue) * 8 * t * t * t * t;
+    } else {
+        t = t - 1;
+        return startValue + (endValue - startValue) * (1 - 8 * t * t * t * t);
+    }
+}
+
+/**
+	Example usage for cubicHermite
+ 
+	// Example usage //
+	const double ii = 0; // Starting value //
+	const double II = 100;   // Ending value //
+
+	std::cout << "[ ";
+
+	for(double i = ii; i < II; i += 0.01)
+	{
+		const double stepRatio = linearStep(i,ii,II); // Current time as a normalized between [0, 1] //
+		
+		const double interpolatedValue = cubicHermite(stepRatio, ii, II, 0.0, 0.0);
+		
+		std::cout << interpolatedValue << ", ";
+	}
+
+	std::cout << " ]";
+ */
+
+	/**
+ * Performs cubic Hermite interpolation between two values bound within an interval.
+ * 
+ * @param {number} t - The interpolation factor, ranging from 0.0 (start) to 1.0 (end).
+ * @param {number} p0 - The starting value of the interpolation (at t=0).
+ * @param {number} p1 - The ending value of the interpolation (at t=1).
+ * @param {number} m0 - The tangent (slope) at the starting point.
+ * @param {number} m1 - The tangent (slope) at the ending point.
+ * @returns {number} - The interpolated value. */
+function cubicHermite(t, p0, p1, m0, m1)
+{
+    const t2 = t * t;
+    const t3 = t2 * t;
+    return (2 * t3 - 3 * t2 + 1) * p0 + (t3 - 2 * t2 + t) * m0 + (-2 * t3 + 3 * t2) * p1 + (t3 - t2) * m1;
+}
+
 okBTN.addEventListener('click', function(e) {
 	e.preventDefault();
 	try {
@@ -2526,11 +2645,10 @@ okBTN.addEventListener('click', function(e) {
 				break;
 			case 'out':
 			case 'none':
-			default:
-				break;
+			default: break;
 		}
-	} catch (err) {
-		console.info(err);
+	} catch (e) {
+		console.info(e);
 	}
 });
 
@@ -2557,7 +2675,8 @@ function updateProgress(progress) {
 		setTimeout(function() {
 			progressBar.style.display = 'none';
 		}, 500); // 500 milliseconds = 0.5 seconds
-	} else if (progress > 0 
+	} else if (
+		progress > 0 
 		&& progressBar.style.display != 'block') {
 			progressBar.style.display = 'block';
 	}
@@ -2576,14 +2695,14 @@ frequencyBtn.addEventListener('click', function() {
 });
 
 window.addEventListener('keydown', function(e) {
-	// Close popup on escape key press
+	// Close popup on escape key press //
 	if (e.key === 'Escape') {
 		closeOverlay();
 	}
 });
 
 window.addEventListener('resize', () => {
-	// Update the chart
+	// Update the chart //
 	g_formantChart.resize();
 });
 
