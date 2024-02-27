@@ -82,29 +82,12 @@ double LERP(
     return result;
 }
 
-enum class BLEND_STRATEGY : unsigned long long
+enum class BLEND_STRATEGY
 {
-    // amplitude //
-    amplitude_LERP = 1 << 1,
-    amplitude_CUBIC = 1 << 2,
-    amplitude_QUARTIC = 1 << 3,
-    
-    // frequency //
-    frequency_LERP = 1 << 4,
-    frequency_CUBIC = 1 << 5,
-    frequency_QUARTIC = 1 << 6,
-    
-    // phase //
-    phase_LERP = 1 << 7,
-    phase_CUBIC = 1 << 8,
-    phase_QUARTIC = 1 << 9,
+    LERP = 1 << 1,
+    CUBIC,
+    QUARTIC,
 };
-
-template <typename PRECISION = unsigned long long>
-PRECISION to_uLL(/*BLEND_COMPONENT*/BLEND_STRATEGY blend)
-{
-    return static_cast<PRECISION>(blend);
-}
 
 // Define a concept for unsigned types //
 template<typename T>
@@ -118,7 +101,7 @@ struct WaveShape
 };
 
 // Struct to encapsulate SIN parameters //
-template<typename T = double, Unsigned U = unsigned long long>
+template<typename T = double>
 struct signalParameters
 {
     T time {};
@@ -129,22 +112,57 @@ struct signalParameters
     T amplitudeEnd {};
     T amplitudeBlendStartFrame {};
     T amplitudeBlendEndFrame {};
+    BLEND_STRATEGY amplitudeBlendStrategy = BLEND_STRATEGY::LERP;
     T frequency {};
     T frequencyStart {};
     T frequencyEnd {};
     T frequencyBlendStartFrame {};
     T frequencyBlendEndFrame {};
+    BLEND_STRATEGY frequencyBlendStrategy = BLEND_STRATEGY::LERP;
     T phase {};
     T phaseStart {};
     T phaseEnd {};
     T phaseBlendStartFrame {};
     T phaseBlendEndFrame {};
+    BLEND_STRATEGY phaseBlendStrategy = BLEND_STRATEGY::LERP;
     long double cumulativePhase {};
-    U blendParams {};
 };
 
-template<typename PRECISION = double, Unsigned U = unsigned long long>    
-double SIN(signalParameters<PRECISION,U>& params)
+template<typename PRECISION = double>
+PRECISION do_Blend(
+      BLEND_STRATEGY blend
+    , PRECISION blendRatio
+    , PRECISION startValue
+    , PRECISION endValue
+    , PRECISION startValueSlope = 0.0f
+    , PRECISION endValueSlope = 0.0f)
+{
+    PRECISION value {};
+    
+    switch(blend)
+    {
+        case BLEND_STRATEGY::LERP:
+        value = LERP(blendRatio, startValue, endValue);
+        break;
+        
+        case BLEND_STRATEGY::CUBIC:
+        value = cubicHermite<PRECISION>(blendRatio, startValue, endValue, 0.0f, 0.0f);
+        break;
+        
+        case BLEND_STRATEGY::QUARTIC:
+        value = quarticEaseInOut(blendRatio, startValue, endValue);
+        break;
+        
+        default:
+        value = startValue;
+        break;
+    }
+    
+    return value;
+}
+
+template<typename PRECISION = double>    
+double SIN(signalParameters<PRECISION>& params)
 {
     /**
     
@@ -170,57 +188,23 @@ double SIN(signalParameters<PRECISION,U>& params)
     const double oldFrequency = params.frequency;
     params.cumulativePhase += 2 * M_PI * oldFrequency * params.deltaTime / params.TIME;
 
-    if (params.blendParams & to_uLL<>(BLEND_STRATEGY::frequency_LERP))
+    if (static_cast<bool>(params.frequencyBlendStrategy))
     {
         // Blend factor, between the range [0,1] //
         const double t = linearStep(params.time, params.frequencyBlendStartFrame, params.frequencyBlendEndFrame);
         
-        params.frequency = LERP(t, params.frequencyStart, params.frequencyEnd);
+        params.frequency = do_Blend(params.frequencyBlendStrategy, t, params.frequencyStart, params.frequencyEnd);
 
         // Adjust phase to match the instantaneous phase at the time of frequency change //
         params.phase = params.cumulativePhase - 2 * M_PI * params.frequency / params.TIME * (params.time + params.deltaTime);
     }
-    else if (params.blendParams & to_uLL<>(BLEND_STRATEGY::frequency_CUBIC))
-    {
-        // Blend factor, between the range [0,1] //
-        const double t = linearStep(params.time, params.frequencyBlendStartFrame, params.frequencyBlendEndFrame);
-        
-        params.frequency = cubicHermite<PRECISION>(t, params.frequencyStart, params.frequencyEnd, 0.0f, 0.0f);
 
-        // Adjust phase to match the instantaneous phase at the time of frequency change //
-        params.phase = params.cumulativePhase - 2 * M_PI * params.frequency / params.TIME * (params.time + params.deltaTime);   
-    }
-    else if (params.blendParams & to_uLL<>(BLEND_STRATEGY::frequency_QUARTIC))
-    {
-        // Blend factor, between the range [0,1] //
-        const double t = linearStep(params.time, params.frequencyBlendStartFrame, params.frequencyBlendEndFrame);
-        
-        params.frequency = quarticEaseInOut(t, params.frequencyStart, params.frequencyEnd);
-
-        // Adjust phase to match the instantaneous phase at the time of frequency change //
-        params.phase = params.cumulativePhase - 2 * M_PI * params.frequency / params.TIME * (params.time + params.deltaTime);   
-    }
-
-    if (params.blendParams & to_uLL<>(BLEND_STRATEGY::amplitude_LERP))
+    if (static_cast<bool>(params.amplitudeBlendStrategy))
     {
         // Blend factor, between the range [0,1] //
         const double t = linearStep(params.time, params.amplitudeBlendStartFrame, params.amplitudeBlendEndFrame);
         
-        params.amplitude = LERP(t, params.amplitudeStart, params.amplitudeEnd);
-    } 
-    else if (params.blendParams & to_uLL<>(BLEND_STRATEGY::amplitude_CUBIC))
-    {
-        // Blend factor, between the range [0,1] //
-        const double t = linearStep(params.time, params.amplitudeBlendStartFrame, params.amplitudeBlendEndFrame);
-        
-        params.amplitude = cubicHermite<PRECISION>(t, params.amplitudeStart, params.amplitudeEnd, 0.0f, 0.0f);
-    }
-    else if (params.blendParams & to_uLL<>(BLEND_STRATEGY::amplitude_QUARTIC))
-    {
-        // Blend factor, between the range [0,1] //
-        const double t = linearStep(params.time, params.amplitudeBlendStartFrame, params.amplitudeBlendEndFrame);
-        
-        params.amplitude = quarticEaseInOut(t, params.amplitudeStart, params.amplitudeEnd);
+        params.amplitude = do_Blend(params.amplitudeBlendStrategy, t, params.amplitudeStart, params.amplitudeEnd);
     }
 
     // Generate the signal with interpolated parameters //
@@ -238,8 +222,6 @@ int main()
     double frequencyStart = 40.0, frequencyEnd = 5.0;
     double phaseStart = 0.0, phaseEnd = 0.0; // Assuming no phase shift, initially //
     
-    unsigned long long blend = to_uLL<>(BLEND_STRATEGY::amplitude_LERP) | to_uLL<>(BLEND_STRATEGY::frequency_LERP);
-    
     std::cout << "points = [ ";
     
     signalParameters<> params
@@ -251,13 +233,14 @@ int main()
         .amplitudeEnd = amplitudeEnd,
         .amplitudeBlendStartFrame = blendStart,
         .amplitudeBlendEndFrame = blendEnd,
+        .amplitudeBlendStrategy = BLEND_STRATEGY::LERP,
         .frequency = frequencyStart,
         .frequencyStart = frequencyStart,
         .frequencyEnd = frequencyEnd,
         .frequencyBlendStartFrame = blendStart,
         .frequencyBlendEndFrame = blendEnd,
+        .frequencyBlendStrategy = BLEND_STRATEGY::LERP,
         .phase = phaseStart,
-        .blendParams = blend,
     };
     
     for(double time = 0; time < TIME; ++time) {
