@@ -143,11 +143,6 @@ struct signalParameters
     U blendParams {};
 };
 
-// (global) Interpolate parameters //
-//double amplitude {};
-//double frequency {};
-//double phase {};
-//double cumulativePhase {};
 template<typename PRECISION = double, Unsigned U = unsigned long long>    
 double SIN(signalParameters<PRECISION,U>& params)
 {
@@ -171,7 +166,7 @@ double SIN(signalParameters<PRECISION,U>& params)
     This helps in avoiding phase discontinuities.
     
     **/
-    //const double deltaTime = 1; // in our case, timesteps are measured in individual frames //
+    
     const double oldFrequency = params.frequency;
     params.cumulativePhase += 2 * M_PI * oldFrequency * params.deltaTime / params.TIME;
 
@@ -185,6 +180,26 @@ double SIN(signalParameters<PRECISION,U>& params)
         // Adjust phase to match the instantaneous phase at the time of frequency change //
         params.phase = params.cumulativePhase - 2 * M_PI * params.frequency / params.TIME * (params.time + params.deltaTime);
     }
+    else if (params.blendParams & to_uLL<>(BLEND_STRATEGY::frequency_CUBIC))
+    {
+        // Blend factor, between the range [0,1] //
+        const double t = linearStep(params.time, params.frequencyBlendStartFrame, params.frequencyBlendEndFrame);
+        
+        params.frequency = cubicHermite<PRECISION>(t, params.frequencyStart, params.frequencyEnd, 0.0f, 0.0f);
+
+        // Adjust phase to match the instantaneous phase at the time of frequency change //
+        params.phase = params.cumulativePhase - 2 * M_PI * params.frequency / params.TIME * (params.time + params.deltaTime);   
+    }
+    else if (params.blendParams & to_uLL<>(BLEND_STRATEGY::frequency_QUARTIC))
+    {
+        // Blend factor, between the range [0,1] //
+        const double t = linearStep(params.time, params.frequencyBlendStartFrame, params.frequencyBlendEndFrame);
+        
+        params.frequency = quarticEaseInOut(t, params.frequencyStart, params.frequencyEnd);
+
+        // Adjust phase to match the instantaneous phase at the time of frequency change //
+        params.phase = params.cumulativePhase - 2 * M_PI * params.frequency / params.TIME * (params.time + params.deltaTime);   
+    }
 
     if (params.blendParams & to_uLL<>(BLEND_STRATEGY::amplitude_LERP))
     {
@@ -192,6 +207,20 @@ double SIN(signalParameters<PRECISION,U>& params)
         const double t = linearStep(params.time, params.amplitudeBlendStartFrame, params.amplitudeBlendEndFrame);
         
         params.amplitude = LERP(t, params.amplitudeStart, params.amplitudeEnd);
+    } 
+    else if (params.blendParams & to_uLL<>(BLEND_STRATEGY::amplitude_CUBIC))
+    {
+        // Blend factor, between the range [0,1] //
+        const double t = linearStep(params.time, params.amplitudeBlendStartFrame, params.amplitudeBlendEndFrame);
+        
+        params.amplitude = cubicHermite<PRECISION>(t, params.amplitudeStart, params.amplitudeEnd, 0.0f, 0.0f);
+    }
+    else if (params.blendParams & to_uLL<>(BLEND_STRATEGY::amplitude_QUARTIC))
+    {
+        // Blend factor, between the range [0,1] //
+        const double t = linearStep(params.time, params.amplitudeBlendStartFrame, params.amplitudeBlendEndFrame);
+        
+        params.amplitude = quarticEaseInOut(t, params.amplitudeStart, params.amplitudeEnd);
     }
 
     // Generate the signal with interpolated parameters //
@@ -212,11 +241,6 @@ int main()
     unsigned long long blend = to_uLL<>(BLEND_STRATEGY::amplitude_LERP) | to_uLL<>(BLEND_STRATEGY::frequency_LERP);
     
     std::cout << "points = [ ";
-    
-    // (global) Interpolate parameters //
-    //amplitude = amplitudeStart;
-    //frequency = frequencyStart;
-    //phase = phaseStart;
     
     signalParameters<> params
     {
@@ -242,19 +266,7 @@ int main()
         
         params.time = time;
         
-        const double signalValue = SIN(/*
-              time
-            , TIME
-            , amplitudeStart
-            , amplitudeEnd
-            , frequencyStart
-            , frequencyEnd
-            , phaseStart
-            , phaseEnd
-            , blendStart
-            , blendEnd
-            , blend*/
-            params);
+        const double signalValue = SIN(params);
         
         std::cout << signalValue << ", " ;
     }
