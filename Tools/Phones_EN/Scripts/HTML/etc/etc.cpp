@@ -1,3 +1,60 @@
+
+
+// Struct to encapsulate SIN parameters //
+template<typename T = double, Unsigned U = unsigned long long>
+struct signalParameters
+{
+    T time {};
+    T TIME {};
+    T deltaTime {};
+    T amplitude {};
+    T amplitudeStart {};
+    T amplitudeEnd {};
+    T amplitudeBlendStartFrame {};
+    T amplitudeBlendEndFrame {};
+    BLEND_STRATEGY amplitudeBlendStrategy = BLEND_STRATEGY::LERP;
+    T frequency {};
+    T frequencyStart {};
+    T frequencyEnd {};
+    T frequencyBlendStartFrame {};
+    T frequencyBlendEndFrame {};
+    BLEND_STRATEGY frequencyBlendStrategy = BLEND_STRATEGY::LERP;
+    T phase {};
+    T phaseStart {};
+    T phaseEnd {};
+    T phaseBlendStartFrame {};
+    T phaseBlendEndFrame {};
+    BLEND_STRATEGY phaseBlendStrategy = BLEND_STRATEGY::LERP;
+    long double cumulativePhase {};
+    U blendParams {};
+};
+
+template <typename PRECISION = unsigned long long>
+PRECISION to_uLL(/*BLEND_COMPONENT*/BLEND_STRATEGY blend)
+{
+    return static_cast<PRECISION>(blend);
+}
+
+unsigned long long blend = to_uLL<>(BLEND_STRATEGY::amplitude_LERP) | to_uLL<>(BLEND_STRATEGY::frequency_LERP);
+
+enum class BLEND_STRATEGY : unsigned long long
+{
+    // amplitude //
+    amplitude_LERP = 1 << 1,
+    amplitude_CUBIC = 1 << 2,
+    amplitude_QUARTIC = 1 << 3,
+    
+    // frequency //
+    frequency_LERP = 1 << 4,
+    frequency_CUBIC = 1 << 5,
+    frequency_QUARTIC = 1 << 6,
+    
+    // phase //
+    phase_LERP = 1 << 7,
+    phase_CUBIC = 1 << 8,
+    phase_QUARTIC = 1 << 9,
+};
+
 // (global) Interpolate parameters //
 //double amplitude {};
 //double frequency {};
