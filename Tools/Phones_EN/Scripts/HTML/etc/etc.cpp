@@ -1,3 +1,8 @@
+// (global) Interpolate parameters //
+//double amplitude {};
+//double frequency {};
+//double phase {};
+//double cumulativePhase {};
 
 /*
 enum class BLEND_COMPONENT : unsigned long long
