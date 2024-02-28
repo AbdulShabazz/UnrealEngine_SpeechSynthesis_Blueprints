@@ -1,5 +1,34 @@
 
 
+function performUndoRedo(action) {
+	switch (action.type) {
+
+		case 'add':
+			// Reapply the action by adding the data point back
+			addDataPoint(g_formantChart, action.data, g_lastSelectedFormantIndex);
+			break;
+
+		case 'remove':
+			// Reverse the action by removing the data point
+			removeDatapoint(g_formantChart, action.data);
+			break;
+
+		case 'update':
+			// Reverse the action by updating the data point
+			break;
+
+		case 'edit':
+			// Reverse the action by editing the data point
+			break;
+
+		default:
+			break;
+	}
+}
+
+undoStack = [];
+redoStack = [];
+
 
 	// Check if the chart instance already exists
 	if (!window.overlayChart) {
