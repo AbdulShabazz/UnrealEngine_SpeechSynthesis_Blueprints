@@ -165,6 +165,10 @@ Formants[0].push(
 	new OSC_INTERVAL ({ amplitude: -11.0, frequency: 20.0, frame: 2000, time_step: 105 })
 );
 
+Formants.prototype = Object.create(Array.prototype);
+Formants.prototype.undoStack = [];
+Formants.prototype.redoStack = [];
+
 g_config = {
 	type: 'line',
 	data: {
@@ -1773,15 +1777,27 @@ function has_shape(a,b)
 @param shapes_oscilatorParamsVec: The complex wave-shapes to develop (ie. Formants[]).
 @param customUpdateCallback: An (optional) lambda that can be used to update the oscillator parameters, instead.
 @return The oscillator signal at frame N).*/
-function generateComplexSignal(shapes_oscilatorParamsVec
-	, customUpdateCallback) {
+function generateComplexSignal(
+	  shapes_oscilatorParamsVec
+	, customUpdateCallback)
+{
 
+	let idx = 0;
 	let frame_idx = 0;
 	let waveform = new FWaveform();
 	let audioFrames_float64Vec = [];
+	const pcm_encoding = shapes_oscilatorParamsVec.pcm_encoding;
+	const hz_pcm_encoding = pcm_encoding_docstring_options[pcm_encoding].sample_rate * 1000;
+	const bit_depth_pcm_encoding = pcm_encoding_docstring_options[pcm_encoding].bit_depth;
+	const amplitude_pcm_encoding_dynamic_range = Math.pow(2, bit_depth_pcm_encoding - 1) - 1;
 
 	for (const shape_oscillatorParams of shapes_oscilatorParamsVec) {
-		let outShape = 0;
+
+		// Ensure that the index is within the bounds of the shapes_oscilatorParamsVec array
+		if (idx >= shapes_oscilatorParamsVec.length)
+			break;
+		
+			let outShape = 0;
 
 		// Custom updates using lambda
 		if (customUpdateCallback) {
@@ -1791,112 +1807,151 @@ function generateComplexSignal(shapes_oscilatorParamsVec
 				outShape);
 		} else {
 			const FRAME_IDX = shape_oscillatorParams.frame + 1;
+			const t = frame_idx / FRAME_IDX;
+			const hz_start = shape_oscillatorParams.frequency;
+			const db_start = shape_oscillatorParams.amplitude;
+			const hz_end = shapes_oscilatorParamsVec[idx + 1].frequency;
+			const db_end = shapes_oscilatorParamsVec[idx + 1].amplitude;
+			
 			while(frame_idx < FRAME_IDX)
 			{
-				const startingShape = outShape;
-				/*
-				const hz = bezier_spline_interpolation(shape_oscillatorParams, frame_idx, "frequency");
-				const db = bezier_spline_interpolation(shape_oscillatorParams, frame_idx, "amplitude");
-				const hz = sinusoidal_spline_interpolation(shape_oscillatorParams, frame_idx, "frequency");
-				const db = sinusoidal_spline_interpolation(shape_oscillatorParams, frame_idx, "amplitude");*/
-				const hz = linear_spline_interpolation(shape_oscillatorParams, frame_idx, "frequency");
-				const db = linear_spline_interpolation(shape_oscillatorParams, frame_idx, "amplitude");
+				const nullShape = outShape;
 
-				if (has_shape(shape_oscillatorParams.shape
+				const hz_stepRatio = linearStep(t, hz_start, hz_end);
+				const db_stepRatio = linearStep(t, db_start, db_end);
+				
+				const hz = 1 / hz_pcm_encoding * shapes_oscilatorParamsVec.frequency_as_bezierCurve_flag 
+				? quarticEaseInOut(hz_stepRatio, hz_start, hz_end)
+				: LERP(hz_stepRatio, hz_start, hz_end);
+				
+				const db = shapes_oscilatorParamsVec.frequency_as_bezierCurve_flag 
+				? quarticEaseInOut(hz_stepRatio, db_start, db_end)
+				: LERP(db_stepRatio, db_start, db_end);
+
+				if (has_shape(
+					  shape_oscillatorParams.shape
 					, WaveShape.Sine_enum))
-					outShape += waveform.sine(db
+					outShape += waveform.sine(
+						  db
 						, hz
 						, frame_idx
 						, shape_oscillatorParams.theta); 
 
-				if (has_shape(shape_oscillatorParams.shape
+				if (has_shape(
+					  shape_oscillatorParams.shape
 					, WaveShape.Cosine_enum))
-					outShape += waveform.cosine(db
+					outShape += waveform.cosine(
+						  db
 						, hz
 						, frame_idx
 						, shape_oscillatorParams.theta);
 
-				if (has_shape(shape_oscillatorParams.shape
+				if (has_shape(
+					  shape_oscillatorParams.shape
 					, WaveShape.QuarterSine_enum))
-					outShape += waveform.quarterSine(db
+					outShape += waveform.quarterSine(
+						  db
 						, hz
 						, frame_idx
 						, shape_oscillatorParams.theta);
 
-				if (has_shape(shape_oscillatorParams.shape
+				if (has_shape(
+					  shape_oscillatorParams.shape
 					, WaveShape.HalfSine_enum))
-					outShape += waveform.halfSine(db
+					outShape += waveform.halfSine(
+						  db
 						, hz
 						, frame_idx
 						, shape_oscillatorParams.theta);
 
-				if (has_shape(shape_oscillatorParams.shape
+				if (has_shape(
+					  shape_oscillatorParams.shape
 					, WaveShape.Triangle_enum))
-					outShape += waveform.Triangle(db
+					outShape += waveform.Triangle(
+						  db
 						, hz
 						, frame_idx);
 
-				if (has_shape(shape_oscillatorParams.shape
+				if (has_shape(
+					  shape_oscillatorParams.shape
 					, WaveShape.Square_enum))
-					outShape += waveform.Square(db
+					outShape += waveform.Square(
+						  db
 						, hz
 						, frame_idx);
 
-				if (has_shape(shape_oscillatorParams.shape
+				if (has_shape(
+					  shape_oscillatorParams.shape
 					, WaveShape.ForwardSawtooth_enum))
-					outShape += waveform.forwardSaw(db
+					outShape += waveform.forwardSaw(
+						  db
 						, hz
 						, frame_idx);
 
-				if (has_shape(shape_oscillatorParams.shape
+				if (has_shape(
+					  shape_oscillatorParams.shape
 					, WaveShape.ReverseSawtooth_enum))
-					outShape += waveform.ReverseSaw(db
+					outShape += waveform.ReverseSaw(
+						  db
 						, hz
 						, frame_idx);
 
-				if (has_shape(shape_oscillatorParams.shape
+				if (has_shape(
+					  shape_oscillatorParams.shape
 					, WaveShape.WhiteNoise_enum))
 					outShape += waveform.whiteNoise(db);
 
-				if (has_shape(shape_oscillatorParams.shape
+				if (has_shape(
+					  shape_oscillatorParams.shape
 					, WaveShape.BrownNoise_enum))
-					outShape += waveform.brownNoise(db
+					outShape += waveform.brownNoise(
+						  db
 						, hz
 						, frame_idx);
 
-				if (has_shape(shape_oscillatorParams.shape
+				if (has_shape(
+					  shape_oscillatorParams.shape
 					, WaveShape.PinkNoise_enum))
-					outShape += waveform.pinkNoise(db
+					outShape += waveform.pinkNoise(
+						  db
 						, hz
 						, frame_idx);
 
-				if (has_shape(shape_oscillatorParams.shape
+				if (has_shape(
+					  shape_oscillatorParams.shape
 					, WaveShape.YellowNoise_enum))
-					outShape += waveform.yellowNoise(db
+					outShape += waveform.yellowNoise(
+						  db
 						, hz
 						, frame_idx);
 
-				if (has_shape(shape_oscillatorParams.shape
+				if (has_shape(
+					  shape_oscillatorParams.shape
 					, WaveShape.BlueNoise_enum))
-					outShape += waveform.blueNoise(db
+					outShape += waveform.blueNoise(
+						  db
 						, hz
 						, frame_idx);
 
-				if (has_shape(shape_oscillatorParams.shape
+				if (has_shape(
+					  shape_oscillatorParams.shape
 					, WaveShape.GreyNoise_enum))
-					outShape += waveform.greyNoise(db
+					outShape += waveform.greyNoise(
+						  db
 						, hz
 						, frame_idx);
 
-				if (has_shape(shape_oscillatorParams.shape
+				if (has_shape(
+					  shape_oscillatorParams.shape
 					, WaveShape.WhiteGaussianNoise_enum))
 					outShape += waveform.whiteGaussianNoise(db);
 
-				if (has_shape(shape_oscillatorParams.shape
+				if (has_shape(
+					  shape_oscillatorParams.shape
 					, WaveShape.PurpleVioletNoise_enum))
 					outShape += waveform.purpleVioletNoise();
 
-				if (outShape == startingShape)
+				if (outShape == nullShape)
 					throw ("invalid_argument to WaveShape generator - Unexpected or Unknown WaveShape type.");
 					//console.error(`Error at audio frame ${frame_idx} - Unknown or Unexpected wave-shape: ${shape_oscillatorParams.shape}`);
 					//throw std::invalid_argument("Unexpected or Unknown wave-shape.");
@@ -1905,6 +1960,7 @@ function generateComplexSignal(shapes_oscilatorParamsVec
 		} // End of else statement
 
 		audioFrames_float64Vec.push(outShape);
+		++idx;
 	} // End of for loop
 
 	return audioFrames_float64Vec;
