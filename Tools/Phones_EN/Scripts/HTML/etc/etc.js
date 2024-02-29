@@ -1,4 +1,347 @@
 
+				/*
+				const hz = bezier_spline_interpolation(shape_oscillatorParams, frame_idx, "frequency");
+				const db = bezier_spline_interpolation(shape_oscillatorParams, frame_idx, "amplitude");
+				const hz = sinusoidal_spline_interpolation(shape_oscillatorParams, frame_idx, "frequency");
+				const db = sinusoidal_spline_interpolation(shape_oscillatorParams, frame_idx, "amplitude");*/
+				//const hz = linear_spline_interpolation(shape_oscillatorParams, frame_idx, "frequency");
+				//const db = linear_spline_interpolation(shape_oscillatorParams, frame_idx, "amplitude");
+
+/**
+@brief linear spline (interpolation) function.
+@details linear spline (interpolation) function.
+@param pts - The formant object.
+@param dt - The frame to interpolate.
+@param audio_component - The audio component to interpolate (eg. 'amplitude' or 'frequency').
+@returns point */
+function linear_spline_interpolation (pts,dt,audio_component)
+{
+	if (pts.length == 0 )
+		throw ("runtime_error: Not enough frames for linear interpolation within the specified oscillator interval.");
+
+	// Find the interval [x_i, x_i+1] that contains x
+	const I = pts.length-1;
+	const II = pts.length-2;
+	for (let i = 0; i < II; ++i) {
+		const frame_1 = pts[i].frame;
+		const frame_2 = pts[i+1].frame;
+		const audio_component_1 = audio_component === "amplitude" ? pts[i].amplitude : pts[i].frequency ;
+		const audio_component_2 = audio_component === "amplitude" ? pts[i+1].amplitude : pts[i+1].frequency ;
+		if (dt > frame_1 && dt < frame_2) {
+			const dt = (dt - audio_component_1) / (audio_component_1 - frame_2);
+			return (1 - dt) * audio_component_1 + dt * audio_component_2;
+		}
+	}
+
+	// Handle extrapolation cases
+	const frame_1 = pts[0].frame;
+	const frame_2 = pts[I].frame;
+	const audio_component_1 = audio_component === "amplitude" ? pts[0].amplitude : pts[0].frequency ;
+	const audio_component_2 = audio_component === "amplitude" ? pts[I].amplitude : pts[I].frequency ;
+	if (dt <= frame_1) {
+		return  audio_component_1;
+	} else if (dt >= frame_2) {
+		return  audio_component_2;
+	}
+
+	throw ("runtime_error: unspecfied (linear) spline interpolation error.");
+} // end of linear_spline_interpolation
+
+/**
+ * @brief Bezier spline interpolation function.
+ * @details Bezier spline interpolation function.
+ * @param pts - The formant object.
+ * @param idx - The current formant curve index .
+ * @param dt - The frame to interpolate. Normalized to the range [0.0, 1.0].
+ * @param audio_component - The audio component to interpolate (eg. 'amplitude' or 'frequency').
+ * @returns point */
+function bezier_spline_interpolation (pts, idx, dt, audio_component)
+{
+	if (dt > 1) {
+		throw ("runtime_error: Not enough inter-frame interpolation \
+		steps for Bezier interpolation within the specified oscillator interval [0, 1]");
+	}
+
+	let n = 0;
+	let amplitude_retval = 0;
+	const dt_i = 1 - dt;
+
+	if (((idx + 1) in formant)) {
+		++n;
+	}
+
+	if (((idx + 2) in formant)) {
+		++n;
+	}
+
+	if (((idx + 3) in formant)) {
+		++n;
+	}
+
+	if (((idx + 4) in formant)) {
+		++n;
+	}
+
+	switch (audio_component) {
+		case "amplitude":
+		if (n === 0) {
+			// Single point
+			amplitude_retval = pts[idx + 0].amplitude;
+		} else if (n === 1) {
+			// Linear Bezier curve
+			amplitude_retval = (dt_i) * pts[idx + 0].amplitude + dt * pts[idx + 1].amplitude;
+		} else if (n === 2) {
+			// Quadratic Bezier curve
+			amplitude_retval = Math.pow(dt_i, 2) 
+				* pts[idx + 0].amplitude + 2 * (dt_i) * dt * pts[idx + 1].amplitude 
+				+ Math.pow(dt, 2) * pts[idx + 2].amplitude;
+		} else if (n === 3) {
+			// Cubic Bezier curve
+			amplitude_retval = Math.pow(dt_i, 3) 
+				* pts[idx + 0].amplitude + 3 * Math.pow(dt_i, 2) * dt 
+				* pts[idx + 1].amplitude + 3 * (dt_i) * Math.pow(dt, 2) 
+				* pts[idx + 2].amplitude + Math.pow(dt, 3) * pts[idx + 3].amplitude;
+		} else {
+			// Quartic Bezier curve
+			amplitude_retval = pts[idx + 0].amplitude * (Math.pow(dt_i, 3));
+				+ pts[idx + 1].amplitude * (3 * Math.pow(dt_i, 2) * dt);
+				+ pts[idx + 2].amplitude * (3 * (dt_i) * Math.pow(dt, 2));
+				+ pts[idx + 3].amplitude * (Math.pow(dt, 3));
+		}
+		break;
+
+		case "frequency":
+
+		break;
+
+		default:
+		// pts;
+		break;
+
+	}
+
+	return amplitude_retval;
+}
+
+/**
+@brief Calculates the ratio of an intermediate frame between two frames.
+@details Determines the relative position of an intermediate frame within the intervals
+         defined by either the start to intermediate frame or the intermediate to end frame,
+         depending on the position of the intermediate frame.
+@param frameStart The start frame of the interval.
+@param intermediateFrame The intermediate frame whose ratio is to be calculated.
+@param frameEnd The end frame of the interval.
+@param iframe The frame to interpolate, normalized to the range [0.0, 1.0].
+@return The calculated ratio of the intermediate frame within the specified interval.*/
+function calculateRatioBetweenFrames(frameStart, intermediateFrame, frameEnd, iframe) {
+	return iframe >= intermediateFrame
+	? interpolationUtils.getInterpolationFactor(intermediateFrame, frameEnd, iframe)
+	: interpolationUtils.getInterpolationFactor(frameStart, intermediateFrame, iframe);
+}
+
+
+/*
+NOTES:
+
+The newly constructed sinusoidal interpolation algorithm developed here focuses on high fidelity 
+and precise control over the interpolation process, especially within the context of audio signal processing. 
+By carefully mapping interpolation points to specific quadrants of the cosine function's arc, 
+the algorithm aims to maintain the natural curvilinear properties of sinusoidal waves, 
+which is crucial for preserving the integrity of audio signals during interpolation. 
+Let's evaluate this approach in comparison to the current state-of-the-art in interpolation techniques:
+
+### 1. **Fidelity and Precision**
+
+The emphasis is on fidelity and precision in this algorithm, 
+especially through the use of piece-wise interpolation that respects the curvilinear properties 
+of sinusoidal functions, is a significant advantage for applications requiring high-quality audio signal processing. 
+This approach can potentially offer superior results in maintaining the natural characteristics of audio signals, 
+especially when compared to simpler linear interpolation methods.
+
+### 2. **Complexity and Computational Efficiency**
+
+While this algorithm offers high fidelity, it may also introduce increased computational complexity 
+due to the need for piece-wise calculations and potentially more complex logic 
+to determine the interpolation range for each segment. In contrast, state-of-the-art techniques 
+like spline or Bezier curve interpolations provide a good balance between computational efficiency and smoothness 
+of the interpolated signal. The choice between these methods often comes down to the specific requirements 
+of the application, including the acceptable trade-off between computational load and interpolation quality.
+
+### 3. **Flexibility and Applicability**
+
+The following algorithm's design to specifically leverage the properties 
+of sinusoidal functions makes it highly suited for audio signal processing, 
+where such waveforms are common. However, its applicability might be more limited in contexts where 
+the data does not inherently align with sinusoidal wave characteristics or when a broader range 
+of interpolation behaviors is desired. In contrast, more general interpolation techniques, 
+such as cubic splines or Bézier curves, are widely applicable across different domains 
+due to their flexibility in fitting a wide range of data patterns.
+
+### 4. **Ease of Implementation and Integration**
+
+Implementing and integrating this algorithm into existing systems may require careful consideration, 
+especially if the system was designed around more conventional interpolation methods. 
+The specific nature of your algorithm's calculations might necessitate adjustments 
+in data preprocessing or postprocessing stages. On the other hand, 
+widely used techniques like cubic splines are often supported by existing libraries and tools, 
+facilitating easier integration.
+
+### Conclusion
+
+This sinusoidal interpolation algorithm presents a novel approach with potential advantages in 
+audio signal processing applications, emphasizing fidelity and precision. However, 
+it's essential to weigh these benefits against the increased computational complexity 
+and the specific applicability to sinusoidal waveforms. As with any specialized technique, 
+the ultimate evaluation would benefit from empirical testing within its intended application context, 
+comparing its performance directly against other state-of-the-art interpolation methods in terms of both 
+qualitative and quantitative outcomes.
+
+*/
+
+/**
+@brief Sine interpolation function.
+@details Sine interpolation function.  Using the sinusoidal approach to produce arcs between specified quadrants based on the trend of amplitude changes across three points.
+@param pts  The formant object.
+@param idx  The index of the formant object.
+@param iframe  The frame to interpolate. Normalized to the range [0.0, 1.0].
+@param amp  The amplitude of the oscillator signal.
+@param freq  The frequency of the oscillator signal.
+@param audio_component  The audio component to interpolate (eg. 'amplitude' or 'frequency'). 
+@return p_result: The oscillator signal at frame (frame) */
+function sinusoidal_spline_interpolation(pts, idx, iframe, amp, freq, audio_component) {
+
+	interpolationUtils.ensureEnoughPoints(pts, idx);
+
+	let retval = 0;
+
+	// REM: iframe should always (linearly) increase in the range [0, pts[lastIndex].frame]
+	const saturated = !(pts[idx].frame <= iframe && iframe <= pts[idx + 2].frame);
+
+	// Assuming 'saturated' should be false to indicate active interpolation
+	if (saturated) {
+		retval = audio_component ==="amplitude" ? amp : freq;
+
+		return { retval, saturated };
+	} 
+
+	// saturated is false, so we can proceed with interpolation
+	switch (audio_component) {
+		case "amplitude":
+
+				const amplitudeIsMonotonicallyIncreasing =
+					(pts[idx].amplitude <= pts[idx + 1].amplitude
+					&& pts[idx + 1].amplitude <= pts[idx + 2].amplitude);
+
+				const amplitudeIsCresting =
+					(pts[idx].amplitude <= pts[idx + 1].amplitude
+					&& pts[idx + 1].amplitude >= pts[idx + 2].amplitude);
+
+				const amplitudeIsTroughing =
+					(pts[idx].amplitude >= pts[idx + 1].amplitude
+					&& pts[idx + 1].amplitude <= pts[idx + 2].amplitude);
+
+				const amplitudeIsMonotonicallyDecreasing =
+					(pts[idx].amplitude >= pts[idx + 1].amplitude
+					&& pts[idx + 1].amplitude >= pts[idx + 2].amplitude);
+
+				const iframeIsBeyondTheMidpoint = iframe > pts[idx + 1].frame;
+
+				let tsRangeStart, tsRangeEnd;
+
+				// Interpolate the appropraite cosine interval for the amplitude value at the frame (iframe) between the range [0, pi/2]
+				// Available ranges are [0, pi/4] and [pi/4, pi/2]
+				if (amplitudeIsMonotonicallyIncreasing) {
+					tsRangeStart = !iframeIsBeyondTheMidpoint ? Math.PI : 3 * Math.PI/4;
+					tsRangeEnd = !iframeIsBeyondTheMidpoint ? 3 * Math.PI/4: 2 * Math.PI;
+				} else if (amplitudeIsCresting) { // non-sign preseerving
+					tsRangeStart = !iframeIsBeyondTheMidpoint ? Math.PI / 2 : Math.PI;
+					tsRangeEnd = !iframeIsBeyondTheMidpoint ? Math.PI : 2 * Math.PI;
+				} else if (amplitudeIsTroughing) { // sign preserving
+					tsRangeStart = !iframeIsBeyondTheMidpoint ? Math.PI / 2 : Math.PI;
+					tsRangeEnd = !iframeIsBeyondTheMidpoint ? Math.PI : 2 * Math.PI;
+				} else if (amplitudeIsMonotonicallyDecreasing) {
+					tsRangeStart = !iframeIsBeyondTheMidpoint ? 0 : Math.PI / 2;
+					tsRangeEnd = !iframeIsBeyondTheMidpoint ? Math.PI / 2 : Math.PI;
+				}
+
+				// Which frame interval? Calculate ratio between the current frame and the next frame
+				const ddf = calculateRatioBetweenFrames(pts[idx + 1].frame
+					, pts[idx + 1].frame
+					, pts[idx + 2].frame
+					, iframe);
+
+				// Interpolate an amplitude for the frame at iframe, between the range [0, pi/2]
+				const A = ddf <= 0.5
+					? interpolationUtils.LERP(pts[idx + 0].amplitude, pts[idx + 1].amplitude, ddf)
+					: interpolationUtils.LERP(pts[idx + 1].amplitude, pts[idx + 2].amplitude, ddf);
+
+				const ts = interpolationUtils.LERP(tsRangeStart, tsRangeEnd, ddf);
+
+				retval = interpolationUtils.calculateSinusoidalValue(A, freq, ts);
+
+			break;
+
+		case "frequency":
+
+            const frequencyIsMonotonicallyIncreasing =
+                (pts[idx].frequency <= pts[idx + 1].frequency
+                && pts[idx + 1].frequency <= pts[idx + 2].frequency);
+
+            const frequencyIsCresting =
+                (pts[idx].frequency <= pts[idx + 1].frequency
+                && pts[idx + 1].frequency >= pts[idx + 2].frequency);
+
+            const frequencyIsTroughing =
+                (pts[idx].frequency >= pts[idx + 1].frequency
+                && pts[idx + 1].frequency <= pts[idx + 2].frequency);
+
+            const frequencyIsMonotonicallyDecreasing =
+                (pts[idx].frequency >= pts[idx + 1].frequency
+                && pts[idx + 1].frequency >= pts[idx + 2].frequency);
+
+            const iframeIsBeyondTheMidpoint2 = iframe > pts[idx + 1].frame;
+
+            let tsRangeStart2, tsRangeEnd2;
+
+            // Interpolate the appropraite cosine interval for the frequency value at the frame (iframe) between the range [0, pi/2]
+            // Available ranges are [0, pi/4] and [pi/4, pi/2]
+            if (frequencyIsMonotonicallyIncreasing) {
+                tsRangeStart2 = !iframeIsBeyondTheMidpoint2 ? Math.PI : 3 * Math.PI/4;
+                tsRangeEnd2 = !iframeIsBeyondTheMidpoint2 ? 3 * Math.PI/4: 2 * Math.PI;
+            } else if (frequencyIsCresting) { // non-sign preseerving
+                tsRangeStart2 = !iframeIsBeyondTheMidpoint2 ? Math.PI / 2 : Math.PI;
+                tsRangeEnd2 = !iframeIsBeyondTheMidpoint2 ? Math.PI : 2 * Math.PI;
+            } else if (frequencyIsTroughing) { // sign preserving
+                tsRangeStart2 = !iframeIsBeyondTheMidpoint2 ? Math.PI / 2 : Math.PI;
+                tsRangeEnd2 = !iframeIsBeyondTheMidpoint2 ? Math.PI : 2 * Math.PI;
+            } else if (frequencyIsMonotonicallyDecreasing) {
+                tsRangeStart2 = !iframeIsBeyondTheMidpoint2 ? 0 : Math.PI / 2;
+                tsRangeEnd2 = !iframeIsBeyondTheMidpoint2 ? Math.PI / 2 : Math.PI;
+            }
+
+            // Which frame interval? Calculate ratio between the current frame and the next frame
+            const ddf2 = calculateRatioBetweenFrames(pts[idx + 1].frame
+                , pts[idx + 1].frame
+                , pts[idx + 2].frame
+                , iframe);
+
+            // Interpolate a frequency for the frame at iframe, between the range [0, pi/2]
+            const F = ddf2 <= 0.5
+                ? interpolationUtils.LERP(pts[idx + 0].frequency, pts[idx + 1].frequency, ddf2)
+                : interpolationUtils.LERP(pts[idx + 1].frequency, pts[idx + 2].frequency, ddf2);
+
+            const ts2 = interpolationUtils.LERP(tsRangeStart2, tsRangeEnd2, ddf2);
+
+            retval = interpolationUtils.calculateSinusoidalValue(amp, F, ts2);
+
+        break;
+
+		default:
+			throw new Error(`Unsupported audio component: ${audio_component}`);
+	}
+
+	return { retval, saturated };
+}
 
 function performUndoRedo(action) {
 	switch (action.type) {
