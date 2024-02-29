@@ -2752,9 +2752,30 @@ frequencyBtn.addEventListener('click', function() {
 
 window.addEventListener('keydown', function(e) {
 	// Close popup on escape key press //
-	if (e.key === 'Escape') {
+	if (e.key === 'Escape')
+	{
 		closeOverlay();
-	}
+	} 
+	else if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'z')
+	{
+        e.preventDefault(); // Prevent the default undo behavior
+        // Ctrl + Shift + Z for redo in some applications and Firefox
+        if (e.shiftKey) {
+           // console.log('Ctrl + Shift + Z pressed');
+            //redo();
+        } else {
+            //console.log('Ctrl + Z pressed');
+            //undo();
+        }
+    }
+	// Check if Ctrl (or Cmd on Mac!) is pressed along with Y
+	// Note: Firefox might not use 'y' for redo, relying on Ctrl + Shift + Z instead.
+	else if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'y')
+	{
+        e.preventDefault(); // Prevent the default redo behavior
+        //console.log('Ctrl + Y pressed');
+        //redo();
+    }
 });
 
 window.addEventListener('resize', () => {
