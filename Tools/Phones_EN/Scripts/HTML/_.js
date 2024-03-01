@@ -150,6 +150,8 @@ class FORMANTS extends Array {
 		this.shape = shape; // Adds the shape property
 		this.amplitude_as_bezierCurve_flag = amplitude_as_bezierCurve_flag;
 		this.frequency_as_bezierCurve_flag = frequency_as_bezierCurve_flag;
+		this.undoStack = [];
+		this.redoStack = [];
 	}
 }
 
@@ -165,9 +167,9 @@ Formants[0].push(
 	new OSC_INTERVAL ({ amplitude: -11.0, frequency: 20.0, frame: 2000, time_step: 105 })
 );
 
-Formants.prototype = Object.create(Array.prototype);
-Formants.prototype.undoStack = [];
-Formants.prototype.redoStack = [];
+//Formants.prototype = Object.create(Array.prototype);
+//Formants.prototype.undoStack = [];
+//Formants.prototype.redoStack = [];
 
 g_config = {
 	type: 'line',
@@ -384,6 +386,99 @@ function getMaxAmplitude(i, formant) {
 	return 0.00;
 }
 
+/**
+ * @brief  Function to find and add the nearest element 
+ * @param {*} formant  The formant array
+ * @param {*} nextOSCINterval  The next OSC_INTERVAL object to be added
+ * @returns {boolean}  */
+function addPoint(formant, nextOSCINterval) {
+	let insertionMade = false;
+	// Insert new marker //
+	const xValue = nextOSCINterval.frame;
+	const I = formant.length;
+	for (var i = 0; i < I; ++i) {
+		if (formant[i].frame > xValue) { // Insert new marker //
+			formant.splice(i, 0, nextOSCINterval);
+			insertionMade = true;
+			break;
+		}
+	}
+
+	if (!insertionMade) {
+		formant.push(nextOSCINterval);
+		insertionMade = true;
+	}
+
+	return insertionMade;
+}
+
+class AddCommand {
+	constructor(formant, data) {
+		this.formant = formant;
+		this.data = data;
+	}
+
+	execute() {
+		addPoint(this.formant, this.data);
+	}
+
+	undo() {
+		removeNearest(this.formant, [this.data.frame]);
+	}
+}
+
+class RemoveCommand {
+	constructor(formant, data) {
+		this.formant = formant;
+		this.data = data;
+	}
+
+	execute() {
+		removeNearest(this.formant, [this.data.frame]);
+	}
+
+	undo() {
+		addPoint(this.formant, this.data);
+	}
+}
+
+function executeCommand(command) {
+	command.execute();
+	
+	let formant = Formants[g_lastSelectedFormantIndex];
+
+	formant.redoStack = []; // Clear redo stack on new action
+	formant.undoStack.push(command);
+
+	updateChart(formant);
+}
+
+function undo() {
+	let formant = Formants[g_lastSelectedFormantIndex];
+	
+	if (formant.undoStack.length === 0) return;
+
+	const command = formant.undoStack.pop();
+
+	command.undo();
+
+	formant.redoStack.push(command);
+	updateChart(formant);
+}
+
+function redo() {
+	let formant = Formants[g_lastSelectedFormantIndex];
+
+	if (formant.redoStack.length === 0) return;
+
+	const command = formant.redoStack.pop();
+
+	command.execute();
+
+	formant.undoStack.push(command);
+	updateChart(formant);
+}
+
 // Function to find and remove the nearest element //
 function removeNearest(audio_frame, remove_element) {
 	let nearestAudioFrameIndex  = 0;
@@ -447,7 +542,8 @@ function displaySliders(i, formant) {
 	const maxFrame = i + 1 in formant ? formant[i+1].frame : formant[i].frame;
 
 	// Create a slider for the frame index //
-	var frameIndexSlider = createSlider('frameIndex'
+	var frameIndexSlider = createSlider(
+		  'frameIndex'
 		, 'Adjust Frame Index'
 		, formant[i].frame
 		, minFrame
@@ -461,7 +557,8 @@ function displaySliders(i, formant) {
 	});
 
 	// Create a slider for frequency
-	var frequencySlider = createSlider('frequency'
+	var frequencySlider = createSlider(
+		  'frequency'
 		, 'Frequency (Hz)'
 		, formant[i].frequency
 		, 0.00
@@ -475,7 +572,8 @@ function displaySliders(i, formant) {
 	});
 
 	// Create a slider for amplitude
-	var amplitudeSlider = createSlider('amplitude'
+	var amplitudeSlider = createSlider(
+		  'amplitude'
 		, 'Amplitude (dBFS)'
 		, formant[i].amplitude
 		,-20.00
@@ -509,6 +607,7 @@ function displaySliders(i, formant) {
 	showTAElement({ jsonINDIR: 'slider' });
 }
 
+// Insert a new point at the crosshair //
 formant_graph_canvas.addEventListener('click', function(e) {
 	// Add a point to the chart //
 	let chart = g_formantChart;
@@ -537,10 +636,10 @@ formant_graph_canvas.addEventListener('click', function(e) {
 
 		const I = formant.length;
 		for (var i = 0; i < I; ++i) {
-			if (Math.abs(formant[i].frame - xValue) < 65) { // Edit current marker
+			if (Math.abs(formant[i].frame - xValue) < 65) { // Edit current marker //
 				displaySliders(i, formant);
 				break;
-			} else if (formant[i].frame > xValue) { // Insert new marker
+			} else if (formant[i].frame > xValue) { // Insert new marker //
 				formant.splice(i, 0, nextOSCINterval);
 				break;
 			}
@@ -605,8 +704,7 @@ const ShapeButtonMappings = {
 };
 
 // Called by the global Formants[].shape to convert its string input. The DOM calls updateActiveRadioButton directly.
-function updateShapeBar(u)
-{
+function updateShapeBar(u) {
 	if (u in ShapeButtonMappings) {
 		let ShapeActiveButton = ShapeButtonMappings[u];
 		updateActiveRadioButton(ShapeActiveButton);
@@ -930,8 +1028,7 @@ RemoveFramesBTN.addEventListener('click', function() {
 });
 
 // Show/Hide JSON Text Area Element
-function showTAElement({ jsonINDIR = 'out' }={})
-{
+function showTAElement({ jsonINDIR = 'out' }={}) {
 	switch (jsonINDIR) {
 		case 'in':
 		JsonTA.style.display = 'block';
@@ -968,8 +1065,7 @@ function showTAElement({ jsonINDIR = 'out' }={})
 }
 
 // Show/Hide JSON Text Area Element
-function hideTAElement()
-{
+function hideTAElement() {
 	popupContainer.style.display = 'none';
 	json_form_class.style.display = 'none';
 	jsonFORM.style.display = 'none';
@@ -993,7 +1089,10 @@ function serializeCustomObject(obj) {
 	let properties = [];
 
 	for (let property in obj) {
-		if (obj.hasOwnProperty(property)) {
+		if (
+			obj.hasOwnProperty(property)
+			&& property !== 'undoStack'
+			&& property !== 'redoStack') {
 			let value = obj[property];
 
 			// Handling non-primitive types (like another object)
@@ -1381,8 +1480,7 @@ class FWaveform extends Object {
 @param dt - The frame to interpolate.
 @param audio_component - The audio component to interpolate (eg. 'amplitude' or 'frequency').
 @returns point */
-function linear_spline_interpolation (pts,dt,audio_component)
-{
+function linear_spline_interpolation (pts,dt,audio_component) {
 	if (pts.length == 0 )
 		throw ("runtime_error: Not enough frames for linear interpolation within the specified oscillator interval.");
 
@@ -1419,14 +1517,14 @@ function linear_spline_interpolation (pts,dt,audio_component)
 @details Utility module for sinusoidal spline interpolation  */
 const interpolationUtils = {
 
-    /**
-    @brief Ensures that there are enough points for interpolation.
-    @details Throws an exception if there aren't enough points for sinusoidal interpolation.
-             This is a static utility method used to validate the size of the points array
-             before performing interpolation operations.
-    @param pts Pointer to the first element of an array of FormantPoint.
-    @param idx The current index within the points array to check for sufficient subsequent points.
-    @throws std::runtime_error if there are not enough points for interpolation. 
+	/**
+	@brief Ensures that there are enough points for interpolation.
+	@details Throws an exception if there aren't enough points for sinusoidal interpolation.
+			 This is a static utility method used to validate the size of the points array
+			 before performing interpolation operations.
+	@param pts Pointer to the first element of an array of FormantPoint.
+	@param idx The current index within the points array to check for sufficient subsequent points.
+	@throws std::runtime_error if there are not enough points for interpolation. 
 	ensureEnoughPoints: function(pts, idx) {
 		if (!(idx + 2 in pts)) {
 			throw new Error("runtime_error: Not enough inter-frame interpolation\
@@ -1434,38 +1532,38 @@ const interpolationUtils = {
 		}
 	},
 
-    /**
-    @brief Calculates the sinusoidal value based on amplitude, frequency, and time.
-    @details Uses the cosine function to calculate the sinusoidal value, representing
-             the value of the waveform at a given time based on its amplitude and frequency.
-    @param amp The amplitude of the waveform.
-    @param freq The frequency of the waveform.
-    @param ts The time stamp at which to calculate the waveform's value.
-    @return The calculated sinusoidal value. */
+	/**
+	@brief Calculates the sinusoidal value based on amplitude, frequency, and time.
+	@details Uses the cosine function to calculate the sinusoidal value, representing
+			 the value of the waveform at a given time based on its amplitude and frequency.
+	@param amp The amplitude of the waveform.
+	@param freq The frequency of the waveform.
+	@param ts The time stamp at which to calculate the waveform's value.
+	@return The calculated sinusoidal value. */
 	calculateSinusoidalValue: function(amp, freq, ts) {
 		return amp * Math.cos(Math.PI * (freq * ts));
 	},
 
-    /**
-    @brief Calculates the interpolation factor between two frames.
-    @details Determines the relative position of an intermediate frame within the interval
-             defined by a starting and ending frame.
-    @param frameStart The normalized start frame value.
-    @param frameEnd The normalized end frame value.
-    @param iframe The intermediate frame whose position is to be determined.
-    @return The interpolation factor of the intermediate frame within the start and end frame interval. */
+	/**
+	@brief Calculates the interpolation factor between two frames.
+	@details Determines the relative position of an intermediate frame within the interval
+			 defined by a starting and ending frame.
+	@param frameStart The normalized start frame value.
+	@param frameEnd The normalized end frame value.
+	@param iframe The intermediate frame whose position is to be determined.
+	@return The interpolation factor of the intermediate frame within the start and end frame interval. */
 	getInterpolationFactor: function(frameStart, frameEnd, iframe) {
 		return Math.abs((iframe - frameStart) / (frameEnd - frameStart));
 	},
 
-    /**
-    @brief Performs linear interpolation (LERP) between two values.
-    @details Calculates a value linearly interpolated between a start and end value,
-             based on a given factor that indicates the relative position between the two.
-    @param start The start value for interpolation.
-    @param end The end value for interpolation.
-    @param factor The factor indicating the position between the start and end values.
-    @return The interpolated value. */
+	/**
+	@brief Performs linear interpolation (LERP) between two values.
+	@details Calculates a value linearly interpolated between a start and end value,
+			 based on a given factor that indicates the relative position between the two.
+	@param start The start value for interpolation.
+	@param end The end value for interpolation.
+	@param factor The factor indicating the position between the start and end values.
+	@return The interpolated value. */
 	LERP: function(start, end, factor) {
 		return (1 - factor) * start + factor * end;
 	}
@@ -1475,8 +1573,8 @@ const interpolationUtils = {
 /**
 @brief Calculates the ratio of an intermediate frame between two frames.
 @details Determines the relative position of an intermediate frame within the intervals
-         defined by either the start to intermediate frame or the intermediate to end frame,
-         depending on the position of the intermediate frame.
+		 defined by either the start to intermediate frame or the intermediate to end frame,
+		 depending on the position of the intermediate frame.
 @param frameStart The start frame of the interval.
 @param intermediateFrame The intermediate frame whose ratio is to be calculated.
 @param frameEnd The end frame of the interval.
@@ -1631,58 +1729,58 @@ function sinusoidal_spline_interpolation(pts, idx, iframe, amp, freq, audio_comp
 
 		case "frequency":
 
-            const frequencyIsMonotonicallyIncreasing =
-                (pts[idx].frequency <= pts[idx + 1].frequency
-                && pts[idx + 1].frequency <= pts[idx + 2].frequency);
+			const frequencyIsMonotonicallyIncreasing =
+				(pts[idx].frequency <= pts[idx + 1].frequency
+				&& pts[idx + 1].frequency <= pts[idx + 2].frequency);
 
-            const frequencyIsCresting =
-                (pts[idx].frequency <= pts[idx + 1].frequency
-                && pts[idx + 1].frequency >= pts[idx + 2].frequency);
+			const frequencyIsCresting =
+				(pts[idx].frequency <= pts[idx + 1].frequency
+				&& pts[idx + 1].frequency >= pts[idx + 2].frequency);
 
-            const frequencyIsTroughing =
-                (pts[idx].frequency >= pts[idx + 1].frequency
-                && pts[idx + 1].frequency <= pts[idx + 2].frequency);
+			const frequencyIsTroughing =
+				(pts[idx].frequency >= pts[idx + 1].frequency
+				&& pts[idx + 1].frequency <= pts[idx + 2].frequency);
 
-            const frequencyIsMonotonicallyDecreasing =
-                (pts[idx].frequency >= pts[idx + 1].frequency
-                && pts[idx + 1].frequency >= pts[idx + 2].frequency);
+			const frequencyIsMonotonicallyDecreasing =
+				(pts[idx].frequency >= pts[idx + 1].frequency
+				&& pts[idx + 1].frequency >= pts[idx + 2].frequency);
 
-            const iframeIsBeyondTheMidpoint2 = iframe > pts[idx + 1].frame;
+			const iframeIsBeyondTheMidpoint2 = iframe > pts[idx + 1].frame;
 
-            let tsRangeStart2, tsRangeEnd2;
+			let tsRangeStart2, tsRangeEnd2;
 
-            // Interpolate the appropraite cosine interval for the frequency value at the frame (iframe) between the range [0, pi/2]
-            // Available ranges are [0, pi/4] and [pi/4, pi/2]
-            if (frequencyIsMonotonicallyIncreasing) {
-                tsRangeStart2 = !iframeIsBeyondTheMidpoint2 ? Math.PI : 3 * Math.PI/4;
-                tsRangeEnd2 = !iframeIsBeyondTheMidpoint2 ? 3 * Math.PI/4: 2 * Math.PI;
-            } else if (frequencyIsCresting) { // non-sign preseerving
-                tsRangeStart2 = !iframeIsBeyondTheMidpoint2 ? Math.PI / 2 : Math.PI;
-                tsRangeEnd2 = !iframeIsBeyondTheMidpoint2 ? Math.PI : 2 * Math.PI;
-            } else if (frequencyIsTroughing) { // sign preserving
-                tsRangeStart2 = !iframeIsBeyondTheMidpoint2 ? Math.PI / 2 : Math.PI;
-                tsRangeEnd2 = !iframeIsBeyondTheMidpoint2 ? Math.PI : 2 * Math.PI;
-            } else if (frequencyIsMonotonicallyDecreasing) {
-                tsRangeStart2 = !iframeIsBeyondTheMidpoint2 ? 0 : Math.PI / 2;
-                tsRangeEnd2 = !iframeIsBeyondTheMidpoint2 ? Math.PI / 2 : Math.PI;
-            }
+			// Interpolate the appropraite cosine interval for the frequency value at the frame (iframe) between the range [0, pi/2]
+			// Available ranges are [0, pi/4] and [pi/4, pi/2]
+			if (frequencyIsMonotonicallyIncreasing) {
+				tsRangeStart2 = !iframeIsBeyondTheMidpoint2 ? Math.PI : 3 * Math.PI/4;
+				tsRangeEnd2 = !iframeIsBeyondTheMidpoint2 ? 3 * Math.PI/4: 2 * Math.PI;
+			} else if (frequencyIsCresting) { // non-sign preseerving
+				tsRangeStart2 = !iframeIsBeyondTheMidpoint2 ? Math.PI / 2 : Math.PI;
+				tsRangeEnd2 = !iframeIsBeyondTheMidpoint2 ? Math.PI : 2 * Math.PI;
+			} else if (frequencyIsTroughing) { // sign preserving
+				tsRangeStart2 = !iframeIsBeyondTheMidpoint2 ? Math.PI / 2 : Math.PI;
+				tsRangeEnd2 = !iframeIsBeyondTheMidpoint2 ? Math.PI : 2 * Math.PI;
+			} else if (frequencyIsMonotonicallyDecreasing) {
+				tsRangeStart2 = !iframeIsBeyondTheMidpoint2 ? 0 : Math.PI / 2;
+				tsRangeEnd2 = !iframeIsBeyondTheMidpoint2 ? Math.PI / 2 : Math.PI;
+			}
 
-            // Which frame interval? Calculate ratio between the current frame and the next frame
-            const ddf2 = calculateRatioBetweenFrames(pts[idx + 1].frame
-                , pts[idx + 1].frame
-                , pts[idx + 2].frame
-                , iframe);
+			// Which frame interval? Calculate ratio between the current frame and the next frame
+			const ddf2 = calculateRatioBetweenFrames(pts[idx + 1].frame
+				, pts[idx + 1].frame
+				, pts[idx + 2].frame
+				, iframe);
 
-            // Interpolate a frequency for the frame at iframe, between the range [0, pi/2]
-            const F = ddf2 <= 0.5
-                ? interpolationUtils.LERP(pts[idx + 0].frequency, pts[idx + 1].frequency, ddf2)
-                : interpolationUtils.LERP(pts[idx + 1].frequency, pts[idx + 2].frequency, ddf2);
+			// Interpolate a frequency for the frame at iframe, between the range [0, pi/2]
+			const F = ddf2 <= 0.5
+				? interpolationUtils.LERP(pts[idx + 0].frequency, pts[idx + 1].frequency, ddf2)
+				: interpolationUtils.LERP(pts[idx + 1].frequency, pts[idx + 2].frequency, ddf2);
 
-            const ts2 = interpolationUtils.LERP(tsRangeStart2, tsRangeEnd2, ddf2);
+			const ts2 = interpolationUtils.LERP(tsRangeStart2, tsRangeEnd2, ddf2);
 
-            retval = interpolationUtils.calculateSinusoidalValue(amp, F, ts2);
+			retval = interpolationUtils.calculateSinusoidalValue(amp, F, ts2);
 
-        break;
+		break;
 
 		default:
 			throw new Error(`Unsupported audio component: ${audio_component}`);
@@ -1698,8 +1796,7 @@ function sinusoidal_spline_interpolation(pts, idx, iframe, amp, freq, audio_comp
  * @param dt - The frame to interpolate. Normalized to the range [0.0, 1.0].
  * @param audio_component - The audio component to interpolate (eg. 'amplitude' or 'frequency').
  * @returns point */
-function bezier_spline_interpolation (pts, idx, dt, audio_component)
-{
+function bezier_spline_interpolation (pts, idx, dt, audio_component) {
 	if (dt > 1) {
 		throw ("runtime_error: Not enough inter-frame interpolation \
 		steps for Bezier interpolation within the specified oscillator interval [0, 1]");
@@ -1766,8 +1863,7 @@ function bezier_spline_interpolation (pts, idx, dt, audio_component)
 	return amplitude_retval;
 }
 
-function has_shape(a,b)
-{
+function has_shape(a,b) {
 	return (a & b) !== 0;
 }
 
@@ -1779,8 +1875,7 @@ function has_shape(a,b)
 @return The oscillator signal at frame N).*/
 function generateComplexSignal(
 	  shapes_oscilatorParamsVec
-	, customUpdateCallback)
-{
+	, customUpdateCallback) {
 
 	let idx = 0;
 	let frame_idx = 0;
@@ -2438,7 +2533,7 @@ var chart_viewer_config = {
 			}
 		},
 		responsive: true, // Makes the chart responsive to window resizing
-        animation: false, // Disable chart animations ( performance)
+		animation: false, // Disable chart animations ( performance)
 		maintainAspectRatio: true, // Maintain aspect ratio
 		plugins: {
 			legend: {
@@ -2503,7 +2598,7 @@ Cpp20BTN.addEventListener('click', function() {
 	const I = Math.min(25000, duration * sampleRate);
 
 	// Create an audio buffer with appropriate settings
-	let channelDataLeft = new Float64Array (I);
+	let channelDataLeft =  new Float64Array (I);
 	let channelDataRight = new Float64Array (I);
 
 	channelDataLeft.sampleRate = sampleRate;
@@ -2531,7 +2626,7 @@ Cpp20BTN.addEventListener('click', function() {
 	}
 
 	showOverlayWithData( [
-		Array.from(channelDataLeft, (chart_amplitude/* item */, chart_frame /* idx*/) => ({ y:chart_amplitude, x:chart_frame }))
+		  Array.from(channelDataLeft, (chart_amplitude/* item */, chart_frame /* idx*/) => ({ y:chart_amplitude, x:chart_frame }))
 		, Array.from(channelDataRight, (chart_amplitude/* item */, chart_frame /* idx*/) => ({ y:chart_amplitude, x:chart_frame }))] );
 
 });
@@ -2591,12 +2686,11 @@ function closeOverlay() {
  * @param {number} min - The lower bound of the input range.
  * @param {number} max - The upper bound of the input range.
  * @returns {number} - The smoothly interpolated stepRatio between 0 and 1. */
-function linearStep(x, min, max)
-{
-    if (x <= min) return 0;
-    if (x >= max) return 1;
-    const stepRatio = (x - min) / (max - min);
-    return stepRatio;
+function linearStep(x, min, max) {
+	if (x <= min) return 0;
+	if (x >= max) return 1;
+	const stepRatio = (x - min) / (max - min);
+	return stepRatio;
 }
 
 /**
@@ -2605,7 +2699,7 @@ function linearStep(x, min, max)
  * @param {number} t - The interpolation factor, between 0.0 (start) and 1.0 (end).
  * @returns {number} The interpolated value at the factor t, assuming start value is 0 and end value is 1. */
 function quarticEaseIn(t) {
-    return t * t * t * t;
+	return t * t * t * t;
 }
 
 /**
@@ -2614,7 +2708,7 @@ function quarticEaseIn(t) {
  * @param {number} t - The interpolation factor, between 0.0 (start) and 1.0 (end).
  * @returns {number} The interpolated value at the factor t, assuming start value is 0 and end value is 1. */
 function quarticEaseOut(t) {
-    return 1 - (--t) * t * t * t;
+	return 1 - (--t) * t * t * t;
 }
 
 /*
@@ -2644,13 +2738,13 @@ function quarticEaseOut(t) {
  * @param {number} t - The interpolation factor, between 0.0 (start) and 1.0 (end).
  * @returns {number} The interpolated value. */
 function quarticEaseInOut(startValue, endValue, t) {
-    t = Math.max(0, Math.min(1, t)); // Clamp t to the range [0, 1] //
-    if (t < 0.5) {
-        return startValue + (endValue - startValue) * 8 * t * t * t * t;
-    } else {
-        t = t - 1;
-        return startValue + (endValue - startValue) * (1 - 8 * t * t * t * t);
-    }
+	t = Math.max(0, Math.min(1, t)); // Clamp t to the range [0, 1] //
+	if (t < 0.5) {
+		return startValue + (endValue - startValue) * 8 * t * t * t * t;
+	} else {
+		t = t - 1;
+		return startValue + (endValue - startValue) * (1 - 8 * t * t * t * t);
+	}
 }
 
 /**
@@ -2683,11 +2777,10 @@ function quarticEaseInOut(startValue, endValue, t) {
  * @param {number} m0 - The tangent (slope) at the starting point.
  * @param {number} m1 - The tangent (slope) at the ending point.
  * @returns {number} - The interpolated value. */
-function cubicHermite(t, p0, p1, m0, m1)
-{
-    const t2 = t * t;
-    const t3 = t2 * t;
-    return (2 * t3 - 3 * t2 + 1) * p0 + (t3 - 2 * t2 + t) * m0 + (-2 * t3 + 3 * t2) * p1 + (t3 - t2) * m1;
+function cubicHermite(t, p0, p1, m0, m1) {
+	const t2 = t * t;
+	const t3 = t2 * t;
+	return (2 * t3 - 3 * t2 + 1) * p0 + (t3 - 2 * t2 + t) * m0 + (-2 * t3 + 3 * t2) * p1 + (t3 - t2) * m1;
 }
 
 okBTN.addEventListener('click', function(e) {
@@ -2697,7 +2790,7 @@ okBTN.addEventListener('click', function(e) {
 		switch(jsonFORM.jsonIndirection) {
 			case 'in':
 				const tmpData = JSON.parse(JsonTA.value);
-				//g_formantChart.data/*.datasets*/ = tmpData;
+				//todo: rebuild the chart objects with the new data
 				break;
 			case 'out':
 			case 'none':
@@ -2758,24 +2851,21 @@ window.addEventListener('keydown', function(e) {
 	} 
 	else if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'z')
 	{
-        e.preventDefault(); // Prevent the default undo behavior
-        // Ctrl + Shift + Z for redo in some applications and Firefox
-        if (e.shiftKey) {
-           // console.log('Ctrl + Shift + Z pressed');
-            //redo();
-        } else {
-            //console.log('Ctrl + Z pressed');
-            //undo();
-        }
-    }
+		e.preventDefault(); // Prevent the default undo behavior
+		// Ctrl + Shift + Z for redo in some applications and Firefox
+		if (e.shiftKey) {
+			redo(); // console.log('Ctrl + Shift + Z pressed');
+		} else {
+			undo();  //console.log('Ctrl + Z pressed');
+		}
+	}
 	// Check if Ctrl (or Cmd on Mac!) is pressed along with Y
 	// Note: Firefox might not use 'y' for redo, relying on Ctrl + Shift + Z instead.
 	else if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'y')
 	{
-        e.preventDefault(); // Prevent the default redo behavior
-        //console.log('Ctrl + Y pressed');
-        //redo();
-    }
+		e.preventDefault(); // Prevent the default redo behavior
+		redo(); //console.log('Ctrl + Y pressed');
+	}
 });
 
 window.addEventListener('resize', () => {
