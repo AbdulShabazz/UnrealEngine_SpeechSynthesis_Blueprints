@@ -1,4 +1,102 @@
 
+
+// Function to find and undo the nearest action //
+function undo()
+{
+	//let chart = g_formantChart;
+	let formant = Formants[g_lastSelectedFormantIndex];
+
+	let undoStack = formant.undoStack;
+	let redoStack = formant.undoStack;
+
+	if (undoStack.length === 0)
+		return;
+
+	//const y_axis_amplitude = 0;
+	//const y_axis_frequency = 1;
+
+	const action = undoStack.pop();
+
+	//const idx = action.yAxisAmplitudeVisibleFlag ? y_axis_amplitude : y_axis_frequency;
+
+	switch (action.type)
+	{
+		case 'add':
+			//const removedData = chart.data.datasets[idx].data.pop();
+			//chart.update();
+			
+			// Reverse the action by removing the data point
+			removeNearest(formant, [action.data.frame]);
+
+			// Save the reverse action for redo //
+			action.type = 'remove';
+			
+			redoStack.push(action);
+			updateChart(formant);
+			break;
+
+		case 'remove':
+			const addedData = action.data;
+			// Reverse the action by removing the data point
+			addPoint(formant, addedData);
+
+			// Save the reverse action for redo //
+			action.type = 'add';
+			
+			redoStack.push(action);
+			updateChart(formant);
+			break;
+	}
+}
+
+// Function to find and redo the nearest undone action //
+function redo()
+{
+	//let chart = g_formantChart;
+	let formant = Formants[g_lastSelectedFormantIndex];
+
+	let undoStack = formant.undoStack;
+	let redoStack = formant.undoStack;
+
+	if (redoStack.length === 0)
+		return;
+
+	//const y_axis_amplitude = 0;
+	//const y_axis_frequency = 1;
+
+	const action = undoStack.pop();
+
+	//const idx = action.yAxisAmplitudeVisibleFlag ? y_axis_amplitude : y_axis_frequency;
+
+	switch (action.type)
+	{
+		case 'add':
+			//const removedData = chart.data.datasets[idx].data.pop();
+			//chart.update();
+			
+			// Reverse the action by removing the data point
+			removeNearest(formant, [action.data.frame]);
+
+			// Save the reverse action for redo //
+			action.type = 'remove';
+			
+			undoStack.push(action);
+			updateChart(formant);
+			break;
+
+		case 'remove':
+			const addedData = action.data;
+			// Reverse the action by removing the data point
+			addPoint(formant, addedData);
+
+			// Save the reverse action for redo //
+			action.type = 'add';
+			
+			undoStack.push(action);
+			updateChart(formant);
+			break;
+	}
+}
 				/*
 				const hz = bezier_spline_interpolation(shape_oscillatorParams, frame_idx, "frequency");
 				const db = bezier_spline_interpolation(shape_oscillatorParams, frame_idx, "amplitude");
