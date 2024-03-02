@@ -1271,40 +1271,61 @@ class FWaveform extends Object {
 	@brief Generates a Sine wave.
 	@param params: The essential parameters for the input signal
 	@return double ( The oscillator signal at time-step t).*/
-	SINE(params) {	
-		const oldFrequency = params.frequency;
-
-		if (params.frequencyBlendStrategy) {
-			params.cumulativePhase += 2 * Math.PI * oldFrequency * params.deltaTime / params.TIME;	
-		}
-
-		const value = params.amplitude * Math.sin(2 * Math.PI * params.frequency * params.time + params.phase);
-
-		if (params.frequencyBlendStrategy) {
-			/**
-			
-			Adjusting the phase in your algorithm to maintain smoothness, 
-			especially during frequency transitions, requires a careful approach. 
-			The goal is to ensure that when the frequency changes, 
-			the phase does not introduce discontinuities or abrupt changes in the waveform!
-			Here's an approach to adjust the phase dynamically to accommodate changes 
-			in frequency smoothly:
-			
-			1. Track the cumulative phase of the signal over time.
-			
-			This phase needs to be updated every time you generate a sample.
-			
-			2. Adjust Phase During Frequency Transition
+	SIN(params)
+	{
+		/**
 		
-			When you change the frequency, adjust the starting phase 
-			of the new frequency to match the instantaneous phase of the ongoing signal. 
-			This helps in avoiding phase discontinuities.
+		Adjusting the phase in your algorithm to maintain smoothness, 
+		especially during frequency transitions, requires a careful approach. 
+		The goal is to ensure that when the frequency changes, 
+		the phase does not introduce discontinuities or abrupt changes in the waveform. 
+		Here's an approach to adjust the phase dynamically to accommodate changes 
+		in frequency smoothly:
+		
+		1. Track the cumulative phase of the signal over time.
+		
+		This phase needs to be updated every time you generate a sample.
+		
+		2. Adjust Phase During Frequency Transition
+
+		When you change the frequency, adjust the starting phase 
+		of the new frequency to match the instantaneous phase of the ongoing signal. 
+		This helps in avoiding phase discontinuities.
+		
+		**/
+		
+		const oldFrequency = params.frequency;
+		params.cumulativePhase += 2 * Math.PI * oldFrequency * params.deltaTime / params.TIME;
+
+		if (params.frequencyBlendStrategy) {
+			// Blend factor, between the range [0,1] //
+			const t = linearStep(params.time, params.frequencyBlendStartFrame, params.frequencyBlendEndFrame);
 			
-			**/
+			params.frequency = do_Blend(
+				  params.frequencyBlendStrategy
+				, t
+				, params.frequencyStart
+				, params.frequencyEnd);
+
+			// Adjust phase to match the instantaneous phase at the time of frequency change //
 			params.phase = params.cumulativePhase - 2 * M_PI * params.frequency / params.TIME * (params.time + params.deltaTime);
 		}
 
-		return value;
+		if (params.amplitudeBlendStrategy) {
+			// Blend factor, between the range [0,1] //
+			const t = linearStep(params.time, params.amplitudeBlendStartFrame, params.amplitudeBlendEndFrame);
+			
+			params.amplitude = do_Blend(
+					  params.amplitudeBlendStrategy
+					, t
+					, params.amplitudeStart
+					, params.amplitudeEnd);
+		}
+
+		// Generate the signal with interpolated parameters //
+		const result = params.amplitude * Math.sin(2 * Math.PI * params.frequency / params.TIME * params.time + params.phase);
+
+		return result;
 	}
 
 	/**
@@ -1694,7 +1715,12 @@ function do_Blend(
 		//value = cubicHermite<PRECISION>(blendRatio, startValue, endValue, 0.0f, 0.0f);
 		//break;
 		case BLEND_STRATEGY.CUBIC:
-		value = cubicHermite/* <PRECISION> */(blendRatio, startValue, endValue, 0.0, 0.0);
+		value = cubicHermite/* <PRECISION> */(
+					  blendRatio
+					, startValue
+					, endValue
+					, startValueSlope
+					, endValueSlope);
 		break;
 		
 		//case BLEND_STRATEGY::QUARTIC:
@@ -1805,7 +1831,7 @@ function generateComplexSignal(
 				// Use the do_Blend function to interpolate the amplitude and frequency values //
 				if (shapes_oscilatorParamsVec.amplitude_as_bezierCurve_flag) {
 					const db = do_Blend(
-						params.amplitudeBlendStrategy
+						  params.amplitudeBlendStrategy
 						, db_stepRatio
 						, params.amplitudeStart
 						, params.amplitudeEnd);
@@ -1814,7 +1840,7 @@ function generateComplexSignal(
 				// Use the do_Blend function to interpolate the amplitude and frequency values //
 				if (shapes_oscilatorParamsVec.frequency_as_bezierCurve_flag) {
 					const hz = do_Blend(
-						params.frequencyBlendStrategy
+						  params.frequencyBlendStrategy
 						, hz_stepRatio
 						, params.frequencyStart
 						, params.frequencyEnd);
