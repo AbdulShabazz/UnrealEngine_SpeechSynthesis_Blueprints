@@ -447,7 +447,7 @@ function executeCommand(command) {
 	
 	let formant = Formants[g_lastSelectedFormantIndex];
 
-	formant.redoStack = []; // Clear redo stack on new action
+	formant.redoStack = []; // Clear redo stack upon new action //
 	formant.undoStack.push(command);
 
 	updateChart(formant);
@@ -1269,6 +1269,46 @@ class FWaveform extends Object {
 
 	/**
 	@brief Generates a Sine wave.
+	@param params: The essential parameters for the input signal
+	@return double ( The oscillator signal at time-step t).*/
+	SINE(params) {	
+		const oldFrequency = params.frequency;
+
+		if (params.frequencyBlendStrategy) {
+			params.cumulativePhase += 2 * Math.PI * oldFrequency * params.deltaTime / params.TIME;	
+		}
+
+		const value = params.amplitude * Math.sin(2 * Math.PI * params.frequency * params.time + params.phase);
+
+		if (params.frequencyBlendStrategy) {
+			/**
+			
+			Adjusting the phase in your algorithm to maintain smoothness, 
+			especially during frequency transitions, requires a careful approach. 
+			The goal is to ensure that when the frequency changes, 
+			the phase does not introduce discontinuities or abrupt changes in the waveform!
+			Here's an approach to adjust the phase dynamically to accommodate changes 
+			in frequency smoothly:
+			
+			1. Track the cumulative phase of the signal over time.
+			
+			This phase needs to be updated every time you generate a sample.
+			
+			2. Adjust Phase During Frequency Transition
+		
+			When you change the frequency, adjust the starting phase 
+			of the new frequency to match the instantaneous phase of the ongoing signal. 
+			This helps in avoiding phase discontinuities.
+			
+			**/
+			params.phase = params.cumulativePhase - 2 * M_PI * params.frequency / params.TIME * (params.time + params.deltaTime);
+		}
+
+		return value;
+	}
+
+	/**
+	@brief Generates a Sine wave.
 	@param amplitude_constDouble: The amplitude of the oscillator signal.
 	@param frequencyHz_double: The frequency of the oscillator signal.
 	@param timeStep_constDouble: The time-step (t) at which the oscillator is to be evaluated.
@@ -1586,285 +1626,92 @@ function calculateRatioBetweenFrames(frameStart, intermediateFrame, frameEnd, if
 	: interpolationUtils.getInterpolationFactor(frameStart, intermediateFrame, iframe);
 }
 
-/*
-NOTES:
-
-The newly constructed sinusoidal interpolation algorithm developed here focuses on high fidelity 
-and precise control over the interpolation process, especially within the context of audio signal processing. 
-By carefully mapping interpolation points to specific quadrants of the cosine function's arc, 
-the algorithm aims to maintain the natural curvilinear properties of sinusoidal waves, 
-which is crucial for preserving the integrity of audio signals during interpolation. 
-Let's evaluate this approach in comparison to the current state-of-the-art in interpolation techniques:
-
-### 1. **Fidelity and Precision**
-
-The emphasis is on fidelity and precision in this algorithm, 
-especially through the use of piece-wise interpolation that respects the curvilinear properties 
-of sinusoidal functions, is a significant advantage for applications requiring high-quality audio signal processing. 
-This approach can potentially offer superior results in maintaining the natural characteristics of audio signals, 
-especially when compared to simpler linear interpolation methods.
-
-### 2. **Complexity and Computational Efficiency**
-
-While this algorithm offers high fidelity, it may also introduce increased computational complexity 
-due to the need for piece-wise calculations and potentially more complex logic 
-to determine the interpolation range for each segment. In contrast, state-of-the-art techniques 
-like spline or Bezier curve interpolations provide a good balance between computational efficiency and smoothness 
-of the interpolated signal. The choice between these methods often comes down to the specific requirements 
-of the application, including the acceptable trade-off between computational load and interpolation quality.
-
-### 3. **Flexibility and Applicability**
-
-The following algorithm's design to specifically leverage the properties 
-of sinusoidal functions makes it highly suited for audio signal processing, 
-where such waveforms are common. However, its applicability might be more limited in contexts where 
-the data does not inherently align with sinusoidal wave characteristics or when a broader range 
-of interpolation behaviors is desired. In contrast, more general interpolation techniques, 
-such as cubic splines or Bézier curves, are widely applicable across different domains 
-due to their flexibility in fitting a wide range of data patterns.
-
-### 4. **Ease of Implementation and Integration**
-
-Implementing and integrating this algorithm into existing systems may require careful consideration, 
-especially if the system was designed around more conventional interpolation methods. 
-The specific nature of your algorithm's calculations might necessitate adjustments 
-in data preprocessing or postprocessing stages. On the other hand, 
-widely used techniques like cubic splines are often supported by existing libraries and tools, 
-facilitating easier integration.
-
-### Conclusion
-
-This sinusoidal interpolation algorithm presents a novel approach with potential advantages in 
-audio signal processing applications, emphasizing fidelity and precision. However, 
-it's essential to weigh these benefits against the increased computational complexity 
-and the specific applicability to sinusoidal waveforms. As with any specialized technique, 
-the ultimate evaluation would benefit from empirical testing within its intended application context, 
-comparing its performance directly against other state-of-the-art interpolation methods in terms of both 
-qualitative and quantitative outcomes.
-
-*/
-
-/**
-@brief Sine interpolation function.
-@details Sine interpolation function.  Using the sinusoidal approach to produce arcs between specified quadrants based on the trend of amplitude changes across three points.
-@param pts  The formant object.
-@param idx  The index of the formant object.
-@param iframe  The frame to interpolate. Normalized to the range [0.0, 1.0].
-@param amp  The amplitude of the oscillator signal.
-@param freq  The frequency of the oscillator signal.
-@param audio_component  The audio component to interpolate (eg. 'amplitude' or 'frequency'). 
-@return p_result: The oscillator signal at frame (frame) */
-function sinusoidal_spline_interpolation(pts, idx, iframe, amp, freq, audio_component) {
-
-	interpolationUtils.ensureEnoughPoints(pts, idx);
-
-	let retval = 0;
-
-	// REM: iframe should always (linearly) increase in the range [0, pts[lastIndex].frame]
-	const saturated = !(pts[idx].frame <= iframe && iframe <= pts[idx + 2].frame);
-
-	// Assuming 'saturated' should be false to indicate active interpolation
-	if (saturated) {
-		retval = audio_component ==="amplitude" ? amp : freq;
-
-		return { retval, saturated };
-	} 
-
-	// saturated is false, so we can proceed with interpolation
-	switch (audio_component) {
-		case "amplitude":
-
-				const amplitudeIsMonotonicallyIncreasing =
-					(pts[idx].amplitude <= pts[idx + 1].amplitude
-					&& pts[idx + 1].amplitude <= pts[idx + 2].amplitude);
-
-				const amplitudeIsCresting =
-					(pts[idx].amplitude <= pts[idx + 1].amplitude
-					&& pts[idx + 1].amplitude >= pts[idx + 2].amplitude);
-
-				const amplitudeIsTroughing =
-					(pts[idx].amplitude >= pts[idx + 1].amplitude
-					&& pts[idx + 1].amplitude <= pts[idx + 2].amplitude);
-
-				const amplitudeIsMonotonicallyDecreasing =
-					(pts[idx].amplitude >= pts[idx + 1].amplitude
-					&& pts[idx + 1].amplitude >= pts[idx + 2].amplitude);
-
-				const iframeIsBeyondTheMidpoint = iframe > pts[idx + 1].frame;
-
-				let tsRangeStart, tsRangeEnd;
-
-				// Interpolate the appropraite cosine interval for the amplitude value at the frame (iframe) between the range [0, pi/2]
-				// Available ranges are [0, pi/4] and [pi/4, pi/2]
-				if (amplitudeIsMonotonicallyIncreasing) {
-					tsRangeStart = !iframeIsBeyondTheMidpoint ? Math.PI : 3 * Math.PI/4;
-					tsRangeEnd = !iframeIsBeyondTheMidpoint ? 3 * Math.PI/4: 2 * Math.PI;
-				} else if (amplitudeIsCresting) { // non-sign preseerving
-					tsRangeStart = !iframeIsBeyondTheMidpoint ? Math.PI / 2 : Math.PI;
-					tsRangeEnd = !iframeIsBeyondTheMidpoint ? Math.PI : 2 * Math.PI;
-				} else if (amplitudeIsTroughing) { // sign preserving
-					tsRangeStart = !iframeIsBeyondTheMidpoint ? Math.PI / 2 : Math.PI;
-					tsRangeEnd = !iframeIsBeyondTheMidpoint ? Math.PI : 2 * Math.PI;
-				} else if (amplitudeIsMonotonicallyDecreasing) {
-					tsRangeStart = !iframeIsBeyondTheMidpoint ? 0 : Math.PI / 2;
-					tsRangeEnd = !iframeIsBeyondTheMidpoint ? Math.PI / 2 : Math.PI;
-				}
-
-				// Which frame interval? Calculate ratio between the current frame and the next frame
-				const ddf = calculateRatioBetweenFrames(pts[idx + 1].frame
-					, pts[idx + 1].frame
-					, pts[idx + 2].frame
-					, iframe);
-
-				// Interpolate an amplitude for the frame at iframe, between the range [0, pi/2]
-				const A = ddf <= 0.5
-					? interpolationUtils.LERP(pts[idx + 0].amplitude, pts[idx + 1].amplitude, ddf)
-					: interpolationUtils.LERP(pts[idx + 1].amplitude, pts[idx + 2].amplitude, ddf);
-
-				const ts = interpolationUtils.LERP(tsRangeStart, tsRangeEnd, ddf);
-
-				retval = interpolationUtils.calculateSinusoidalValue(A, freq, ts);
-
-			break;
-
-		case "frequency":
-
-			const frequencyIsMonotonicallyIncreasing =
-				(pts[idx].frequency <= pts[idx + 1].frequency
-				&& pts[idx + 1].frequency <= pts[idx + 2].frequency);
-
-			const frequencyIsCresting =
-				(pts[idx].frequency <= pts[idx + 1].frequency
-				&& pts[idx + 1].frequency >= pts[idx + 2].frequency);
-
-			const frequencyIsTroughing =
-				(pts[idx].frequency >= pts[idx + 1].frequency
-				&& pts[idx + 1].frequency <= pts[idx + 2].frequency);
-
-			const frequencyIsMonotonicallyDecreasing =
-				(pts[idx].frequency >= pts[idx + 1].frequency
-				&& pts[idx + 1].frequency >= pts[idx + 2].frequency);
-
-			const iframeIsBeyondTheMidpoint2 = iframe > pts[idx + 1].frame;
-
-			let tsRangeStart2, tsRangeEnd2;
-
-			// Interpolate the appropraite cosine interval for the frequency value at the frame (iframe) between the range [0, pi/2]
-			// Available ranges are [0, pi/4] and [pi/4, pi/2]
-			if (frequencyIsMonotonicallyIncreasing) {
-				tsRangeStart2 = !iframeIsBeyondTheMidpoint2 ? Math.PI : 3 * Math.PI/4;
-				tsRangeEnd2 = !iframeIsBeyondTheMidpoint2 ? 3 * Math.PI/4: 2 * Math.PI;
-			} else if (frequencyIsCresting) { // non-sign preseerving
-				tsRangeStart2 = !iframeIsBeyondTheMidpoint2 ? Math.PI / 2 : Math.PI;
-				tsRangeEnd2 = !iframeIsBeyondTheMidpoint2 ? Math.PI : 2 * Math.PI;
-			} else if (frequencyIsTroughing) { // sign preserving
-				tsRangeStart2 = !iframeIsBeyondTheMidpoint2 ? Math.PI / 2 : Math.PI;
-				tsRangeEnd2 = !iframeIsBeyondTheMidpoint2 ? Math.PI : 2 * Math.PI;
-			} else if (frequencyIsMonotonicallyDecreasing) {
-				tsRangeStart2 = !iframeIsBeyondTheMidpoint2 ? 0 : Math.PI / 2;
-				tsRangeEnd2 = !iframeIsBeyondTheMidpoint2 ? Math.PI / 2 : Math.PI;
-			}
-
-			// Which frame interval? Calculate ratio between the current frame and the next frame
-			const ddf2 = calculateRatioBetweenFrames(pts[idx + 1].frame
-				, pts[idx + 1].frame
-				, pts[idx + 2].frame
-				, iframe);
-
-			// Interpolate a frequency for the frame at iframe, between the range [0, pi/2]
-			const F = ddf2 <= 0.5
-				? interpolationUtils.LERP(pts[idx + 0].frequency, pts[idx + 1].frequency, ddf2)
-				: interpolationUtils.LERP(pts[idx + 1].frequency, pts[idx + 2].frequency, ddf2);
-
-			const ts2 = interpolationUtils.LERP(tsRangeStart2, tsRangeEnd2, ddf2);
-
-			retval = interpolationUtils.calculateSinusoidalValue(amp, F, ts2);
-
-		break;
-
-		default:
-			throw new Error(`Unsupported audio component: ${audio_component}`);
-	}
-
-	return { retval, saturated };
-}
-
-/**
- * @brief Bezier spline interpolation function.
- * @details Bezier spline interpolation function.
- * @param pts - The formant object.
- * @param dt - The frame to interpolate. Normalized to the range [0.0, 1.0].
- * @param audio_component - The audio component to interpolate (eg. 'amplitude' or 'frequency').
- * @returns point */
-function bezier_spline_interpolation (pts, idx, dt, audio_component) {
-	if (dt > 1) {
-		throw ("runtime_error: Not enough inter-frame interpolation \
-		steps for Bezier interpolation within the specified oscillator interval [0, 1]");
-	}
-
-	let n = 0;
-	let amplitude_retval = 0;
-	const dt_i = 1 - dt;
-
-	if (((idx + 1) in formant)) {
-		++n;
-	}
-
-	if (((idx + 2) in formant)) {
-		++n;
-	}
-
-	if (((idx + 3) in formant)) {
-		++n;
-	}
-
-	if (((idx + 4) in formant)) {
-		++n;
-	}
-
-	switch (audio_component) {
-		case "amplitude":
-		if (n === 0) {
-			// Single point
-			amplitude_retval = pts[idx + 0].amplitude;
-		} else if (n === 1) {
-			// Linear Bezier curve
-			amplitude_retval = (dt_i) * pts[idx + 0].amplitude + dt * pts[idx + 1].amplitude;
-		} else if (n === 2) {
-			// Quadratic Bezier curve
-			amplitude_retval = Math.pow(dt_i, 2) 
-				* pts[idx + 0].amplitude + 2 * (dt_i) * dt * pts[idx + 1].amplitude 
-				+ Math.pow(dt, 2) * pts[idx + 2].amplitude;
-		} else if (n === 3) {
-			// Cubic Bezier curve
-			amplitude_retval = Math.pow(dt_i, 3) 
-				* pts[idx + 0].amplitude + 3 * Math.pow(dt_i, 2) * dt 
-				* pts[idx + 1].amplitude + 3 * (dt_i) * Math.pow(dt, 2) 
-				* pts[idx + 2].amplitude + Math.pow(dt, 3) * pts[idx + 3].amplitude;
-		} else {
-			// Quartic Bezier curve
-			amplitude_retval = pts[idx + 0].amplitude * (Math.pow(dt_i, 3));
-				+ pts[idx + 1].amplitude * (3 * Math.pow(dt_i, 2) * dt);
-				+ pts[idx + 2].amplitude * (3 * (dt_i) * Math.pow(dt, 2));
-				+ pts[idx + 3].amplitude * (Math.pow(dt, 3));
-		}
-		break;
-
-		case "frequency":
-
-		break;
-
-		default:
-		// pts;
-		break;
-
-	}
-
-	return amplitude_retval;
-}
-
 function has_shape(a,b) {
 	return (a & b) !== 0;
+}
+
+// class to encapsulate wave-shape parameters //
+class BLEND_STRATEGY
+{
+	static LERP = 1 << 1;
+	static CUBIC = 1 << 2;
+	static QUARTIC = 1 << 3;
+}
+
+// class to encapsulate SIN, etc. parameters //
+class signalParameters extends Object
+{
+	constructor() {
+		super();
+
+		this.time = 0;
+		this.TIME = 0;
+		this.deltaTime = 0;
+		this.amplitude = 0;
+		this.amplitudeStart = 0;
+		this.amplitudeEnd = 0;
+		this.amplitudeBlendStartFrame = 0;
+		this.amplitudeBlendEndFrame = 0;
+		this.amplitudeBlendStrategy = BLEND_STRATEGY.LERP;
+		this.frequency = 0;
+		this.frequencyStart = 0;
+		this.frequencyEnd = 0;
+		this.frequencyBlendStartFrame = 0;
+		this.frequencyBlendEndFrame = 0;
+		this.frequencyBlendStrategy = BLEND_STRATEGY.LERP;
+		this.phase = 0;
+		this.phaseStart = 0;
+		this.phaseEnd = 0;
+		this.phaseBlendStartFrame = 0;
+		this.phaseBlendEndFrame = 0;
+		this.phaseBlendStrategy = BLEND_STRATEGY.LERP;
+		this.cumulativePhase = 0;
+	}
+}
+/**
+ * @brief Generates a signal based on specific wave-shape parameters.
+ * @details Generates a signal based on specific wave-shape parameters.
+ * @param blend - The blend strategy to use.
+ * @param blendRatio - The blend ratio to use.
+ * @param startValue - The start value of the signal.
+ * @param endValue - The end value of the signal.
+ * @param startValueSlope - The start value Secant and or tangent slope of the signal (CUBIC interpolation).
+ * @param endValueSlope - The end value Secant and or tangent slope of the signal. (CUBIC interpolation) */
+//template<typename PRECISION = double>
+function do_Blend(
+	  /* BLEND_STRATEGY */ blend
+	, /* PRECISION */ blendRatio
+	, /* PRECISION */ startValue
+	, /* PRECISION */ endValue
+	, /* PRECISION */ startValueSlope = 0.0
+	, /* PRECISION */ endValueSlope = 0.0)
+{
+	/* PRECISION */ value = 0;
+	
+	switch(blend)
+	{
+		//case BLEND_STRATEGY::CUBIC:
+		//value = cubicHermite<PRECISION>(blendRatio, startValue, endValue, 0.0f, 0.0f);
+		//break;
+		case BLEND_STRATEGY.CUBIC:
+		value = cubicHermite/* <PRECISION> */(blendRatio, startValue, endValue, 0.0, 0.0);
+		break;
+		
+		//case BLEND_STRATEGY::QUARTIC:
+		//value = quarticEaseInOut(blendRatio, startValue, endValue);
+		//break;		
+		case BLEND_STRATEGY.QUARTIC:
+		value = quarticEaseInOut(blendRatio, startValue, endValue);
+		break;
+		
+		//case BLEND_STRATEGY::LERP:
+		case BLEND_STRATEGY.LERP:
+		default:
+		value = LERP(blendRatio, startValue, endValue);
+		break;
+	}
+	
+	return value;
 }
 
 /**
@@ -1892,7 +1739,37 @@ function generateComplexSignal(
 		if (idx >= shapes_oscilatorParamsVec.length)
 			break;
 		
-			let outShape = 0;
+		let outShape = 0;
+
+		/*
+		
+		params = new signalParameters();
+
+		params.TIME = shape_oscillatorParams.frame + 1; 
+		params.deltaTime = 1; // ie. 1 frame per time increment //
+
+		params.amplitude = db_start;
+		params.amplitudeStart = db_start;
+		params.amplitudeEnd = db_end;
+		params.amplitudeBlendStartFrame = frame_idx;
+		params.amplitudeBlendEndFrame = FRAME_IDX;
+		params.amplitudeBlendStrategy = shapes_oscilatorParamsVec.amplitude_as_bezierCurve_flag
+		? BLEND_STRATEGY.QIARTIC
+		: BLEND_STRATEGY.LERP;
+		
+		params.frequency = hz_start;
+		params.frequencyStart = hz_start;
+		params.frequencyEnd = hz_end;
+		params.frequencyBlendStartFrame = frame_idx;
+		params.frequencyBlendEndFrame = FRAME_IDX;
+		params.frequencyBlendStrategy = shapes_oscilatorParamsVec.frequency_as_bezierCurve_flag
+		? BLEND_STRATEGY.QUARTIC
+		: BLEND_STRATEGY.LERP;
+
+		params.phase = 0;
+		params.cumulativePhase = 0;
+
+		*/
 
 		// Custom updates using lambda
 		if (customUpdateCallback) {
@@ -1902,6 +1779,7 @@ function generateComplexSignal(
 				outShape);
 		} else {
 			const FRAME_IDX = shape_oscillatorParams.frame + 1;
+			
 			const t = frame_idx / FRAME_IDX;
 			const hz_start = shape_oscillatorParams.frequency;
 			const db_start = shape_oscillatorParams.amplitude;
@@ -1922,6 +1800,34 @@ function generateComplexSignal(
 				const db = shapes_oscilatorParamsVec.frequency_as_bezierCurve_flag 
 				? quarticEaseInOut(hz_stepRatio, db_start, db_end)
 				: LERP(db_stepRatio, db_start, db_end);
+
+				/*
+				// Use the do_Blend function to interpolate the amplitude and frequency values //
+				if (shapes_oscilatorParamsVec.amplitude_as_bezierCurve_flag) {
+					const db = do_Blend(
+						params.amplitudeBlendStrategy
+						, db_stepRatio
+						, params.amplitudeStart
+						, params.amplitudeEnd);
+				}
+
+				// Use the do_Blend function to interpolate the amplitude and frequency values //
+				if (shapes_oscilatorParamsVec.frequency_as_bezierCurve_flag) {
+					const hz = do_Blend(
+						params.frequencyBlendStrategy
+						, hz_stepRatio
+						, params.frequencyStart
+						, params.frequencyEnd);
+				}
+
+				params.time = frame_idx;
+
+				if (has_shape(
+					  shape_oscillatorParams.shape
+					, WaveShape.Sine_enum))
+					outShape += waveform.SINE(params);
+				
+				*/
 
 				if (has_shape(
 					  shape_oscillatorParams.shape
@@ -2729,6 +2635,22 @@ function quarticEaseOut(t) {
 
 	std::cout << " ]";
 */
+
+/**
+ *  Performa a Linear Interpolation between two values.
+ * @param {*} t  - The interpolation factor, ranging from 0.0 (start) to 1.0 (end).
+ * @param {*} start  - The starting value of the parameter to interpolate.
+ * @param {*} end  - The ending value of the parameter to interpolate.
+ * @returns  The interpolated value. */
+function LERP(
+	t
+  , start
+  , end)
+{
+  const result = (1-t) * start + end * t;
+
+  return result;
+}
 
 /**
  * Combines quartic ease-in and ease-out into a single function.
