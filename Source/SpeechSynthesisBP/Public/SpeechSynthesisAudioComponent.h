@@ -1160,7 +1160,7 @@ class SPEECHSYNTHESISBP_API USpeechSynthesisAudioComponent : public UObject
 	void ARPABETSpeechSynthesis_Breathe_heavily(
 		UPARAM(DisplayName = "Voices") const int Voices)
 	{
-		speechSample_FPhoneVec.push_back(ARPABETPhone::ARPABETPhone_Breathe_heavily());
+		speechSample_FPhoneVec.push_back(ARPABETPhone::ARPABETPhone_BreatheHeavily());
 	};
 
 	/** Activates speech synthesis channel phoneme functionality 'Bruxism' */
@@ -1211,12 +1211,12 @@ class SPEECHSYNTHESISBP_API USpeechSynthesisAudioComponent : public UObject
 		speechSample_FPhoneVec.push_back(ARPABETPhone::ARPABETPhone_Chime());
 	};
 
-	/** Activates speech synthesis channel phoneme functionality 'Chime_in' */
-	UFUNCTION(BlueprintCallable, Category = TextToSpeech, meta = ( keywords = "TTS, SpeechSynthesis, TextToSpeech", DisplayName = "ARPABETSpeechSynthesis: other > non-verbal > Chime_in" ))
-	void ARPABETSpeechSynthesis_Chime_in(
+	/** Activates speech synthesis channel phoneme functionality 'ChimeIn' */
+	UFUNCTION(BlueprintCallable, Category = TextToSpeech, meta = ( keywords = "TTS, SpeechSynthesis, TextToSpeech", DisplayName = "ARPABETSpeechSynthesis: other > non-verbal > ChimeIn" ))
+	void ARPABETPhone_ChimeIn(
 		UPARAM(DisplayName = "Voices") const int Voices)
 	{
-		speechSample_FPhoneVec.push_back(ARPABETPhone::ARPABETPhone_Chime_in());
+		speechSample_FPhoneVec.push_back(ARPABETPhone::ARPABETPhone_ChimeIn());
 	};
 
 	/** Activates speech synthesis channel phoneme functionality 'Chirp' */
@@ -1251,12 +1251,12 @@ class SPEECHSYNTHESISBP_API USpeechSynthesisAudioComponent : public UObject
 		speechSample_FPhoneVec.push_back(ARPABETPhone::ARPABETPhone_Clap());
 	};
 
-	/** Activates speech synthesis channel phoneme functionality 'Clear_Throat' */
-	UFUNCTION(BlueprintCallable, Category = TextToSpeech, meta = ( keywords = "TTS, SpeechSynthesis, TextToSpeech", DisplayName = "ARPABETSpeechSynthesis: other > non-verbal > Clear_Throat" ))
-	void ARPABETSpeechSynthesis_Clear_throat(
+	/** Activates speech synthesis channel phoneme functionality 'ClearThroat' */
+	UFUNCTION(BlueprintCallable, Category = TextToSpeech, meta = ( keywords = "TTS, SpeechSynthesis, TextToSpeech", DisplayName = "ARPABETSpeechSynthesis: other > non-verbal > ClearThroat" ))
+	void ARPABETPhone_ClearThroat(
 		UPARAM(DisplayName = "Voices") const int Voices)
 	{
-		speechSample_FPhoneVec.push_back(ARPABETPhone::ARPABETPhone_Clear_throat());
+		speechSample_FPhoneVec.push_back(ARPABETPhone::ARPABETPhone_ClearThroat());
 	};
 
 	/** Activates speech synthesis channel phoneme functionality 'Click' */
@@ -1603,12 +1603,12 @@ class SPEECHSYNTHESISBP_API USpeechSynthesisAudioComponent : public UObject
 		speechSample_FPhoneVec.push_back(ARPABETPhone::ARPABETPhone_Sigh());
 	};
 
-	/** Activates speech synthesis channel phoneme functionality 'Skeptical_Sigh_or_Hum' */
-	UFUNCTION(BlueprintCallable, Category = TextToSpeech, meta = ( keywords = "TTS, SpeechSynthesis, TextToSpeech", DisplayName = "ARPABETSpeechSynthesis: other > non-verbal > Skeptical_Sigh_or_Hum" ))
-	void ARPABETSpeechSynthesis_Skeptical_sigh_or_hum(
+	/** Activates speech synthesis channel phoneme functionality 'SkepticalSighOrHum' */
+	UFUNCTION(BlueprintCallable, Category = TextToSpeech, meta = ( keywords = "TTS, SpeechSynthesis, TextToSpeech", DisplayName = "ARPABETSpeechSynthesis: other > non-verbal > SkepticalSighOrHum" ))
+	void ARPABETSpeechSynthesis_SkepticalSighOrHum(
 		UPARAM(DisplayName = "Voices") const int Voices)
 	{
-		speechSample_FPhoneVec.push_back(ARPABETPhone::ARPABETPhone_Skeptical_sigh_or_hum());
+		speechSample_FPhoneVec.push_back(ARPABETPhone::ARPABETPhone_SkepticalSighOrHum());
 	};
 
 	/** Activates speech synthesis channel phoneme functionality 'Slam' */
