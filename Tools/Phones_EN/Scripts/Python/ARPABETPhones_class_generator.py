@@ -1,6 +1,7 @@
 ''' This script generates the ARPABETPhones.h file, which contains the'''
 import os
 import arpabet_phoneme_library as apl
+import arpabet_phoneme_nonverbals_library as apnl
 import get_yes_or_no_confirmation as get_confirmation
 
 
@@ -50,6 +51,37 @@ for ph in apl.arpabet_phone_library:
                 updateFilesFlag = "False"
         else:
             updateFilesFlag = "True"
+
+
+foundation_class += '\n\n\t\t// NONVERBALS //'
+
+for ph in apnl.arpabet_phone_nonverbals_library:
+
+    foundation_class += f'''
+
+        /**
+        @brief ARPABETPhone class for '{ph[0]}'
+        @details {ph[0]}: {ph[1]} */
+        class ARPABETPhone_{ph[0]} : public FPhone
+        {{
+        public:
+            ARPABETPhone_{ph[0]}(){{}};
+        }};'''
+
+
+foundation_class += '\n\n\t\t// ARPABETPhone (NONVERBAL) APIs //'
+
+for ph in apnl.arpabet_phone_nonverbals_library:
+
+    foundation_class += f'''
+
+        /** Activates speech synthesis channel phoneme functionality for nonverbal ( {ph[0]} ) */
+        UFUNCTION(BlueprintCallable, Category = TextToSpeech, meta = ( keywords = "TTS, SpeechSynthesis, TextToSpeech", DisplayName = "ARPABETSpeechSynthesis: other > non-verbal > {ph[0]}" ))
+        void ARPABETSpeechSynthesis_{ph[0]}(
+            UPARAM(DisplayName = "Voices") const int Voices)
+        {{
+            speechSample_FPhoneVec.push_back(ARPABETPhone::ARPABETPhone_{ph[0]}());
+        }};'''
 
 
 foundation_class += '\n\n}\n'
