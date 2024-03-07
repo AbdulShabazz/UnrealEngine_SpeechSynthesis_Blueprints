@@ -1440,10 +1440,10 @@ class FWaveform extends Object {
 	 * @param {*} sampleRate  The sample rate of the noise signal in Hz
 	 * @returns  The generated noise signal */
 	quasiPeriodicNoise(duration, sampleRate) {
-		const basePeriod = 0.01;          // Average period in seconds
-		const periodVariation = 0.1;      // Degree of irregularity (0-1) 
-		const pulseWidth = 0.2;           // Pulse width relative to period (0-1)
-		const filterCutoff = 800;         // Low-pass filter cutoff frequency (Hz)
+		const basePeriod = 0.01;		  // Average period in seconds
+		const periodVariation = 0.1;	  // Degree of irregularity (0-1) 
+		const pulseWidth = 0.2;		   // Pulse width relative to period (0-1)
+		const filterCutoff = 800;		 // Low-pass filter cutoff frequency (Hz)
 
 		const output = new Float32Array(duration * sampleRate);
 		let time = 0;
@@ -2794,6 +2794,33 @@ function cubicHermite(t, p0, p1, m0, m1) {
 	const t2 = t * t;
 	const t3 = t2 * t;
 	return (2 * t3 - 3 * t2 + 1) * p0 + (t3 - 2 * t2 + t) * m0 + (-2 * t3 + 3 * t2) * p1 + (t3 - t2) * m1;
+}
+
+/**
+ * @brief  Interpolates between startValue and endValue using a sine arc.
+ * @param  t - The interpolation parameter, ranging from 0 (start) to 1 (end).
+ * @param  startValue - The starting value of the parameter to interpolate.
+ * @param  endValue - The ending value of the parameter to interpolate. */
+function sineArcInterpolation(
+	  t
+	, startValue
+	, endValue) {
+	// Ensure t is within the bounds [0, 1]
+	if (t < 0.0) t = 0.0;
+	if (t > 1.0) t = 1.0;
+
+	// Calculate the angle for the sine function, ranging from -PI/2 to PI/2
+	// This maps the linear progression of t to a sine curve
+	let theta = Math.PI * (t - 0.5);
+	
+	// Calculate the sine value, which will smoothly transition from -1 to 1
+	let sineValue = Math.sin(theta);
+	
+	// Adjust the sine curve to go from 0 to 1 instead of -1 to 1
+	let normalizedSine = (sineValue + 1.0) / 2.0;
+	
+	// Interpolate between startValue and endValue based on the normalized sine curve
+	return startValue + (endValue - startValue) * normalizedSine;
 }
 
 okBTN.addEventListener('click', function(e) {
