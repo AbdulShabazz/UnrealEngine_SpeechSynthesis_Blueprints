@@ -48,7 +48,7 @@ The project consists of the following files, each serving a distinct purpose wit
 
 To use the Artificial Speech Formant Editor:
 
-1. Open `index.html` in a web browser.
+1. Open `SpeechFormantEditor.html` in a web browser.
 2. Use the dropdown boxes to select the desired formant frequencies and amplitudes.
 3. Observe the changes in the graph as you adjust the formants.
 4. Utilize the visual feedback to understand the relationship between formants and speech sounds.
