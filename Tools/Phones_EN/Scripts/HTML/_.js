@@ -1819,9 +1819,14 @@ function generateComplexSignal(
 	let frame_idx = 0;
 	let waveform = new FWaveform();
 	let audioFrames_float64Vec = [];
+	var defaultInterpolationMethod = LERP;
+	var smoothInterpolationMethod = quarticEaseInOut; // cubicHermite; quarticEaseInOut; sineArcInterpolation;
 	const pcm_encoding = shapes_oscilatorParamsVec.pcm_encoding;
+
 	const hz_pcm_encoding = pcm_encoding_docstring_options[pcm_encoding].sample_rate * 1000;
+
 	const bit_depth_pcm_encoding = pcm_encoding_docstring_options[pcm_encoding].bit_depth;
+
 	const amplitude_pcm_encoding_dynamic_range = Math.pow(2, bit_depth_pcm_encoding - 1) - 1;
 
 	for (const shape_oscillatorParams of shapes_oscilatorParamsVec) {
@@ -1885,12 +1890,12 @@ function generateComplexSignal(
 				const db_stepRatio = linearStep(t, db_start, db_end);
 				
 				const hz = 1 / hz_pcm_encoding * shapes_oscilatorParamsVec.frequency_as_bezierCurve_flag 
-				? quarticEaseInOut(hz_stepRatio, hz_start, hz_end)
-				: LERP(hz_stepRatio, hz_start, hz_end);
+				? smoothInterpolationMethod(hz_stepRatio, hz_start, hz_end)
+				: defaultInterpolationMethod(hz_stepRatio, hz_start, hz_end);
 				
 				const db = shapes_oscilatorParamsVec.frequency_as_bezierCurve_flag 
-				? quarticEaseInOut(hz_stepRatio, db_start, db_end)
-				: LERP(db_stepRatio, db_start, db_end);
+				? smoothInterpolationMethod(hz_stepRatio, db_start, db_end)
+				: defaultInterpolationMethod(db_stepRatio, db_start, db_end);
 
 				/*
 				// Use the do_Blend function to interpolate the amplitude and frequency values //
