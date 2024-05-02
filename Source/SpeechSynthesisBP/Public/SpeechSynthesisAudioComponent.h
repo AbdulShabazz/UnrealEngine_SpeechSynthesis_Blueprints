@@ -4,6 +4,13 @@
 
 #include <memory.h>
 #include <vector>
+#include <string>
+#include <functional>
+#include <cmath>
+#include <limits>
+#include <map>
+#include <numbers>
+
 #include "ARPABETPhones.h"
 #include "CoreMinimal.h"
 #include "UObject/NoExportTypes.h"
@@ -13,19 +20,21 @@
  * 
  */
 UCLASS()
+template<typename AudioPhoneResolution = float>
 class SPEECHSYNTHESISBP_API USpeechSynthesisAudioComponent : public UObject
 {
 	GENERATED_BODY()
 
-	// forward declarations
+	// forward declarations //
 	class UTTSVoice;
 
 	// Strong Typing for Configuration Parameters
-	using VoiceArray = TArray<UTTSVoice>;  // Only one voice for simplicity
+	using VoiceArray = TArray<UTTSVoice<AudioPhoneResolution>>;  // Only one voice, for simplicity //
 	using ChannelCount = unsigned int;
 	using SampleWidth = unsigned int;
 	using FrameRate = unsigned int;
 
+	template<typename AudioPhoneResolution = float>
 	class UARPABETAudio {
 	public:
 
@@ -33,7 +42,7 @@ class SPEECHSYNTHESISBP_API USpeechSynthesisAudioComponent : public UObject
 		//TArray<TArray<float>> speechSample_TensorFloat32{};
 
 		//UPROPERTY(VisibleAnywhere, Category = "TextToSpeech")
-		std::vector<std::vector<float>> speechSample_TensorFloat32{};
+		std::vector<std::vector<AudioPhoneResolution>> speechSample_TensorFloat32{};
 
 		/** Save .voice data from USpeechSynthesisBPLibrary to persistent disk */
 		bool toWAVFile(const FText& filename_ConstFTextRef)
@@ -254,6 +263,8 @@ class SPEECHSYNTHESISBP_API USpeechSynthesisAudioComponent : public UObject
         oscillatorConfig m_oscillatorConfig{};
     };
 	*/
+
+	template<typename AudioPhoneResolution = float>
     class UTTSVoice {
     public:
 
@@ -273,7 +284,7 @@ class SPEECHSYNTHESISBP_API USpeechSynthesisAudioComponent : public UObject
             // ...generate voice-specific samples... //
         };
 
-        std::vector<float> getSpeechSampleTensorFloat32()
+        std::vector<AudioPhoneResolution> getSpeechSampleTensorFloat32()
         {
             return m_currentPhone.getSpeechSampleTensorFloat32();
         };
@@ -288,7 +299,7 @@ class SPEECHSYNTHESISBP_API USpeechSynthesisAudioComponent : public UObject
             m_currentPhone.setOscillatorConfig(config);
         };
 
-        FPhone m_currentPhone{};
+        FPhone<AudioPhoneResolution> m_currentPhone{};
         oscillatorConfig m_oscillatorConfig;
 
     };
@@ -1935,9 +1946,9 @@ class SPEECHSYNTHESISBP_API USpeechSynthesisAudioComponent : public UObject
 	std::unique_ptr<UTTSVoice> voice_UTTSVoice{};
 
 	//UPROPERTY()
-	UARPABETAudio m_UARPABETAudio{};
+	UARPABETAudio<AudioPhoneResolution> m_UARPABETAudio{};
 
-	UTTSVoice currentPhone{};
-	std::vector<FPhone> speechSample_FPhoneVec{}; 
+	UTTSVoice<AudioPhoneResolution> currentPhone{};
+	std::vector<FPhone<AudioPhoneResolution>> speechSample_FPhoneVec{}; 
 	
 };
