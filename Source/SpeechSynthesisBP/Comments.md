@@ -1,105 +1,20 @@
-# Concatenative Speech Synthesis for Unreal Engine 5
-Concatenative Speech Synthesis, Text-to-Speech library and re-speecheer voice-mapping tool based on MARYTTS for Unreal Engine 5.
+### Concatenative speech synthesis text-to-speech (TTS) library implemented in Blueprints.
 
-### Based upon MaryTTS 2.5
+Concatenative speech synthesis library and re-speecher voice-mapping library suitable for use in theatrical production, implemented in Blueprints and C++23 based on the MaryTTS repo for Unreal Engine 5.
 
-This is a multilingual open-source text-to-speech and speech-to-speech platform (re-speecher) suitable for use in theatrical production, based on the MaryTTS text-to-speech library,
- compatible with any platform that has a Java runtime installed, it is developed for the Unreal Engine 3D graphics game engine.
+This library expands the current state-of-the-art text-to-speech synthesis library in Unreal Engine 5, which is based on the Tacotron 2 voice model. 
 
-The library is made available under the Lesser General Public License LGPL version 3.0 -- see LICENSE.md for details.
+The Tacotron 2 model is a neural network that takes text as input and outputs a spectrogram, which is then converted to audio using a vocoder. 
+The Tacotron 2 model is trained on a large dataset of speech recordings, and is able to produce speech that sounds natural and human-like. 
+However, the Tacotron 2 model is not able to produce natural speech that sounds like a live performance, 
+and is not able to produce speech having a specific character attribute such as a whisper, non-verbal cue, mechatron or chorus.
 
-### Available APIs
+The concatenative natural speech synthesis library based upon MaryTTS is able to produce natural speech that sounds like a live performance, 
+and can support many other character performance aspects such as a whisper, non-verbal cues, mechatron and chorus, etc. After building its transition-states internally via state-machine, 
+the concatenative speech synthesis then generates the requisite (sine) signals for the entire duration of speech for all formants in parallel, including the fundamental, and then combines them with the aid of an Artificial Neural Network (ANN) which as a sort of DSP signal processor also incorporates other natural aspects and voice cues such as jitter and shimmer before combining the waveforms into a single output signal. 
+The concatenative speech synthesis library is implemented in Blueprints and C++23, and is intended for use in theatrical production.
 
-The Speech Synthesis Library uses the ARPABET phoneme alphabet set, which is a subset of the International Phonetic Alphabet (IPA), over its less ASCII-friendly standardized IPA phonetic superset. 
-(Context-sensitive search may need to be disabled in your blueprint event graph editor to view the phoneme glyphs correctly.)
-
-ARPA ARPABET - Wikipedia  
-[+] Much easier to type on a computer  
-[+] Only has relevant phones for American English  
-[+] Has a phone for every sound in American English  
-(-) No singular easy to read glyphs like those in the IPA  
-  
-The CMU Pronouncing Dictionary  
-  
-vowels > front > ARPABET UV >  
-IY (Beat)  
-IH (Bit)  
-EH (Bet)  
-EY (Bate)  
-AE (Bat)  
-  
-vowels > back > ARPABET UV >  
-AA (Bot)  
-AO (Bought)  
-OW (Boat)  
-UH (Book)  
-UW (Boot)  
-  
-vowels > mid > ARPABET UV >  
-ER (Bird)  
-AX (About)  
-AH (Butt)  
-  
-vowels > diphthongs > ARPABET UV >  
-AY (Bite)  
-AW (Bout)  
-OY (Boy)  
-IX (Rabbit)  
-  
-stopConsonants > voiced > ARPABET UV >  
-B (Beat)  
-D (Deep)  
-G (Go)  
-  
-stopConsonants > unvoiced > ARPABET UV >  
-P (Pea)  
-T (Tea)  
-K (Kick)  
-  
-fricatives > voiced > ARPABET UV >  
-V (Very)  
-DH (Then)  
-  
-fricatives > unvoiced > ARPABET UV >  
-F (Five)  
-TH (Think)  
-S (See)  
-SH (She)  
-  
-semivowels > liquid > ARPABET UV >  
-L (Love)  
-EL (Bottle)  
-R (Red)  
-  
-semivowels > glides > ARPABET UV >  
-W (Water)  
-WH (What)  
-Y (Yes)  
-  
-nasals > non vocalic > ARPABET UV >  
-M (More)  
-N (Now)  
-NX or NG (Sing)  
-  
-nasals > vocalic > ARPABET UV >  
-EM (Button)  
-EN (Son)  
-  
-affricates > voiced > ARPABET UV >  
-CH (Church)  
-JH (Jump)  
-  
-other > whisper > ARPABET UV >  
-HH (How)  
-  
-other > vocalic > ARPABET UV >  
-DX (Riddle)  
-  
-other > pause or glottal_stop > ARPABET UV >  
-Q (Question)  
-
-
-### Example:  
+### Example: 
 
 ```cpp
 
