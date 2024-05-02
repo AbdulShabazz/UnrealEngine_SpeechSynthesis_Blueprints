@@ -6,9 +6,89 @@
 #include <chrono>
 #include <concepts>
 #include <functional>
+#include <vector>
+#include <random>
+#include <algorithm>
 
-#include "OscillatorConfig.h"
-#include "OscillatorLocalParams.h"
+template<typename T = float>
+class Oscillator_GaussianNoise {
+private:
+    std::vector<T> generateWhiteGaussianNoise(const size_t length) {
+        std::vector<T> noise(length);
+        std::random_device rd;
+        std::mt19937 gen(rd());
+        std::normal_distribution<T> dist(0.0, 1.0);
+
+        std::generate(noise.begin(), noise.end(), [&]() { return dist(gen); });
+        return noise;
+    }
+
+    std::vector<T> applyBandpassFilter(
+	  const std::vector<T>& signal
+	, const T sampleRate
+	, const T lowFreq
+	, const T highFreq) {
+        size_t n = signal.size();
+        std::vector<T> filteredSignal(n, 0.0);
+
+        for (size_t i = 0; i < n; ++i) {
+            for (size_t j = 0; j < n; ++j) {
+                T freq = (j / static_cast<T>(n)) * sampleRate;
+                if (freq >= lowFreq && freq <= highFreq) {
+                    filteredSignal[i] += signal[j] * std::cos((2.0 * M_PI * i * j) / n);
+                }
+            }
+        }
+
+        return filteredSignal;
+    }
+
+public:
+    std::vector<T> carveSignal(
+	  const std::vector<T>& phone
+	, const T sampleRate
+	, const T lowFreq
+	, const T highFreq) {
+        std::vector<T> noise = generateWhiteGaussianNoise(phone.size());
+        std::vector<T> filteredNoise = applyBandpassFilter(noise, sampleRate, lowFreq, highFreq);
+
+        std::vector<T> carvedSignal(phone.size());
+        for (size_t i = 0; i < phone.size(); ++i) {
+            T freq = (i / static_cast<T>(phone.size())) * sampleRate;
+            if (freq >= lowFreq && freq <= highFreq) {
+                carvedSignal[i] = filteredNoise[i];
+            } else {
+                carvedSignal[i] = phone[i];
+            }
+        }
+
+        return carvedSignal;
+    }
+};
+
+/*
+	Example usage:  We map over each sample in the phone array and check if its corresponding frequency falls within the specified frequency range (lowFreq to highFreq). If it does, we replace the sinusoidal sample with the corresponding filtered noise sample. Otherwise, we keep the original sinusoidal sample.
+This approach effectively carves the sinusoidal signal out of the filtered white Gaussian noise within the specified frequency range, similar to how diffusion models carve audio out of a Gaussian noise canvas.
+Remember to adjust the frequency range (lowFreq and highFreq) based on the desired frequency bands you want to replace with the filtered noise samples. * /
+
+int main() {
+    std::vector<double> phone = {...}; // Sinusoidal signal for speech synthesis
+    double sampleRate = 44100.0; // Sample rate in Hz
+    double lowFreq = 300.0; // Lower frequency limit of the bandpass filter
+    double highFreq = 3400.0; // Upper frequency limit of the bandpass filter
+
+    Oscillator_GaussianNoise<double> oscillator;
+    std::vector<double> carvedSignal = oscillator.carveSignal(phone, sampleRate, lowFreq, highFreq);
+
+    // Use carvedSignal for further processing or output
+    // ...
+
+    return 0;
+}
+*/
+
+//#include "OscillatorConfig.h"
+//#include "OscillatorLocalParams.h"
 
 /**
 @brief C++20 concept to check if two types are bitwise operations compatible.
@@ -68,680 +148,343 @@ int main() {
     // Generate and output waveforms...
     return 0;
 }*/
+template<typename AudioPhoneResolution = float>
 class Oscillator {
-public:
-
-    /**
-    @brief The UpdateFunction class is used to (custom) update the oscillator parameters at time-step (t).
-    @details The UpdateFunction class is used to (custom) update the oscillator parameters at time-step (t).
-    @param Oscillator_sharedPtr: A shared pointer to the Oscillator class (*self).
-    @param Amplitude_numericType: The amplitude of the oscillator signal.
-    @param FrequencyHz_numericType: The frequency of the oscillator signal.
-    @param Theta_numericType: The phase of the oscillator signal.
-    @param Shape_numericType: The wave-shape of the oscillator signal.
-    @param OutputShape_numericType: The output shape of the oscillator signal.
-    @param TimeStepStart_numericType: The time-step (t) at which the oscillator is to be evaluated.
-    @param TimeStepEnd_numericType: The time-step (tEnd) at which the oscillator is to be evaluated.
-    @param TimeStepInterval_TimeIntervalType: The time-step (t) at which the oscillator is to be evaluated.
-    @return OutputShape_numericType (The oscillator signal at time-step t).*/
-    template <typename OutputShape_numericType = double,
-        typename AmplitudeType = double,
-        typename FrequencyHzType = double,
-        typename ThetaType = double,
-        typename ShapeType = enum class WaveShape,
-        typename OutputShapeType = double,
-        typename TimeStepType = double,
-        typename OscillatorParameterType = OscillatorParameters<AmplitudeType
-        , FrequencyHzType
-        , ThetaType
-        , ShapeType
-        , OutputShapeType
-        , TimeStepType>
-    >
-    using UpdateFunction = 
-        std::function<OutputShape_numericType(
-            std::shared_ptr<class Oscillator>
-            , OscillatorParameterType
-        )>;
-
-    enum class WaveShape : uint32_t {
-        Sine_enum = 1 << 0, 
-        Cosine_enum = 1 << 1, 
-        QuarterSine_enum = 1 << 2, 
-        HalfSine_enum = 1 << 3, 
-        Triangle_enum = 1 << 4, 
-        Square_enum = 1 << 5, 
-        ForwardSawtooth_enum = 1 << 6, 
-        ReverseSawtooth_enum  = 1 << 7,
-        WhiteNoise_enum = 1 << 8,
-        BrownNoise_enum = 1 << 9,
-        PinkNoise_enum = 1 << 10,
-        YellowNoise_enum = 1 << 11,
-        BlueNoise_enum = 1 << 12,
-        GreyNoise_enum = 1 << 13,
-        whiteGaussianNoise_enum = 1 << 14,
-        purpleVioletNoise_enum = 1 << 15,
+private:    
+    enum class BLEND_STRATEGY {
+        LERP, CUBIC, QUARTIC
+    };
+    
+    // playback params //
+    struct oscillatorConfig {
+        int64_t TIME;
+        int64_t deltaTime;
+        AudioPhoneResolution sampleRate;
+        BLEND_STRATEGY amplitudeBlendStrategy = BLEND_STRATEGY::LERP;
+        BLEND_STRATEGY frequencyBlendStrategy = BLEND_STRATEGY::LERP;
+        AudioPhoneResolution phase;
+        AudioPhoneResolution cumulativePhase;
+        int64_t time;
+        AudioPhoneResolution amplitude = -6.0f;;
+        AudioPhoneResolution amplitudeStart = -6.0f;
+        AudioPhoneResolution amplitudeEnd = -6.0f;
+        int64_t amplitudeBlendStartFrame;
+        int64_t amplitudeBlendEndFrame;
+        AudioPhoneResolution frequencyStart = 400.0f;
+        AudioPhoneResolution frequencyEnd = 400.0f;
+        int64_t frequencyBlendStartFrame;
+        int64_t frequencyBlendEndFrame;
+        bool isPhaseSensitive;
+        
+        AudioPhoneResolution shape_func(const oscillatorConfig& config) { return config.amplitude; }
     };
 
-    enum class ComplexWaveShape : uint32_t {};
+public:
+    Oscillator() : RAND_MAX(0x7fff) {}
 
     /**
-    @brief Overloaded bitwise AND operator for the WaveShape enum class and ComplexWaveShape enum class.
-    @details Overloaded bitwise AND operator for the WaveShape enum class and ComplexWaveShape enum class.
-    @param a The enum class WaveShape or ComplexWaveShape.
-    @param b The enum class WaveShape or ComplexWaveShape.*/
-    template<typename T, typename U>
-    requires(bitwise_ops_compatible<T, U>)
-    bool shape_has_shape (const T& a, const U& b) {
-        return (static_cast<bool>(static_cast<uint32_t>(a) & static_cast<uint32_t>(b))) != 0;
+     * @brief Generates a Sine wave.
+     * @param params: The oscillatorConfig object containing the necessary parameters.
+     * @return double (The oscillator signal at time-step t).
+     */
+    AudioPhoneResolution SIN(const oscillatorConfig& params) {
+        const AudioPhoneResolution amplitude = params.amplitude;
+        const AudioPhoneResolution frequencyHz = params.frequency;
+        const AudioPhoneResolution timeStep = params.time;
+        const AudioPhoneResolution theta = params.phase;
+
+        // Generate the signal with interpolated parameters
+        const AudioPhoneResolution result = amplitude * std::sin(2 * M_PI * frequencyHz / params.TIME * timeStep + theta);
+
+        return result;
     }
 
     /**
-    @brief Overloaded bitwise AND operator for the WaveShape enum class and ComplexWaveShape enum class.
-    @details Overloaded bitwise AND operator for the WaveShape enum class and ComplexWaveShape enum class.
-    @param a The enum class WaveShape or ComplexWaveShape.
-    @param b The enum class WaveShape or ComplexWaveShape.*/
-    template<typename T, typename U>
-    requires(bitwise_ops_compatible<T, U>)
-    bool boolean_and (const T& a, const U& b) {
-        return (static_cast<bool>(static_cast<uint32_t>(a) & static_cast<uint32_t>(b))) != 0;
+     * @brief Generates a Sine wave.
+     * @param params: The oscillatorConfig object containing the necessary parameters.
+     * @return double (The oscillator signal at time-step t).
+     */
+    AudioPhoneResolution sine(const oscillatorConfig& params) {
+        const AudioPhoneResolution amplitude = params.amplitude;
+        const AudioPhoneResolution frequencyHz = params.frequency;
+        const AudioPhoneResolution timeStep = params.time;
+        const AudioPhoneResolution theta = params.phase;
+
+        const AudioPhoneResolution result = amplitude * std::sin(2 * M_PI * frequencyHz / params.TIME * timeStep + theta);
+
+        return result;
     }
 
     /**
-    @brief Overloaded bitwise OR operator for the WaveShape enum class and ComplexWaveShape enum class.
-    @details Overloaded bitwise OR operator for the WaveShape enum class and ComplexWaveShape enum class.
-    @param a The enum class WaveShape or ComplexWaveShape.
-    @param b The enum class WaveShape or ComplexWaveShape.*/
-    template<typename T, typename U>
-    requires(bitwise_ops_compatible<T, U>)
-    bool boolean_or (const T& a, const U& b) {
-        return (static_cast<bool>(static_cast<uint32_t>(a) | static_cast<uint32_t>(b))) != 0;
-    }
+     * @brief Generates a Quarter-Sine wave.
+     * @param params: The oscillatorConfig object containing the necessary parameters.
+     * @return double (The oscillator signal at time-step t).
+     */
+    AudioPhoneResolution quarterSine(const oscillatorConfig& params) {
+        const AudioPhoneResolution amplitude = params.amplitude;
+        const AudioPhoneResolution frequencyHz = params.frequency;
+        const AudioPhoneResolution timeStep = params.time;
+        const AudioPhoneResolution theta = params.phase;
 
-    Oscillator() = default;
+        const AudioPhoneResolution quarterPeriod = 1 / (4 * frequencyHz);
 
-    /**
-    @brief Generates a Sine wave.
-    @param amplitude_constDouble: The amplitude of the oscillator signal.
-    @param frequencyHz_double: The frequency of the oscillator signal.
-    @param timeStep_constDouble: The time-step (t) at which the oscillator is to be evaluated.
-    @param theta_constDouble: The phase of the oscillator signal.
-    @return double ( The oscillator signal at time-step t).*/
-    double sine(const double amplitude_constDouble
-        , const double frequencyHz_double
-        , const double timeStep_constDouble
-        , const double theta_constDouble) const {
-        return amplitude_constDouble * std::sin(2 * PI_HiRes * frequencyHz_double * timeStep_constDouble + theta_constDouble);
+        const AudioPhoneResolution result = amplitude * std::sin(
+            2 * M_PI * std::fmod(
+                std::abs(frequencyHz / params.TIME * timeStep),
+                quarterPeriod)
+            + theta);
+
+        return result;
     }
 
     /**
-    @brief Generates a Cosine wave.
-    @param amplitude_constDouble: The amplitude of the oscillator signal.
-    @param frequencyHz_double: The frequency of the oscillator signal.
-    @param timeStep_constDouble: The time-step (t) at which the oscillator is to be evaluated.
-    @param theta_constDouble: The phase of the oscillator signal.
-    @return double ( The oscillator signal at time-step t).*/
-    double cosine(const double amplitude_constDouble
-        , const double frequencyHz_double
-        , const double timeStep_constDouble
-        , const double theta_constDouble) const {
-        return amplitude_constDouble * std::cos(2 * PI_HiRes * frequencyHz_double * timeStep_constDouble + theta_constDouble);
+     * @brief Generates a Half-Sine wave.
+     * @param params: The oscillatorConfig object containing the necessary parameters.
+     * @return double (The oscillator signal at time-step, t).
+     */
+    AudioPhoneResolution halfSine(const oscillatorConfig& params) {
+        const AudioPhoneResolution amplitude = params.amplitude;
+        const AudioPhoneResolution frequencyHz = params.frequency;
+        const AudioPhoneResolution timeStep = params.time;
+        const AudioPhoneResolution theta = params.phase;
+
+        const AudioPhoneResolution halfPeriod = 1 / (2 * frequencyHz);
+
+        const AudioPhoneResolution result = amplitude * std::sin(
+            2 * M_PI * std::fmod(
+                std::abs(frequencyHz / params.TIME * timeStep),
+                halfPeriod)
+            + theta);
+
+        return result;
     }
 
     /**
-    @brief Generates a Quarter-Sine wave.
-    @param amplitude_constDouble: The amplitude of the oscillator signal.
-    @param frequencyHz_double: The frequency of the oscillator signal.
-    @param timeStep_constDouble: The time-step (t) at which the oscillator is to be evaluated.
-    @param theta_constDouble: The phase of the oscillator signal.
-    @param quarterPeriod_constDouble: The quarter-period of the oscillator signal.
-    @return double ( The oscillator signal at time-step t).*/
-    double quarterSine(const double amplitude_constDouble
-        , const double frequencyHz_double
-        , const double timeStep_constDouble
-        , const double theta_constDouble) const {
-        const double quarterPeriod_constDouble = 1 / (4 * frequencyHz_double);
-        return amplitude_constDouble * std::sin(2 * PI_HiRes * std::fmod(std::abs(timeStep_constDouble), quarterPeriod_constDouble) + theta_constDouble);
+     * @brief Generates a sawtooth signal.
+     * @param params: The oscillatorConfig object containing the necessary parameters.
+     * @param indirection: The indirection of the sawtooth wave ('forwards' or 'backwards').
+     * @return double (The value of the sawtooth wave at the current time).
+     */
+    AudioPhoneResolution sawtooth(const oscillatorConfig& params, const std::string& indirection = "forwards") {
+        const AudioPhoneResolution t = params.time;
+        const AudioPhoneResolution min = params.amplitudeStart;
+        const AudioPhoneResolution max = params.amplitudeEnd;
+        const AudioPhoneResolution period = 1 / params.frequency;
+
+        const AudioPhoneResolution normalizedTime = std::fmod(t, period) / period;
+
+        const AudioPhoneResolution value = (indirection == "forwards")
+            ? min + (max - min) * normalizedTime
+            : max - (max - min) * normalizedTime;
+
+        return value;
     }
 
     /**
-    @brief Generates a Half-Sine wave.
-    @param amplitude_constDouble: The amplitude of the oscillator signal.
-    @param frequencyHz_double: The frequency of the oscillator signal.
-    @param timeStep_constDouble: The time-step (t) at which the oscillator is to be evaluated.
-    @param theta_constDouble: The phase of the oscillator signal.
-    @return double ( The oscillator signal at time-step t).*/
-    double halfSine(const double amplitude_constDouble
-        , const double frequencyHz_double
-        , const double timeStep_constDouble
-        , const double theta_constDouble) const {
-        const double halfPeriod_constDouble = 1 / (2 * frequencyHz_double);
-        return amplitude_constDouble * std::sin(2 * PI_HiRes * std::fmod(std::abs(timeStep_constDouble), halfPeriod_constDouble) + theta_constDouble);
-    }
+     * @brief Generates a triangle wave signal.
+     * @param params: The oscillatorConfig object containing the necessary parameters.
+     * @return double (The value of the triangle wave at the current time).
+     */
+    AudioPhoneResolution triangle(const oscillatorConfig& params) {
+        const AudioPhoneResolution t = params.time;
+        const AudioPhoneResolution min = params.amplitudeStart;
+        const AudioPhoneResolution max = params.amplitudeEnd;
+        const AudioPhoneResolution period = 1 / params.frequency;
 
-    /**
-    @brief Generates a Forward Sawtooth wave.
-    @param amplitude_constDouble: The amplitude of the oscillator signal.
-    @param frequencyHz_double: The frequency of the oscillator signal.
-    @param timeStep_constDouble: The time-step (t) at which the oscillator is to be evaluated.
-    @return double ( The oscillator signal at time-step t).*/
-    double forwardSaw(const double amplitude_constDouble
-        , const double frequencyHz_double
-        , const double timeStep_constDouble) const {
-        return amplitude_constDouble * (2 * (timeStep_constDouble * frequencyHz_double - std::floor(0.5 + timeStep_constDouble * frequencyHz_double)));
-    }
+        const AudioPhoneResolution normalizedTime = std::fmod(t, period) / period;
 
-    /**
-    @brief Generates a Reverse Sawtooth wave.
-    @param amplitude_constDouble: The amplitude of the oscillator signal.
-    @param frequencyHz_double: The frequency of the oscillator signal.
-    @param timeStep_constDouble: The time-step (t) at which the oscillator is to be evaluated.
-    @return double ( The oscillator signal at time-step t).*/
-    double ReverseSaw(const double amplitude_constDouble
-        , const double frequencyHz_double
-        , const double timeStep_constDouble) const {
-        return amplitude_constDouble * (1 - 2 * (timeStep_constDouble * frequencyHz_double - std::floor(timeStep_constDouble * frequencyHz_double)));
-    }
+        const AudioPhoneResolution slope = (max - min) * 4 / period;
 
-    /**
-    @brief Generates a Triangle wave.
-    @param amplitude_constDouble: The amplitude of the oscillator signal.
-    @param frequencyHz_double: The frequency of the oscillator signal.
-    @param timeStep_constDouble: The time-step (t) at which the oscillator is to be evaluated.
-    @return double (The oscillator signal at time-step t).*/
-    double Triangle(const double amplitude_constDouble
-        , const double frequencyHz_double
-        , const double timeStep_constDouble) const {
-        return amplitude_constDouble * (2 * std::abs(2 * (timeStep_constDouble * frequencyHz_double - std::floor(0.5 + timeStep_constDouble * frequencyHz_double))) - 1);
-    }
+        AudioPhoneResolution value{};
 
-    /**
-    @brief Generates a Square wave.
-    @param amplitude_constDouble: The amplitude of the oscillator signal.
-    @param frequencyHz_double: The frequency of the oscillator signal.
-    @param timeStep_constDouble: The time-step (t) at which the oscillator is to be evaluated.
-    @return double (The oscillator signal at time-step t).*/
-    double Square(const double amplitude_constDouble
-        , const double frequencyHz_double
-        , const double timeStep_constDouble) const {
-        return amplitude_constDouble * std::signbit(std::sin(2 * PI_HiRes * frequencyHz_double * timeStep_constDouble));
-    }
-
-    /**
-    @brief Generate a white noise signal.
-    @param amplitude_constDouble
-    @return double */
-    double whiteNoise(const double amplitude_constDouble) const {
-        return amplitude_constDouble * (2.0 * ((double)rand() / (double)RAND_MAX) - 1.0);
-    }
-
-    /**
-    @brief Generate a white (Gaussian) noise signal.
-    @param amplitude_constDouble
-    @return double */
-    double whiteGaussianNoise(const double amplitude_constDouble) const {
-        static std::mt19937 generator; // Random number generator
-        std::normal_distribution<double> distribution(0.0, amplitude_constDouble); // Normal distribution with mean 0 and standard deviation amplitude
-
-        return distribution(generator);
-    }
-
-    /**
-    @brief Generate a brown noise signal.
-    @param amplitude_constDouble: The amplitude of the oscillator signal.
-    @param frequencyHz_double: The frequency of the oscillator signal.
-    @param timeStep_constDouble: The time-step (t) at which the oscillator is to be evaluated.
-    @return double */
-    double brownNoise(const double amplitude_constDouble
-        , const double frequencyHz_double
-        , const double timeStep_constDouble) const {
-        static double brownNoiseValue_double {};
-        static double lastBrownNoiseValue_double {};
-        static double brownNoiseIncrement_double {};
-        static double brownNoiseDecay_double {};
-
-        if (brownNoiseIncrement_double == 0.0) {
-            brownNoiseIncrement_double = 1.0 / (frequencyHz_double * 0.1);
-            brownNoiseDecay_double = std::exp(-1.0 / (frequencyHz_double * 0.1));
+        if (normalizedTime < 0.5) {
+            value = max - slope * std::fmod(t, period / 2);
+        } else {
+            value = min + slope * std::fmod(t, period / 2);
         }
 
-        brownNoiseValue_double = (brownNoiseValue_double + brownNoiseIncrement_double * (2.0 * ((double)rand() / (double)RAND_MAX) - 1.0)) * brownNoiseDecay_double;
-        return amplitude_constDouble * (brownNoiseValue_double - lastBrownNoiseValue_double);
+        return value;
     }
 
     /**
-    @brief Generate a pink noise signal.
-    @param amplitude_constDouble: The amplitude of the oscillator signal.
-    @param frequencyHz_double: The frequency of the oscillator signal.
-    @param timeStep_constDouble: The time-step (t) at which the oscillator is to be evaluated.
-    @return double */
-    double pinkNoise(const double amplitude_constDouble
-        , const double frequencyHz_double
-        , const double timeStep_constDouble) const {
-        static double pinkNoiseValue_double {};
-        static double lastPinkNoiseValue_double {};
-        static double pinkNoiseIncrement_double {};
-        static double pinkNoiseDecay_double {};
+     * @brief Generates a square wave signal.
+     * @param params: The oscillatorConfig object containing the necessary parameters.
+     * @return double (The value of the square wave at the current time).
+     */
+    AudioPhoneResolution square(const oscillatorConfig& params) {
+        const AudioPhoneResolution t = params.time;
+        const AudioPhoneResolution min = params.amplitudeStart;
+        const AudioPhoneResolution max = params.amplitudeEnd;
+        const AudioPhoneResolution period = 1 / params.frequency;
 
-        if (pinkNoiseIncrement_double == 0.0) {
-            pinkNoiseIncrement_double = 1.0 / (frequencyHz_double * 0.1);
-            pinkNoiseDecay_double = std::exp(-1.0 / (frequencyHz_double * 0.1));
+        const AudioPhoneResolution normalizedTime = std::fmod(t, period) / period;
+
+        const AudioPhoneResolution value = (normalizedTime >= 0.5) ? max : min;
+
+        return value;
+    }
+
+    /**
+     * @brief Generates white Gaussian noise.
+     * @param params: The oscillatorConfig object containing the necessary parameters.
+     * @return double (A random number following a Gaussian distribution).
+     */
+    AudioPhoneResolution whiteGaussianNoise(const oscillatorConfig& params) {
+        const AudioPhoneResolution amplitude = params.amplitude;
+
+        constexpr AudioPhoneResolution epsilon = 0.0001;
+
+        AudioPhoneResolution u = rand() / static_cast<double>(RAND_MAX);
+        AudioPhoneResolution v = rand() / static_cast<double>(RAND_MAX);
+
+        u = (u == 0) ? epsilon : u;
+        v = (v == 0) ? epsilon : v;
+
+        const AudioPhoneResolution z = std::sqrt(-2.0 * std::log(u)) * std::cos(2.0 * M_PI * v);
+
+        return z * amplitude;
+    }
+
+    /**
+     * @brief Generates the next value of quasi periodic (pink) noise signal.
+     * @param params: The oscillatorConfig object containing the necessary parameters.
+     * @return double (The next value in the generated noise signal).
+     */
+    AudioPhoneResolution quasiPeriodicNoise(const oscillatorConfig& params) {
+        static AudioPhoneResolution quasiPeriodicTime = 0;
+        static AudioPhoneResolution prevNoiseValue = 0;
+        static AudioPhoneResolution nextPeriodChangeTime = 0;
+        static AudioPhoneResolution currentPeriod = basePeriod * (1 + periodVariation * (2 * rand() / RAND_MAX - 1));
+
+        const AudioPhoneResolution sampleRate = params.sampleRate;
+
+        if (quasiPeriodicTime >= nextPeriodChangeTime) {
+            currentPeriod = basePeriod * (1 + periodVariation * (2 * rand() / RAND_MAX - 1));
+            nextPeriodChangeTime += currentPeriod;
         }
 
-        pinkNoiseValue_double = (pinkNoiseValue_double + pinkNoiseIncrement_double * (2.0 * ((double)rand() / (double)RAND_MAX) - 1.0)) * pinkNoiseDecay_double;
-        return amplitude_constDouble * (pinkNoiseValue_double - lastPinkNoiseValue_double);
+        AudioPhoneResolution output{};
+        if (std::fmod(quasiPeriodicTime, currentPeriod) < pulseWidth * currentPeriod) {
+            AudioPhoneResolution noiseValue = 2 * rand() / RAND_MAX - 1;
+            noiseValue = (noiseValue + prevNoiseValue) * 0.5;
+            prevNoiseValue = noiseValue;
+            output = noiseValue;
+        } else {
+            output = 0;
+        }
+
+        quasiPeriodicTime += 1 / sampleRate;
+
+        return output;
     }
 
-    std::random_device rd; 
-    std::mt19937 eng{rd()};
-    std::uniform_real_distribution<> dist{-1.0, 1.0};
-    double lastWhite = 0.0; // Previous white noise value
+    /**
+     * @brief Generate a brownian noise signal.
+     * @param params: The oscillatorConfig object containing the necessary parameters.
+     * @return double
+     */
+    AudioPhoneResolution brownNoise(const oscillatorConfig& params) {
+        static AudioPhoneResolution brownNoiseValue = 0;
+        static AudioPhoneResolution lastBrownNoiseValue = 0;
+        static AudioPhoneResolution brownNoiseIncrement = 0;
+        static AudioPhoneResolution brownNoiseDecay = 0;
+
+        const AudioPhoneResolution amplitude = params.amplitude;
+        const AudioPhoneResolution frequencyHz = params.frequency;
+
+        if (brownNoiseIncrement == 0.0) {
+            brownNoiseIncrement = 1.0 / (frequencyHz * 0.1);
+            brownNoiseDecay = std::exp(-1.0 / (frequencyHz * 0.1));
+        }
+
+        brownNoiseValue = (brownNoiseValue + brownNoiseIncrement * (2.0 * (rand() / RAND_MAX) - 1.0)) * brownNoiseDecay;
+
+        const AudioPhoneResolution result = amplitude * (brownNoiseValue - lastBrownNoiseValue);
+
+        return result;
+    }
 
     /**
-    @brief Generate a purple (violet) noise signal.
-    @return double */
-    double purpleVioletNoise() {
-        double newWhite = dist(eng);  // Generate new white noise sample
-        double violet = newWhite - lastWhite; // Differentiate to get violet noise
-        lastWhite = newWhite; // Update the last white noise sample
+     * @brief Generates pink noise.
+     * @param params: The oscillatorConfig object containing the necessary parameters.
+     * @return double (The generated pink noise value).
+     */
+    AudioPhoneResolution pinkNoise(const oscillatorConfig& params) {
+        static AudioPhoneResolution pinkNoiseValue = 0;
+        static AudioPhoneResolution lastPinkNoiseValue = 0;
+        static AudioPhoneResolution pinkNoiseIncrement = 0;
+        static AudioPhoneResolution pinkNoiseDecay = 0;
+
+        const AudioPhoneResolution amplitude = params.amplitude;
+        const AudioPhoneResolution frequencyHz = params.frequency;
+
+        if (pinkNoiseIncrement == 0) {
+            pinkNoiseIncrement = 1.0 / (frequencyHz * 0.1);
+            pinkNoiseDecay = std::exp(-1.0 / (frequencyHz * 0.1));
+        }
+
+        const AudioPhoneResolution randomFactor = 2.0 * rand() / RAND_MAX - 1.0;
+
+        pinkNoiseValue = (pinkNoiseValue + pinkNoiseIncrement * randomFactor) * pinkNoiseDecay;
+
+        const AudioPhoneResolution retPinkNoiseValue = amplitude * (pinkNoiseValue - lastPinkNoiseValue);
+
+        lastPinkNoiseValue = pinkNoiseValue;
+
+        return retPinkNoiseValue;
+    }
+
+    /**
+     * @brief Generate a blue noise signal.
+     * @param params: The oscillatorConfig object containing the necessary parameters.
+     * @return double
+     */
+    AudioPhoneResolution blueNoise(const oscillatorConfig& params) {
+        static AudioPhoneResolution blueNoiseValue = 0;
+        static AudioPhoneResolution lastBlueNoiseValue = 0;
+        static AudioPhoneResolution blueNoiseIncrement = 0;
+        static AudioPhoneResolution blueNoiseDecay = 0;
+
+        const AudioPhoneResolution amplitude = params.amplitude;
+        const AudioPhoneResolution frequencyHz = params.frequency;
+        const AudioPhoneResolution timeStep = params.time;
+
+        if (blueNoiseIncrement == 0.0) {
+            blueNoiseIncrement = 1.0 / (frequencyHz * 0.1);
+            blueNoiseDecay = std::exp(-1.0 / (frequencyHz * 0.1));
+        }
+
+        blueNoiseValue = (blueNoiseValue + blueNoiseIncrement * (2.0 * (rand() / RAND_MAX) - 1.0)) * blueNoiseDecay;
+
+        const AudioPhoneResolution result = amplitude * (blueNoiseValue - lastBlueNoiseValue);
+
+        return result;
+    }
+
+    /**
+     * @brief Generate a purple (violet) noise signal.
+     * @return double
+     */
+    AudioPhoneResolution purpleVioletNoise() {
+        static AudioPhoneResolution lastWhite = 0;
+
+        const AudioPhoneResolution newWhite = (rand() / static_cast<double>(RAND_MAX) * 2 - 1);
+
+        const AudioPhoneResolution violet = newWhite - lastWhite;
+
+        lastWhite = newWhite;
+
         return violet;
     }
+    
+public:
 
-    /**
-    @brief Generate a yellow noise signal.
-    @param amplitude_constDouble: The amplitude of the oscillator signal.
-    @param frequencyHz_double: The frequency of the oscillator signal.
-    @param timeStep_constDouble: The time-step (t) at which the oscillator is to be evaluated.
-    @return double */
-    double yellowNoise(const double amplitude_constDouble
-        , const double frequencyHz_double
-        , const double timeStep_constDouble) const {
-        static double yellowNoiseValue_double {};
-        static double lastYellowNoiseValue_double {};
-        static double yellowNoiseIncrement_double {};
-        static double yellowNoiseDecay_double {};
+	//const float PI_LoRes = 3.14159265358979323;
+	//const long double PI_HiRes = 3.14159265358979323846264338327950288419716939937510582097494459230781640628620899862803482534211706798214808651328230664709384460955058223172535940812848111745028410270193852110555964462294895493038196;
 
-        if (yellowNoiseIncrement_double == 0.0) {
-            yellowNoiseIncrement_double = 1.0 / (frequencyHz_double * 0.1);
-            yellowNoiseDecay_double = std::exp(-1.0 / (frequencyHz_double * 0.1));
-        }
-
-        yellowNoiseValue_double = (yellowNoiseValue_double + yellowNoiseIncrement_double * (2.0 * ((double)rand() / (double)RAND_MAX) - 1.0)) * yellowNoiseDecay_double;
-        return amplitude_constDouble * (yellowNoiseValue_double - lastYellowNoiseValue_double);
-    }
-
-    /**
-    @brief Generate a blue noise signal.
-    @param amplitude_constDouble: The amplitude of the oscillator signal.
-    @param frequencyHz_double: The frequency of the oscillator signal.
-    @param timeStep_constDouble: The time-step (t) at which the oscillator is to be evaluated.
-    @return double */
-    double blueNoise(const double amplitude_constDouble
-        , const double frequencyHz_double
-        , const double timeStep_constDouble) const {
-        static double blueNoiseValue_double {};
-        static double lastBlueNoiseValue_double {};
-        static double blueNoiseIncrement_double {};
-        static double blueNoiseDecay_double {};
-
-        if (blueNoiseIncrement_double == 0.0) {
-            blueNoiseIncrement_double = 1.0 / (frequencyHz_double * 0.1);
-            blueNoiseDecay_double = std::exp(-1.0 / (frequencyHz_double * 0.1));
-        }
-
-        blueNoiseValue_double = (blueNoiseValue_double + blueNoiseIncrement_double * (2.0 * ((double)rand() / (double)RAND_MAX) - 1.0)) * blueNoiseDecay_double;
-        return amplitude_constDouble * (blueNoiseValue_double - lastBlueNoiseValue_double);
-    }
-
-    /**
-    @brief Generate a grey noise signal.
-    @param amplitude_constDouble: The amplitude of the oscillator signal.
-    @param frequencyHz_double: The frequency of the oscillator signal.
-    @param timeStep_constDouble: The time-step (t) at which the oscillator is to be evaluated.
-    @return double */
-    double greyNoise(const double amplitude_constDouble
-        , const double frequencyHz_double
-        , const double timeStep_constDouble) const {
-        static double greyNoiseValue_double {};
-        static double lastGreyNoiseValue_double {};
-        static double greyNoiseIncrement_double {};
-        static double greyNoiseDecay_double {};
-
-        if (greyNoiseIncrement_double == 0.0) {
-            greyNoiseIncrement_double = 1.0 / (frequencyHz_double * 0.1);
-            greyNoiseDecay_double = std::exp(-1.0 / (frequencyHz_double * 0.1));
-        }
-
-        greyNoiseValue_double = (greyNoiseValue_double + greyNoiseIncrement_double * (2.0 * ((double)rand() / (double)RAND_MAX) - 1.0)) * greyNoiseDecay_double;
-        return amplitude_constDouble * (greyNoiseValue_double - lastGreyNoiseValue_double);
-    }
-
-    /**
-    @brief Generates basic signal based on specific wave-shape parameters.
-    @details Generates basic signal based on specific wave-shape parameters.
-    @param shape_oscilatorParamsVec: The complex wave-shapes to develop.
-    @param customUpdateCallback: A lambda function that can be used to update the oscillator parameters.
-    @return double (The oscillator signal at time-step t).*/
-    template <
-        typename AmplitudeType = double,
-        typename FrequencyHzType = double,
-        typename ThetaType = double,
-        typename ShapeType = WaveShape,
-        typename OutputShapeType = double,
-        typename TimeStepType = double,
-        typename OscillatorParameterType
-    >
-    requires ( bitwise_ops_compatible_shapeType<ShapeType> )
-    double generateBasicSignal(const OscillatorParameters<AmplitudeType
-        , FrequencyHzType
-        , ThetaType
-        , ShapeType
-        , OutputShapeType
-        , TimeStepType>& shape_oscillatorParams
-        , UpdateFunction<OscillatorParameterType, OutputShapeType> customUpdateCallback) {
-
-        double outShape {};
-
-        // Custom updates using the lambda function
-        if (customUpdateCallback) {
-            outShape = customUpdateCallback(
-                std::make_shared<Oscillator>(*this),
-                shape_oscillatorParams,
-                outShape);
-        } else {
-            switch (shape_oscillatorParams.shape) {
-                case WaveShape::Sine_enum:
-                    outShape = sine (shape_oscillatorParams.amplitude
-                        , shape_oscillatorParams.frequencyHz
-                        , shape_oscillatorParams.timeStepStart
-                        , shape_oscillatorParams.theta);
-                    break;
-                case WaveShape::Cosine_enum:
-                    outShape = cosine (shape_oscillatorParams.amplitude
-                        , shape_oscillatorParams.frequencyHz
-                        , shape_oscillatorParams.timeStepStart
-                        , shape_oscillatorParams.theta );
-                    break;
-                case WaveShape::QuarterSine_enum:
-                    outShape = quarterSine (shape_oscillatorParams.amplitude
-                        , shape_oscillatorParams.frequencyHz
-                        , shape_oscillatorParams.timeStepStart
-                        , shape_oscillatorParams.theta);
-                    break;
-                case WaveShape::HalfSine_enum:
-                    outShape = halfSine (shape_oscillatorParams.amplitude
-                        , shape_oscillatorParams.frequencyHz
-                        , shape_oscillatorParams.timeStepStart
-                        , shape_oscillatorParams.theta);
-                    break;
-                case WaveShape::Triangle_enum:
-                    outShape = Triangle (shape_oscillatorParams.amplitude
-                        , shape_oscillatorParams.frequencyHz
-                        , shape_oscillatorParams.timeStepStart);
-                    break;
-                case WaveShape::Square_enum:
-                    outShape = Square(shape_oscillatorParams.amplitude
-                        , shape_oscillatorParams.frequencyHz
-                        , shape_oscillatorParams.timeStepStart);
-                    break;
-                case WaveShape::ForwardSawtooth_enum:
-                    outShape = forwardSaw (shape_oscillatorParams.amplitude
-                        , shape_oscillatorParams.frequencyHz
-                        , shape_oscillatorParams.timeStepStart);
-                    break;
-                case WaveShape::ReverseSawtooth_enum:
-                    outShape = ReverseSaw (shape_oscillatorParams.amplitude
-                        , shape_oscillatorParams.frequencyHz
-                        , shape_oscillatorParams.timeStepStart);
-                    break;
-                case WaveShape::WhiteNoise_enum:
-                    outShape = whiteNoise (shape_oscillatorParams.amplitude_constDouble);
-                    break;
-                case WaveShape::BrownNoise_enum:
-                    outShape = brownNoise (shape_oscillatorParams.amplitude
-                        , shape_oscillatorParams.frequencyHz
-                        , shape_oscillatorParams.timeStepStart);
-                    break;
-                case WaveShape::PinkNoise_enum:
-                    outShape = pinkNoise (shape_oscillatorParams.amplitude
-                        , shape_oscillatorParams.frequencyHz
-                        , shape_oscillatorParams.timeStepStart);
-                    break;
-                case WaveShape::YellowNoise_enum:
-                    outShape = yellowNoise (shape_oscillatorParams.amplitude
-                        , shape_oscillatorParams.frequencyHz
-                        , shape_oscillatorParams.timeStepStart);
-                    break;
-                case WaveShape::BlueNoise_enum:
-                    outShape = blueNoise (shape_oscillatorParams.amplitude
-                        , shape_oscillatorParams.frequencyHz
-                        , shape_oscillatorParams.timeStepStart);
-                    break;
-                case WaveShape::GreyNoise_enum:
-                    outShape = greyNoise (shape_oscillatorParams.amplitude
-                        , shape_oscillatorParams.frequencyHz
-                        , shape_oscillatorParams.timeStepStart);
-                    break;
-                case WaveShape::whiteGaussianNoise_enum:
-                    outShape = whiteGaussianNoise (shape_oscillatorParams.amplitude_constDouble);
-                    break;
-                case WaveShape::purpleVioletNoise_enum:
-                    outShape = purpleVioletNoise ();
-                    break;
-                default:
-                    throw std::invalid_argument("Unexpected or Unknown wave-shape.");
-            }
-
-            return outShape;
-        }
-    } // End of generateBasicSignal() function
-
-    /**
-    @brief Generates basic signal based on specific wave-shape parameters.
-    @details Generates basic signal based on specific wave-shape parameters.
-    @param shapes_oscilatorParamsVec: The complex wave-shapes to develop.
-    @param customUpdateCallback: A lambda function that can be used to update the oscillator parameters.
-    @return double (The oscillator signal at time-step t).*/
-    template <
-        typename AmplitudeType = double,
-        typename FrequencyHzType = double,
-        typename ThetaType = double,
-        typename ShapeType = WaveShape,
-        typename OutputShapeType = double,
-        typename TimeStepType = double,
-        typename OscillatorParameterType = OscillatorParameters<AmplitudeType
-        , FrequencyHzType
-        , ThetaType
-        , ShapeType
-        , OutputShapeType
-        , TimeStepType>
-    >
-    requires ( bitwise_ops_compatible_shapeType<ShapeType> )
-    std::vector<double> generateComplexSignal(
-        const std::vector<OscillatorParameterType>& shapes_oscilatorParamsVec
-        , UpdateFunction<OscillatorParameterType, OutputShapeType> customUpdateCallback) {
-
-        std::vector<double> totalOutShape{};
-
-        for (const auto& shape_oscillatorParams : shapes_oscilatorParamsVec) {
-            double outShape{};
-
-            // Custom updates using the lambda function
-            if (customUpdateCallback) {
-                outShape = customUpdateCallback(
-                    std::make_shared<Oscillator>(*this),
-                    shape_oscillatorParams,
-                    outShape);
-            } else {
-                if (signal_has_shape(shape_oscillatorParams.shape, WaveShape::Sine_enum))
-                    outShape += sine(shape_oscillatorParams.amplitude
-                        , shape_oscillatorParams.frequencyHz
-                        , shape_oscillatorParams.timeStepStart
-                        , shape_oscillatorParams.theta);
-
-                if (signal_has_shape(shape_oscillatorParams.shape, WaveShape::Cosine_enum))
-                    outShape += cosine(shape_oscillatorParams.amplitude
-                        , shape_oscillatorParams.frequencyHz
-                        , shape_oscillatorParams.timeStepStart
-                        , shape_oscillatorParams.theta);
-
-                if (signal_has_shape(shape_oscillatorParams.shape, WaveShape::QuarterSine_enum))
-                    outShape += quarterSine(shape_oscillatorParams.amplitude
-                        , shape_oscillatorParams.frequencyHz
-                        , shape_oscillatorParams.timeStepStart
-                        , shape_oscillatorParams.theta);
-
-                if (signal_has_shape(shape_oscillatorParams.shape, WaveShape::HalfSine_enum))
-                    outShape += halfSine(shape_oscillatorParams.amplitude
-                        , shape_oscillatorParams.frequencyHz
-                        , shape_oscillatorParams.timeStepStart
-                        , shape_oscillatorParams.theta);
-
-                if (signal_has_shape(shape_oscillatorParams.shape, WaveShape::Triangle_enum))
-                    outShape += Triangle(shape_oscillatorParams.amplitude
-                        , shape_oscillatorParams.frequencyHz
-                        , shape_oscillatorParams.timeStepStart);
-
-                if (signal_has_shape(shape_oscillatorParams.shape, WaveShape::Square_enum))
-                    outShape += Square(shape_oscillatorParams.amplitude
-                        , shape_oscillatorParams.frequencyHz
-                        , shape_oscillatorParams.timeStepStart);
-
-                if (signal_has_shape(shape_oscillatorParams.shape, WaveShape::ForwardSawtooth_enum))
-                    outShape += forwardSaw(shape_oscillatorParams.amplitude
-                        , shape_oscillatorParams.frequencyHz
-                        , shape_oscillatorParams.timeStepStart);
-
-                if (signal_has_shape(shape_oscillatorParams.shape, WaveShape::ReverseSawtooth_enum))
-                    outShape += ReverseSaw(shape_oscillatorParams.amplitude
-                        , shape_oscillatorParams.frequencyHz
-                        , shape_oscillatorParams.timeStepStart);
-
-                if (signal_has_shape(shape_oscillatorParams.shape, WaveShape::WhiteNoise_enum))
-                    outShape += whiteNoise(shape_oscillatorParams.amplitude_constDouble);
-
-                if (signal_has_shape(shape_oscillatorParams.shape, WaveShape::BrownNoise_enum))
-                    outShape += brownNoise(shape_oscillatorParams.amplitude
-                        , shape_oscillatorParams.frequencyHz
-                        , shape_oscillatorParams.timeStepStart);
-
-                if (signal_has_shape(shape_oscillatorParams.shape, WaveShape::PinkNoise_enum))
-                    outShape += pinkNoise(shape_oscillatorParams.amplitude
-                        , shape_oscillatorParams.frequencyHz
-                        , shape_oscillatorParams.timeStepStart);
-
-                if (signal_has_shape(shape_oscillatorParams.shape, WaveShape::YellowNoise_enum))
-                    outShape += yellowNoise(shape_oscillatorParams.amplitude
-                        , shape_oscillatorParams.frequencyHz
-                        , shape_oscillatorParams.timeStepStart);
-
-                if (signal_has_shape(shape_oscillatorParams.shape, WaveShape::BlueNoise_enum))
-                    outShape += blueNoise(shape_oscillatorParams.amplitude
-                        , shape_oscillatorParams.frequencyHz
-                        , shape_oscillatorParams.timeStepStart);
-
-                if (signal_has_shape(shape_oscillatorParams.shape, WaveShape::GreyNoise_enum))
-                    outShape += greyNoise(shape_oscillatorParams.amplitude
-                        , shape_oscillatorParams.frequencyHz
-                        , shape_oscillatorParams.timeStepStart);
-
-                if (signal_has_shape(shape_oscillatorParams.shape, WaveShape::whiteGaussianNoise_enum))
-                    outShape += whiteGaussianNoise(shape_oscillatorParams.amplitude_constDouble);
-
-                if (signal_has_shape(shape_oscillatorParams.shape, WaveShape::purpleVioletNoise_enum))
-                    outShape += purpleVioletNoise();
-
-                if (outShape == 0)
-                    throw std::invalid_argument("Unexpected or Unknown wave-shape.");
-            } // End of else statement
-
-            /* 
-            Each sample may have multiple formants, 
-            so only advance the sample when the 
-            advanceSample_flag is set to true.*/
-            if ( shape_oscillatorParams.advanceSample_flag ) {
-                totalOutShape.push_back(outShape);
-            }
-        } // End of for loop
-
-        return totalOutShape;
-    } // End of generateComplexSignal() function
-
-    /**
-    @brief Determines if the specified wave-shape should be present in the complex wave-shape.
-    @details Determines if the specified wave-shape should be present in the complex wave-shape.
-    @param shape_1: The complex wave-shape or wave-shape to check.
-    @param shape_2: The complex wave-shape or wave-shape to check.
-    @return bool (True if the specified wave-shape should be present in the generated complex wave-shape, false otherwise).*/
-    template<typename T, typename U>
-    requires (bitwise_ops_compatible<T, U>)
-    bool hasShape(const T& shape_1, const U& shape_2) const {
-        return ( static_cast<uint32_t>( shape_1 ) & static_cast<uint32_t>( shape_2 ) );
-    }
-
-    /**
-    @brief Updates the oscillator parameters at time-step (t).
-    @param shape: The wave-shape to generate.
-    @param t: The time-step (t) at which the oscillator should be evaluated.*/
-    void updateParameters(const WaveShape& shape, const double& t) {
-        switch (shape) {
-            case WaveShape::Sine_enum:
-                //amplitude_double = initialAmplitude * std::exp(-decayRate * t);
-                break;
-            case WaveShape::Cosine_enum:
-                //frequencyHz_double = initialFrequency + frequencySlope * t;
-                break;
-            case WaveShape::Triangle_enum:
-                //frequencyHz_double = initialFrequency + frequencySlope * t;
-                break;
-            case WaveShape::Square_enum:
-                //theta_double = initialTheta + thetaSlope * t;
-                break;
-            case WaveShape::ForwardSawtooth_enum:
-                //theta_double = initialTheta + thetaSlope * t;
-                break;
-            case WaveShape::ReverseSawtooth_enum:
-                //theta_double = initialTheta + thetaSlope * t;
-                break;
-            case WaveShape::WhiteNoise_enum:
-                //theta_double = initialTheta + thetaSlope * t;
-                break;
-            case WaveShape::BrownNoise_enum:
-                //theta_double = initialTheta + thetaSlope * t;
-                break;
-            case WaveShape::PinkNoise_enum: 
-                //theta_double = initialTheta + thetaSlope * t;
-                break;
-            case WaveShape::YellowNoise_enum:
-                //theta_double = initialTheta + thetaSlope * t;
-                break;
-            case WaveShape::BlueNoise_enum:
-                //theta_double = initialTheta + thetaSlope * t;
-                break;
-            case WaveShape::GreyNoise_enum:
-                //theta_double = initialTheta + thetaSlope * t;
-                break;
-            case WaveShape::whiteGaussianNoise_enum:
-                //theta_double = initialTheta + thetaSlope * t;
-                break;
-            case WaveShape::purpleVioletNoise_enum:
-                //theta_double = initialTheta + thetaSlope * t;
-                break;
-            default:
-                throw std::invalid_argument("Unexpected or Unknown wave-shape.");
-        } // End of switch statement
-    } // End of updateParameters() function
-
-protected:
-    oscillatorConfig m_oscillatorConfig;
-    const double PI_LoRes = 3.14159265358979323846f;
-    const long double PI_HiRes = 3.1415926535897932384626433832795028841971693993751058209749445923078164062862089986280348253421170679f;
-
-    /*double amplitude_double {}
-    , frequencyHz_double {}
-    , theta_double {}
-    , outputShape_double {}
-    , timeStepStart_double {}
-    , timeStepEnd_double {};
-    TimeInterval timeInterval_double {};*/
+private:
+    const int RAND_MAX;
+    static inline constexpr AudioPhoneResolution basePeriod = 0.01;
+    static inline constexpr AudioPhoneResolution periodVariation = 0.1;
+    static inline constexpr AudioPhoneResolution pulseWidth = 0.2;
 };
