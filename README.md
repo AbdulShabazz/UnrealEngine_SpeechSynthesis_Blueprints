@@ -1,6 +1,13 @@
 # Concatenative Speech Synthesis for Unreal Engine 5
 Concatenative Speech Synthesis, Text-to-Speech library and re-speecheer voice-mapping tool based on MARYTTS for Unreal Engine 5.
 
+![SpeechSynthesis Architecture](IMG/PHONEME.png)
+<b>Speech Synthesis Architecture for Sara at Audio_Phone [ k ].</b>  
+
+![SpeechSynthesis Architecture](IMG/PHONEME.DETAILS.3.png)
+<b>Speech Synthesis Architecture for Sara at Audio_Phone [ k ] (Module Level).</b>  
+
+
 ### Based upon MaryTTS 2.5
 
 This is a multilingual open-source text-to-speech and speech-to-speech platform (re-speecher) suitable for use in theatrical production, based on the MaryTTS text-to-speech library,
@@ -15,21 +22,24 @@ This is a multilingual open-source text-to-speech and speech-to-speech platform 
 <img title='Schwa.Phoneme.(Formants).Synthesis.Curves' style='margin-top:24px;' alt='Schwa.Phoneme.(Formants).Synthesis.Curves' src='IMG/Phoneme.(Formants).Synthesis.Curves.Screen.PNG'/><br>
 <span>Custom.Schwa.Phoneme.(Formants).Synthesis.Curves</span>
 
+![Artificial Speech Formant Curve](IMG/FormantEditor_Firefox_PCM32Bit_384kHz_40Hz_downto_5Hz_Amplitude_1_to_2_Ramp_Curve.png)
+<b>PCM32Bit/384kHz Encoded Audio LERP from 40Hz down to 5Hz with a QUARTIC Amplitude Ramp from 1.0 to 2.0</b>  
+
+![Available Interpolation Methods](IMG/QuarticEaseInOut_vs_CubicHermiteSmoothstepInterpolation_vs_SineArcInterpolation_vs_LERP.png)
+<b>Available Interpolation Methods</b>  
+
+<p>&nbsp;</p>
+
 <img title='Compact.Custom.Schwa.Phoneme.(Formants).Curve.Editor' style='margin-top:24px;' alt='Schwa.Phoneme.(Formants).Synthesis.Curves' src='IMG/FormantEditor_Firefox.png'/><br>
 <span>Compact.Custom.Schwa.Phoneme.(Formants).Curve.Editor</span>
 
 <img title='Compact.Custom.Schwa.Phoneme.(Formants).Curve.Editor' style='margin-top:24px;' alt='Schwa.Phoneme.(Formants).Synthesis.Curves' src='IMG/SpectrumAnalyzer_Firefox.png'/><br>
 <span>Compact.Custom.(Formant).Spectrum.Analyzer</span>
 
-<img title='UE 5 Voice Configurator' style='margin-top:24px;' alt='UE 5 Voice Configurator (Blueprints)' src='IMG/UE_5_SpeechSynthesis_Configurator.png'/><br>
-<span>UE 5 Voice Configurator</span>
-
 <img title='Hello World!' style='margin-top:24px;' alt='Hello World! (Blueprints)' src='IMG/Hello.World.5.BP.2023.PNG'/><br>
 <span>Hello World! UE Blueprint</span>
 
-<br><br>
-
-The library is made available under the Lesser General Public License LGPL version 3.0 -- see LICENSE.md for details.
+The library has an unrestricted, publice use license.
 
 ### Available APIs
 
@@ -121,6 +131,51 @@ DX (Riddle)
 other > pause or glottal_stop > ARPABET UV >  
 Q (Question)  
 
+## Overview
+This proposal outlines the development of an offline Text to Speech (TTS) library designed for superior speech fidelity, utilizing Unreal Engine. The library is not intended for real-time synthesis but will provide robust and scalable solutions for high-quality speech generation.
+
+## Synthesis Strategies
+### 1. Entirety Synthesis
+- **Description:** Synthesizes an entire audio sample from beginning to end into a .WAV file.
+- **Limitations:** Results are not transferrable or scalable.
+
+### 2. Phoneme Concatenative Synthesis
+- **Description:** Synthesizes short, compatible audio samples that can be concatenated. This method offers re-usability and scalability to larger spoken phrases.
+- **Advantages:** Preferred methodology for in-editor design due to its flexibility and scalability.
+
+## Implementation Details
+### Phonemes and Audio Phones
+- **Blueprints Implementation:** Phonemes are implemented in Blueprints, representing the desired sounds or syllables.
+- **Audio Phone Design:** Audio phones, which are the actual sounds produced, are designed using HTML editors. These designs include customization of formants—constituent frequencies which can be modified in terms of frequency, amplitude, and phase characteristics.
+
+### HTML Editors
+- **Formant Editor:** `Tools/Phones_EN/Scripts/HTML/FormantEditor.html`
+- **Spectrum Analyzer:** `Tools/Phones_EN/Scripts/HTML/SpectrumAnalyzer.html`
+- **Features:** Both editors support waveshape viewing, playback, and modifications such as layering, upscaling, downscaling, shortening, and lengthening of formants.
+
+### Audio Phone Design Tips
+![Formant design strategy ](IMG/F0_v2.png)
+- **Sound Fidelity:** Carving a sinusoid out of a Guassian white or black fundemental, surrounded by lower purple-, blue-, and violet- and upper pink- and brown- noise bands, with frequency slopes toward the fundamental, is a method for achieving the best sound fidelity.
+- **Emotional Expressiveness:** Include a full range of emotional expressiveness for each phoneme.
+- **Playback Support:** Embed jump tables to support playback of arbitrary lengths.
+- **Blockchain Registration:** Register formant parameters on the blockchain a NFTs protect artists creation and establish provenance.
+
+## Todo
+1. **UE Browser Plugin:** Employing the UE browser plugin to display the HTML formant and spectrum analyzer editors.
+2. **Voice Artist Collaboration:** Voice artists are currently designing custom audio phones using the HTML editors.
+3. **Implement and Undo Buffer:** Implement an Undo Buffer.
+4. **Integration with Unreal Engine's Existing Tools:** This library will need to integrate with Unreal Engine's current suite of tools and workflows.
+5. **Performance Metrics:** Provide expected performance metrics, like synthesis speed and resource usage, to help gauge the impact on game performance.
+6. **User Documentation and Support:** Outline plans for documentation and user support. This is crucial for adoption by developers.
+7. **Compatibility and Extensions:** Discuss potential for future extensions, such as real-time synthesis or integration with virtual reality platforms.
+8. **Community and Developer Feedback:** Consider setting up a system for community feedback to refine the library based on real user experience.
+
+## Future Enhancements
+### Voice Remapping
+- **Description:** Voice remapping by scaling the frequency curves of formants. Settings can be adjusted higher for women, lower for men, and thinner layers for children.
+
+### Performance Enhancements
+- **Parallel Synthesis:** If entering and exiting attributes of each phoneme (amplitude, frequency, phase) are predefined, all audio phones can be synthesized in parallel.
 
 ### Example:  
 
