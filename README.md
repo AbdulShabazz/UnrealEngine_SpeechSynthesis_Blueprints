@@ -149,7 +149,7 @@ This proposal outlines the development of an offline Text to Speech (TTS) librar
 - **Audio Phone Design:** Audio phones, which are the actual sounds produced, are designed using HTML editors. These designs include customization of formants—constituent frequencies which can be modified in terms of frequency, amplitude, and phase characteristics.
 
 ### HTML Editors
-- **Formant Editor:** `Tools/Phones_EN/Scripts/HTML/FormantEditor.html`
+- **Formant Editor:** `Tools/Phones_EN/Scripts/HTML/SpeechFormantEditor.html`
 - **Spectrum Analyzer:** `Tools/Phones_EN/Scripts/HTML/SpectrumAnalyzer.html`
 - **Features:** Both editors support waveshape viewing, playback, and modifications such as layering, upscaling, downscaling, shortening, and lengthening of formants.
 
