@@ -130,7 +130,8 @@ class POINT extends Object {
 }
 
 class OSC_INTERVAL extends Object {
-	constructor({ amplitude = g_default_amplitude
+	constructor({ 
+		  amplitude = g_default_amplitude
 		, frequency = g_default_frequency
 		, frame = 0
 		, time_step = 0 } = {}) {
@@ -143,7 +144,8 @@ class OSC_INTERVAL extends Object {
 }
 
 class FORMANTS extends Array {
-	constructor({ shape = "Sine"
+	constructor({ 
+	  shape = "Sine"
 	, amplitude_as_bezierCurve_flag = false
 	, frequency_as_bezierCurve_flag = false } = {}) {
 		super(); // Calls the Array constructor
@@ -171,6 +173,7 @@ Formants[0].push(
 //Formants.prototype.undoStack = [];
 //Formants.prototype.redoStack = [];
 
+// chart.js startup config //
 g_config = {
 	type: 'line',
 	data: {
@@ -687,6 +690,36 @@ function updateActiveRadioButton(rButton) {
 			}
 		}
 	});
+
+	const PreviousAmplitudeStatus = AmplitudeBezierBTN.activeFlag;
+	const PreviousFrequencyStatus = FrequencyBezierBTN.activeFlag;
+
+	const SmoothAmplitudeActiveFlag = Formants[g_lastSelectedFormantIndex].amplitude_as_bezierCurve_flag 
+		? true
+		: false;	
+	const SmoothFrequencyActiveFlag = Formants[g_lastSelectedFormantIndex].frequency_as_bezierCurve_flag 
+		? true
+		: false;
+
+	AmplitudeBezierBTN.activeFlag = SmoothAmplitudeActiveFlag ? true : false;
+	AmplitudeBezierBTN.style.backgroundColor = SmoothAmplitudeActiveFlag ? activeColor : defaultColor;
+
+	FrequencyBezierBTN.activeFlag = SmoothFrequencyActiveFlag ? true : false;
+	FrequencyBezierBTN.style.backgroundColor = SmoothFrequencyActiveFlag ? activeColor : defaultColor;
+
+	const amplitudeCurve = 0;
+	const frequencyCurve = 1;
+
+	g_formantChart.data.datasets[amplitudeCurve].lineTension = SmoothAmplitudeActiveFlag ? g_bezier_lineTension : g_default_lineTension ;
+	g_formantChart.data.datasets[frequencyCurve].lineTension = SmoothFrequencyActiveFlag ? g_bezier_lineTension : g_default_lineTension ;	
+
+	if(
+		   (PreviousAmplitudeStatus != SmoothAmplitudeActiveFlag)
+		|| (PreviousFrequencyStatus != SmoothFrequencyActiveFlag)
+	){		
+		g_formantChart.update();
+	}
+
 }
 
 const ShapeButtonMappings = {
@@ -911,6 +944,7 @@ function updateActiveBezierRadioButton(rButton, audioComponent) {
 	const amplitudeCurve = 0;
 	const frequencyCurve = 1;
 	const activeFlag = rButton.activeFlag;
+
 	switch (audioComponent) {
 
 		case "amplitude":
@@ -978,11 +1012,12 @@ AddFramesBTN.addEventListener('click', function() {
 		var lastOSCInterval = formant[I - 1];
 
 		// TODO: Re-sample the audio (scale the frame property of each OSC_INTERVAL object by the new overall length)
-		// TODO: Adjust te length for all formant curves
+		// TODO: Adjust the length for all formant curves
 
 		const nextOSCINterval_frame = lastOSCInterval.frame + dx;
 		const nextOSCInterval_time_step = lastOSCInterval.time_step;
-		formant.push(new OSC_INTERVAL({ amplitude: g_default_amplitude
+		formant.push(new OSC_INTERVAL({
+			  amplitude: g_default_amplitude
 			, frequency: g_default_frequency
 			, frame: nextOSCINterval_frame
 			, time_step: nextOSCInterval_time_step }) );
@@ -1111,120 +1146,214 @@ function serializeCustomObject(obj) {
 	return result;
 }
 
-const pcm_encoding_docstring_options = 
-{
-	"0": {
-		"pcm_encoding_docstring": "PCM 16-bit/44 KHz",
-		"bit_depth": 16,
-		"sample_rate": 44.1 },
-	"1": {
-		"pcm_encoding_docstring": "PCM 16-bit/48 KHz",
-		"bit_depth": 16,
-		"sample_rate": 48 },
-	"2": {
-		"pcm_encoding_docstring": "PCM 16-bit/88 KHz",
-		"bit_depth": 16,
-		"sample_rate": 88.2 },
-	"3": {
-		"pcm_encoding_docstring": "PCM 16-bit/96 KHz",
-		"bit_depth": 16,
-		"sample_rate": 96 },
-	"4": {
-		"pcm_encoding_docstring": "PCM 16-bit/192 KHz",
-		"bit_depth": 16,
-		"sample_rate": 192 },
-	"5": {
-		"pcm_encoding_docstring": "PCM 16-bit/384 KHz",
-		"bit_depth": 16,
-		"sample_rate": 384 },
-	"6": {
-		"pcm_encoding_docstring": "PCM 16-bit/768 KHz",
-		"bit_depth": 16,
-		"sample_rate": 768 },
-	"7": {
-		"pcm_encoding_docstring": "PCM 24-bit/44 KHz",
-		"bit_depth": 24,
-		"sample_rate": 44.1 },
-	"8": {
-		"pcm_encoding_docstring": "PCM 24-bit/48 KHz",
-		"bit_depth": 24,
-		"sample_rate": 48 },
+const pcm_encoding_docstring_options = {
+    "0": {
+        "pcm_encoding_docstring": "PCM 16-bit/44.1 KHz",
+        "bit_depth": 16,
+        "sample_rate": 44.1,
+        "dynamic_range_dBFS": 96.32,
+        "saturation_value_dBFS": -96
+    },
+    "1": {
+        "pcm_encoding_docstring": "PCM 16-bit/48 KHz",
+        "bit_depth": 16,
+        "sample_rate": 48,
+        "dynamic_range_dBFS": 96.32,
+        "saturation_value_dBFS": -96
+    },
+    "2": {
+        "pcm_encoding_docstring": "PCM 16-bit/88.2 KHz",
+        "bit_depth": 16,
+        "sample_rate": 88.2,
+        "dynamic_range_dBFS": 96.32,
+        "saturation_value_dBFS": -96
+    },
+    "3": {
+        "pcm_encoding_docstring": "PCM 16-bit/96 KHz",
+        "bit_depth": 16,
+        "sample_rate": 96,
+        "dynamic_range_dBFS": 96.32,
+        "saturation_value_dBFS": -96
+    },
+    "4": {
+        "pcm_encoding_docstring": "PCM 16-bit/192 KHz",
+        "bit_depth": 16,
+        "sample_rate": 192,
+        "dynamic_range_dBFS": 96.32,
+        "saturation_value_dBFS": -96
+    },
+    "5": {
+        "pcm_encoding_docstring": "PCM 16-bit/384 KHz",
+        "bit_depth": 16,
+        "sample_rate": 384,
+        "dynamic_range_dBFS": 96.32,
+        "saturation_value_dBFS": -96
+    },
+    "6": {
+        "pcm_encoding_docstring": "PCM 16-bit/768 KHz",
+        "bit_depth": 16,
+        "sample_rate": 768,
+        "dynamic_range_dBFS": 96.32,
+        "saturation_value_dBFS": -96
+    },
+    "7": {
+        "pcm_encoding_docstring": "PCM 24-bit/44.1 KHz",
+        "bit_depth": 24,
+        "sample_rate": 44.1,
+        "dynamic_range_dBFS": 144.48,
+        "saturation_value_dBFS": -144
+    },
+    "8": {
+        "pcm_encoding_docstring": "PCM 24-bit/48 KHz",
+        "bit_depth": 24,
+        "sample_rate": 48,
+        "dynamic_range_dBFS": 144.48,
+        "saturation_value_dBFS": -144
+    },
 	"9": {
-		"pcm_encoding_docstring": "PCM 24-bit/88 KHz",
+		"pcm_encoding_docstring": "PCM 24-bit/88.2 KHz",
 		"bit_depth": 24,
-		"sample_rate": 88.2 },
+		"sample_rate": 88.2,
+        "dynamic_range_dBFS": 144.48,
+        "saturation_value_dBFS": -144 },
 	"10": {
 		"pcm_encoding_docstring": "PCM 24-bit/96 KHz",
 		"bit_depth": 24,
-		"sample_rate": 96 },
+		"sample_rate": 96,
+        "dynamic_range_dBFS": 144.48,
+        "saturation_value_dBFS": -144 },
 	"11": {
 		"pcm_encoding_docstring": "PCM 24-bit/192 KHz",
 		"bit_depth": 24,
-		"sample_rate": 192 },
+		"sample_rate": 192,
+        "dynamic_range_dBFS": 144.48,
+        "saturation_value_dBFS": -144 },
 	"12": {
 		"pcm_encoding_docstring": "PCM 24-bit/384 KHz",
 		"bit_depth": 24,
-		"sample_rate": 384 },
+		"sample_rate": 384,
+        "dynamic_range_dBFS": 144.48,
+        "saturation_value_dBFS": -144 },
 	"13": {
 		"pcm_encoding_docstring": "PCM 24-bit/768 KHz",
 		"bit_depth": 24,
-		"sample_rate": 768 },
+		"sample_rate": 768,
+        "dynamic_range_dBFS": 144.48,
+        "saturation_value_dBFS": -144 },
 	"14": {
-		"pcm_encoding_docstring": "PCM 32-bit/44 KHz",
+		"pcm_encoding_docstring": "PCM 32-bit/44.1 KHz",
 		"bit_depth": 32,
-		"sample_rate": 44.1 },
+		"sample_rate": 44.1,
+        "dynamic_range_dBFS": 192.64,
+        "saturation_value_dBFS": -193 },
 	"15": {
 		"pcm_encoding_docstring": "PCM 32-bit/48 KHz",
 		"bit_depth": 32,
-		"sample_rate": 48 },
+		"sample_rate": 48,
+        "dynamic_range_dBFS": 192.64,
+        "saturation_value_dBFS": -193 },
 	"16": {
-		"pcm_encoding_docstring": "PCM 32-bit/88 KHz",
+		"pcm_encoding_docstring": "PCM 32-bit/88.2 KHz",
 		"bit_depth": 32,
-		"sample_rate": 88.2 },
+		"sample_rate": 88.2,
+        "dynamic_range_dBFS": 192.64,
+        "saturation_value_dBFS": -193 },
 	"17": {
 		"pcm_encoding_docstring": "PCM 32-bit/96 KHz",
 		"bit_depth": 32,
-		"sample_rate": 96 },
+		"sample_rate": 96,
+        "dynamic_range_dBFS": 192.64,
+        "saturation_value_dBFS": -193 },
 	"18": {
 		"pcm_encoding_docstring": "PCM 32-bit/192 KHz",
 		"bit_depth": 32,
-		"sample_rate": 192 },
+		"sample_rate": 192,
+        "dynamic_range_dBFS": 192.64,
+        "saturation_value_dBFS": -193 },
 	"19": {
 		"pcm_encoding_docstring": "PCM 32-bit/384 KHz",
 		"bit_depth": 32,
-		"sample_rate": 384 },
+		"sample_rate": 384,
+        "dynamic_range_dBFS": 192.64,
+        "saturation_value_dBFS": -193 },
 	"20": {
 		"pcm_encoding_docstring": "PCM 32-bit/768 KHz",
 		"bit_depth": 32,
-		"sample_rate": 768 },
+		"sample_rate": 768,
+        "dynamic_range_dBFS": 192.64,
+        "saturation_value_dBFS": -193 },
 	"21": {
-		"pcm_encoding_docstring": "PCM 64-bit/44 KHz",
+		"pcm_encoding_docstring": "PCM 64-bit/44.1 KHz",
 		"bit_depth": 64,
-		"sample_rate": 44.1 },
+		"sample_rate": 44.1,
+		"dynamic_range_dBFS": 385.28,
+		"saturation_value_dBFS": -385 },
 	"22": {
 		"pcm_encoding_docstring": "PCM 64-bit/48 KHz",
 		"bit_depth": 64,
-		"sample_rate": 48 },
+		"sample_rate": 48,
+		"dynamic_range_dBFS": 385.28,
+		"saturation_value_dBFS": -385 },
 	"23": {
-		"pcm_encoding_docstring": "PCM 64-bit/88 KHz",
+		"pcm_encoding_docstring": "PCM 64-bit/88.2 KHz",
 		"bit_depth": 64,
-		"sample_rate": 88.2 },
+		"sample_rate": 88.2,
+		"dynamic_range_dBFS": 385.28,
+		"saturation_value_dBFS": -385 },
 	"24": {
 		"pcm_encoding_docstring": "PCM 64-bit/96 KHz",
 		"bit_depth": 64,
-		"sample_rate": 96 },
+		"sample_rate": 96,
+		"dynamic_range_dBFS": 385.28,
+		"saturation_value_dBFS": -385 },
 	"25": {
 		"pcm_encoding_docstring": "PCM 64-bit/192 KHz",
 		"bit_depth": 64,
-		"sample_rate": 192 },
+		"sample_rate": 192,
+		"dynamic_range_dBFS": 385.28,
+		"saturation_value_dBFS": -385 },
 	"26": {
 		"pcm_encoding_docstring": "PCM 64-bit/384 KHz",
 		"bit_depth": 64,
-		"sample_rate": 384 },
+		"sample_rate": 384,
+		"dynamic_range_dBFS": 385.28,
+		"saturation_value_dBFS": -385 },
 	"27": {
 		"pcm_encoding_docstring": "PCM 64-bit/768 KHz",
 		"bit_depth": 64,
-		"sample_rate": 768 }
+		"sample_rate": 768,
+		"dynamic_range_dBFS": 385.28,
+		"saturation_value_dBFS": -385 }
+		
+};
+
+/**
+@brief The safe dBFS values for saturation to -Infinity dBFS, based on different PCM bit depths. 
+@details The safe dBFS values for saturation to -Infinity dBFS based on different PCM bit depths 
+are determined by the theoretical dynamic range of each bit depth. The dynamic range in dB 
+for a given bit depth can be approximated using the formula:
+
+Dynamic Range (dB) = 6.02 * Bit Depth
+
+This formula derives from the fact that each bit in a digital audio system increases 
+the dynamic range by approximately 6.02 dB, representing the resolution increase afforded 
+by each additional bit. Here's how this applies to the bit depths you mentioned:
+
+Let's calculate the dynamic ranges and then derive the safe dBFS values for saturation 
+to -Infinity dBFS for each bit depth: 11, 16, 24, 32, and 64. */
+const pcm_bit_depth_encoding_recommended_dBFS_saturation_values = {
+    "16": {
+        "dynamic_range_dBFS": 96.32,
+        "saturation_value_dBFS": -96 },
+    "24": {
+        "dynamic_range_dBFS": 144.48,
+        "saturation_value_dBFS": -144 },
+    "32": {
+        "dynamic_range_dBFS": 192.64,
+        "saturation_value_dBFS": -193 },
+    "64": {
+        "dynamic_range_dBFS": 385.28,
+        "saturation_value_dBFS": -385 }
 };
 
 OutJsonBTN.addEventListener('click', function() {
@@ -1238,14 +1367,13 @@ OutJsonBTN.addEventListener('click', function() {
 	showTAElement({ jsonINDIR: 'out' });
 });
 
-/** popup window actions  */
+/** Object window actions */
 
-Object.prototype.add_point = function(b) {
-	return new POINT ({ x: this.x + b.x, y: this.y + b.y });
-};
+Object.prototype.last = function(){
+	let self = this;
+	const I = self.length-1;
 
-Object.prototype.mult_scalar = function(b) {
-	return new POINT ({ x: this.x * b, y: this.y * b });
+	return self[I];
 };
 
 /** trigonometric functions */
@@ -1269,61 +1397,22 @@ class FWaveform extends Object {
 
 	/**
 	@brief Generates a Sine wave.
-	@param params: The essential parameters for the input signal
+	@param amplitude_constDouble: The amplitude of the oscillator signal.
+	@param frequencyHz_double: The frequency of the oscillator signal.
+	@param timeStep_constDouble: The time-step (t) at which the oscillator is to be evaluated.
+	@param theta_constDouble: The phase of the oscillator signal.
 	@return double ( The oscillator signal at time-step t).*/
 	SIN(params)
 	{
-		/**
-		
-		Adjusting the phase in your algorithm to maintain smoothness, 
-		especially during frequency transitions, requires a careful approach. 
-		The goal is to ensure that when the frequency changes, 
-		the phase does not introduce discontinuities or abrupt changes in the waveform. 
-		Here's an approach to adjust the phase dynamically to accommodate changes 
-		in frequency smoothly:
-		
-		1. Track the cumulative phase of the signal over time.
-		
-		This phase needs to be updated every time you generate a sample.
-		
-		2. Adjust Phase During Frequency Transition
 
-		When you change the frequency, adjust the starting phase 
-		of the new frequency to match the instantaneous phase of the ongoing signal. 
-		This helps in avoiding phase discontinuities.
-		
-		**/
-		
-		const oldFrequency = params.frequency;
-		params.cumulativePhase += 2 * Math.PI * oldFrequency * params.deltaTime / params.TIME;
-
-		if (params.frequencyBlendStrategy) {
-			// Blend factor, between the range [0,1] //
-			const t = linearStep(params.time, params.frequencyBlendStartFrame, params.frequencyBlendEndFrame);
-			
-			params.frequency = do_Blend(
-				  params.frequencyBlendStrategy
-				, t
-				, params.frequencyStart
-				, params.frequencyEnd);
-
-			// Adjust phase to match the instantaneous phase at the time of frequency change //
-			params.phase = params.cumulativePhase - 2 * M_PI * params.frequency / params.TIME * (params.time + params.deltaTime);
-		}
-
-		if (params.amplitudeBlendStrategy) {
-			// Blend factor, between the range [0,1] //
-			const t = linearStep(params.time, params.amplitudeBlendStartFrame, params.amplitudeBlendEndFrame);
-			
-			params.amplitude = do_Blend(
-					  params.amplitudeBlendStrategy
-					, t
-					, params.amplitudeStart
-					, params.amplitudeEnd);
-		}
+		const amplitude_constDouble = params.amplitude;
+		const frequencyHz_double = params.frequency;
+		const timeStep_constDouble = params.time;
+		const theta_constDouble = params.phase;
+		const sampleRate = params.sampleRate; // already factored into frequency //
 
 		// Generate the signal with interpolated parameters //
-		const result = params.amplitude * Math.sin(2 * Math.PI * params.frequency / params.TIME * params.time + params.phase);
+		const result = amplitude_constDouble * Math.sin(2 * Math.PI * frequencyHz_double / params.TIME * timeStep_constDouble + theta_constDouble);
 
 		return result;
 	}
@@ -1335,11 +1424,17 @@ class FWaveform extends Object {
 	@param timeStep_constDouble: The time-step (t) at which the oscillator is to be evaluated.
 	@param theta_constDouble: The phase of the oscillator signal.
 	@return double ( The oscillator signal at time-step t).*/
-	sine(amplitude_constDouble
-		, frequencyHz_double
-		, timeStep_constDouble
-		, theta_constDouble) {
-		return amplitude_constDouble * Math.sin(2 * PI_HiRes * frequencyHz_double * timeStep_constDouble + theta_constDouble);
+	sine(params) {
+
+		const amplitude_constDouble = params.amplitude;
+		const frequencyHz_double = params.frequency;
+		const timeStep_constDouble = params.time;
+		const theta_constDouble = params.phase;
+		const sampleRate = params.sampleRate; // already factored into frequency //
+
+		const result = amplitude_constDouble * Math.sin(2 * PI_HiRes * frequencyHz_double / params.TIME * timeStep_constDouble + theta_constDouble);
+
+		return result;
 	}
 
 	/**
@@ -1350,12 +1445,23 @@ class FWaveform extends Object {
 	@param theta_constDouble: The phase of the oscillator signal.
 	@param quarterPeriod_constDouble: The quarter-period of the oscillator signal.
 	@return double ( The oscillator signal at time-step t).*/
-	quarterSine(amplitude_constDouble
-		, frequencyHz_double
-		, timeStep_constDouble
-		, theta_constDouble) {
+	quarterSine(params) {
+		
+		const amplitude_constDouble = params.amplitude;
+		const frequencyHz_double = params.frequency
+		const timeStep_constDouble = params.time;
+		const theta_constDouble = params.phase;
+		const sampleRate = params.sampleRate; // already factored into frequency //
+
 		const quarterPeriod_constDouble = 1 / (4 * frequencyHz_double);
-		return amplitude_constDouble * Math.sin(2 * PI_HiRes * Math.fmod(Math.abs(timeStep_constDouble), quarterPeriod_constDouble) + theta_constDouble);
+
+		const result = amplitude_constDouble * Math.sin(
+			2 * PI_HiRes * Math.fmod(
+			Math.abs(frequencyHz_double / params.TIME * timeStep_constDouble)
+			, quarterPeriod_constDouble) 
+			+ theta_constDouble);
+		
+		return result;
 	}
 
 	/**
@@ -1365,50 +1471,118 @@ class FWaveform extends Object {
 	@param timeStep_constDouble: The time-step (t) at which the oscillator is to be evaluated.
 	@param theta_constDouble: The phase of the oscillator signal.
 	@return double (The oscillator signal at time-step, t). */
-	halfSine(amplitude_constDouble
-		, frequencyHz_double
-		, timeStep_constDouble
-		, theta_constDouble) {
+	halfSine(params) {
+		
+		const amplitude_constDouble = params.amplitude;
+		const frequencyHz_double = params.frequency
+		const timeStep_constDouble = params.time;
+		const theta_constDouble = params.phase;
+		const sampleRate = params.sampleRate; // already factored into frequency //
+
 		const halfPeriod_constDouble = 1 / (2 * frequencyHz_double);
-		return amplitude_constDouble * Math.sin(2 * PI_HiRes * Math.fmod(Math.abs(timeStep_constDouble), halfPeriod_constDouble) + theta_constDouble);
+		
+		const result = amplitude_constDouble * Math.sin(
+			2 * PI_HiRes * Math.fmod(
+			Math.abs(frequencyHz_double / params.TIME * timeStep_constDouble)
+			, halfPeriod_constDouble) 
+			+ theta_constDouble);
+
+		return result;
 	}
-
-	/**
-	@brief Generate a white (Gaussian) noise signal.
-	@param amplitude_constDouble
-	@return double * /
-	double whiteGaussianNoise(amplitude_constDouble) {
-		static std::mt19937 generator; // Random number generator
-		std::normal_distribution<double> distribution(0.0, amplitude_constDouble); // Normal distribution with mean 0 and standard deviation amplitude
-
-		return distribution(generator);
-	}*/
 	
 	/**
-	 * @brief  Generates a sawtooth signal.
-	 * @param {*} currentTime  The current time in milliseconds
-	 * @param {*} min  The minimum value of the sawtooth wave
-	 * @param {*} max  The maximum value of the sawtooth wave
-	 * @param {*} period  The period of the sawtooth wave
-	 * @param {*} indirection  The indirection of the sawtooth wave ('forwards' or 'backwards')
-	 * @returns  The value of the sawtooth wave at the current time
-	 * 
-	 *  // Example usage
+	@brief  Generates a sawtooth signal.
+	@param {*} t  The current time in milliseconds
+	@param {*} start  The minimum value of the sawtooth wave
+	@param {*} end  The maximum value of the sawtooth wave
+	@param {*} period  The period of the sawtooth wave
+	@param {*} indirection  The indirection of the sawtooth wave ('forwards' or 'backwards')
+	@returns  The value of the sawtooth wave at the current time
+	* 
+	*  	// Example usage
 		const now = performance.now(); // Get current time in milliseconds
 		const signalValue = generateSawtooth(now, 0, 1, 2000); // 2 second period
 		console.log(signalValue);  */
 	sawtooth(
-		  currentTime
-		, min
-		, max
-		, period
+		  params
 		, indirection = 'forwards') {
-		const normalizedTime = (currentTime % period) / period; // Keep time within a period
+		
+		const t = params.time;
+		const min = params.amplitudeStart;
+		const max = params.amplitudeEnd;
+		const period = 1/params.frequency;
+		
+		const normalizedTime = (t % period) / period; // Keep time within a period //
 
-		// Linear interpolation for rising edge
+		// Linear interpolation for rising edge //
 		const value = indirection === 'forwards'
 			? min + (max - min) * normalizedTime
 			: max - (max - min) * normalizedTime; 
+
+		return value;
+	}
+	
+	/**
+	@brief  Generates a triangle wave signal.
+	@param {*} t  The current time in milliseconds
+	@param {*} start  The minimum value of the triangle wave
+	@param {*} end  The maximum value of the triangle wave
+	@param {*} period  The period of the triangle wave
+	@returns  The value of the triangle wave at the current time
+	* 
+	*   // Example usage
+		const now = performance.now(); // Get current time in milliseconds
+		const signalValue = generateTriangle(now, 0, 1, 2000); // 2 second period
+		console.log(signalValue);  */
+	triangle(params) {
+	
+		const t = params.time;
+		const min = params.amplitudeStart;
+		const max = params.amplitudeEnd;
+		const period = 1/params.frequency;
+		
+		const normalizedTime = (t % period) / period; // Normalize time within a period
+
+		// Calculate slope for linear interpolation based on wave direction
+		const slope = (max - min) * 4 / period;
+
+		let value;
+
+		if (normalizedTime < 0.5) {
+			// Falling edge first if indirection is backwards
+			value = max - slope * (t % (period / 2));
+		} else {
+			// Then rising edge
+			value = min + slope * (t % (period / 2));
+		}
+
+		return value;
+	}
+
+	/**
+	@brief  Generates a square wave signal.
+	@param {*} t  The current time in milliseconds
+	@param {*} start  The minimum value of the square wave
+	@param {*} end  The maximum value of the square wave
+	@param {*} period  The period of the square wave
+	@returns  The value of the square wave at the current time
+	* 
+	*   // Example usage
+		const now = performance.now(); // Get current time in milliseconds
+		const signalValue = generateSquare(now, 0, 1, 2000); // 2 second period
+		console.log(signalValue);  */
+	square(params) {
+	
+		const t = params.time;
+		const min = params.amplitudeStart;
+		const max = params.amplitudeEnd;
+		const period = 1/params.frequency;
+		
+		const normalizedTime = (t % period) / period; // Normalize time within a period
+			
+		const value = normalizedTime >= 0.5 
+		? max // Output max value for the first half and min value for the second half of the period
+		: min; // Reverse the logic for backwards indirection
 
 		return value;
 	}
@@ -1417,7 +1591,10 @@ class FWaveform extends Object {
 	@brief  Generates white Gaussian noise.
 	@param {number} amplitude_constDouble - Standard deviation of the normal distribution.
 	@returns {number} A random number following a Gaussian distribution.*/
-	whiteGaussianNoise(amplitude_constDouble) {
+	whiteGaussianNoise(params) {
+
+		const amplitude_constDouble = params.amplitude;
+
 		const epsilon = 0.0001; //1e-10; // A small positive constant to prevent u or v from being zero
 
 		let u = Math.random();
@@ -1429,92 +1606,91 @@ class FWaveform extends Object {
 		v = (v === 0) ? epsilon : v;
 
 		// Performing the Box-Muller transform
-		let z = Math.sqrt(-2.0 * Math.log(u)) * Math.cos(2.0 * Math.PI * v);
+		const z = Math.sqrt(-2.0 * Math.log(u)) * Math.cos(2.0 * Math.PI * v);
 
 		return z * amplitude_constDouble;
 	}
 
-	/**
-	 * @brief Generates a quasi periodic (pink) noise signal.
-	 * @param {*} duration  The duration of the noise signal in seconds
-	 * @param {*} sampleRate  The sample rate of the noise signal in Hz
-	 * @returns  The generated noise signal */
-	quasiPeriodicNoise(duration, sampleRate) {
-		const basePeriod = 0.01;		  // Average period in seconds
-		const periodVariation = 0.1;	  // Degree of irregularity (0-1) 
-		const pulseWidth = 0.2;		   // Pulse width relative to period (0-1)
-		const filterCutoff = 800;		 // Low-pass filter cutoff frequency (Hz)
+    static basePeriod = 0.01;             // Average period in seconds
+    static periodVariation = 0.1;         // Degree of irregularity (0-1)
+    static pulseWidth = 0.2;              // Pulse width relative to period (0-1)
+    static filterCutoff = 800;            // Low-pass filter cutoff frequency (Hz)
+    static quasiPeriodicTime = 0;         // Current time in seconds
+    static prevNoiseValue = 0;            // For smooth transitions
+    static nextPeriodChangeTime = 0;      // Time for the next period change
+    static currentPeriod = FWaveform.basePeriod * (1 + FWaveform.periodVariation * (2 * Math.random() - 1)); // Initialize the period
 
-		const output = new Float32Array(duration * sampleRate);
-		let time = 0;
-		let prevNoiseValue = 0; // For smooth transitions
+    /**
+    @brief Generates the next value of quasi periodic (pink) noise signal.
+	@details Generates the next value of quasi periodic (pink) noise signal.
+    @param {*} sampleRate The sample rate of the noise signal in Hz
+    @returns The next value in the generated noise signal */
+    static quasiPeriodicNoise(params) {
 
-		for (let i = 0; i < output.length; i++) {
-		  const period = basePeriod * (1 + periodVariation * (2 * Math.random() - 1));
+		const sampleRate = params.sampleRate;
 
-		  if (time % period < pulseWidth * period) {
-			let noiseValue = 2 * Math.random() - 1;
+        if (FWaveform.quasiPeriodicTime >= FWaveform.nextPeriodChangeTime) {
+            FWaveform.currentPeriod = 
+				FWaveform.basePeriod 
+					* (1 + FWaveform.periodVariation 
+						* (2 * Math.random() - 1));
 
-			// Simple low-pass filtering
-			noiseValue = (noiseValue + prevNoiseValue) * 0.5; 
-			prevNoiseValue = noiseValue;
+            FWaveform.nextPeriodChangeTime += FWaveform.currentPeriod;
+        }
 
-			output[i] = noiseValue; 
-		  } else {
-			output[i] = 0;
-		  }
+        let output;
+        if (FWaveform.quasiPeriodicTime % FWaveform.currentPeriod < FWaveform.pulseWidth * FWaveform.currentPeriod) {
+            let noiseValue = 2 * Math.random() - 1;
 
-		  time += 1 / sampleRate;
-		}
+            // Simple low-pass filtering
+            noiseValue = (noiseValue + FWaveform.prevNoiseValue) * 0.5;
 
-		return output;
-	  }
+            FWaveform.prevNoiseValue = noiseValue;
+
+            output = noiseValue;
+        } else {
+            output = 0;
+        }
+
+        FWaveform.quasiPeriodicTime += 1 / sampleRate;
+
+        return output;
+
+    }
 
 	static brownNoiseValue_double = 0;
 	static lastBrownNoiseValue_double = 0;
 	static brownNoiseIncrement_double = 0;
-	static brownNoiseDecay_double= 0;
+	static brownNoiseDecay_double = 0;
+
 	/**
-	@brief Generate a brown noise signal.
+	@brief Generate a brownian noise signal.
 	@param amplitude_constDouble: The amplitude of the oscillator signal.
 	@param frequencyHz_double: The frequency of the oscillator signal.
-	@param timeStep_constDouble: The time-step (t) at which the oscillator is to be evaluated.
 	@return double */
-	brownNoise(amplitude_constDouble
-		, frequencyHz_double
-		, timeStep_constDouble) {
+	brownNoise(params) {
+
+		const amplitude_constDouble = params.amplitude;
+		const frequencyHz_double = params.frequency;
 
 		if (FWaveform.brownNoiseIncrement_double == 0.0) {
 			FWaveform.brownNoiseIncrement_double = 1.0 / (frequencyHz_double * 0.1);
 			FWaveform.brownNoiseDecay_double = Math.exp(-1.0 / (frequencyHz_double * 0.1));
 		}
 
-		FWaveform.brownNoiseValue_double = (FWaveform.brownNoiseValue_double + FWaveform.brownNoiseIncrement_double * (2.0 * (Math.random() / this.RAND_MAX) - 1.0)) * FWaveform.brownNoiseDecay_double;
-		return amplitude_constDouble * (FWaveform.brownNoiseValue_double - FWaveform.lastBrownNoiseValue_double);
+		FWaveform.brownNoiseValue_double = 
+			(FWaveform.brownNoiseValue_double 
+				+ FWaveform.brownNoiseIncrement_double 
+					* (2.0 * (Math.random() / FWaveform.RAND_MAX) - 1.0)) 
+						* FWaveform.brownNoiseDecay_double;
+		
+		const result = 
+			amplitude_constDouble 
+				* (FWaveform.brownNoiseValue_double 
+					- FWaveform.lastBrownNoiseValue_double);
+
+		return result;
 	};
-
-	/**
-	@brief Generate a pink noise signal.
-	@param amplitude_constDouble: The amplitude of the oscillator signal.
-	@param frequencyHz_double: The frequency of the oscillator signal.
-	@param timeStep_constDouble: The time-step (t) at which the oscillator is to be evaluated.
-	@return double * /
-	pinkNoise(amplitude_constDouble
-		, frequencyHz_double
-		, timeStep_constDouble) {
-		static double pinkNoiseValue_double {};
-		static double lastPinkNoiseValue_double {};
-		static double pinkNoiseIncrement_double {};
-		static double pinkNoiseDecay_double {};
-
-		if (pinkNoiseIncrement_double == 0.0) {
-			pinkNoiseIncrement_double = 1.0 / (frequencyHz_double * 0.1);
-			pinkNoiseDecay_double = Math.exp(-1.0 / (frequencyHz_double * 0.1));
-		}
-
-		pinkNoiseValue_double = (pinkNoiseValue_double + pinkNoiseIncrement_double * (2.0 * ((double)rand() / (double)RAND_MAX) - 1.0)) * pinkNoiseDecay_double;
-		return amplitude_constDouble * (pinkNoiseValue_double - lastPinkNoiseValue_double);
-	}*/
 
 	static pinkNoiseValue = 0;
 	static lastPinkNoiseValue = 0;
@@ -1526,9 +1702,12 @@ class FWaveform extends Object {
 	@details Generates pink noise.
 	@param {number} amplitude - The amplitude of the oscillator signal.
 	@param {number} frequencyHz - The frequency of the oscillator signal in Hertz.
-	@param {number} nextFrame - The time-step at which the oscillator is to be evaluated.
 	@return {number} The generated pink noise value.*/
-	pinkNoise(amplitude, frequencyHz) {
+	pinkNoise(params) {
+
+		const amplitude = params.amplitude;
+		const frequencyHz = params.frequency;
+
 		if (FWaveform.pinkNoiseIncrement === 0) {
 			FWaveform.pinkNoiseIncrement = 1.0 / (frequencyHz * 0.1);
 			FWaveform.pinkNoiseDecay = Math.exp(-1.0 / (frequencyHz * 0.1));
@@ -1538,6 +1717,7 @@ class FWaveform extends Object {
 		const randomFactor = 2.0 * Math.random() - 1.0;
 
 		FWaveform.pinkNoiseValue = (FWaveform.pinkNoiseValue + FWaveform.pinkNoiseIncrement * randomFactor) * FWaveform.pinkNoiseDecay;
+
 		const retPinkNoiseValue = amplitude * (FWaveform.pinkNoiseValue - FWaveform.lastPinkNoiseValue);
 
 		FWaveform.lastPinkNoiseValue = FWaveform.pinkNoiseValue;
@@ -1556,28 +1736,30 @@ class FWaveform extends Object {
 	@param frequencyHz_double: The frequency of the oscillator signal.
 	@param timeStep_constDouble: The time-step (t) at which the oscillator is to be evaluated.
 	@return double */
-	blueNoise(amplitude_constDouble
-		, frequencyHz_double
-		, timeStep_constDouble) {
+	blueNoise(params) {
+		
+		const amplitude_constDouble = params.amplitude;
+		const frequencyHz_double = params.frequency;
+		const timeStep_constDouble = params.time;
 
 		if (FWaveform.blueNoiseIncrement_double == 0.0) {
 			FWaveform.blueNoiseIncrement_double = 1.0 / (frequencyHz_double * 0.1);
 			FWaveform.blueNoiseDecay_double = Math.exp(-1.0 / (frequencyHz_double * 0.1));
 		}
 
-		FWaveform.blueNoiseValue_double = (FWaveform.blueNoiseValue_double + FWaveform.blueNoiseIncrement_double * (2.0 * (Math.random() / RAND_MAX) - 1.0)) * FWaveform.blueNoiseDecay_double;
-		return amplitude_constDouble * (FWaveform.blueNoiseValue_double - FWaveform.lastBlueNoiseValue_double);
-	}
+		FWaveform.blueNoiseValue_double = 
+			(FWaveform.blueNoiseValue_double 
+				+ FWaveform.blueNoiseIncrement_double 
+					* (2.0 * (Math.random() / FWaveform.RAND_MAX) - 1.0)) 
+						* FWaveform.blueNoiseDecay_double;
+		
+		const result = 
+			amplitude_constDouble 
+				* (FWaveform.blueNoiseValue_double 
+					- FWaveform.lastBlueNoiseValue_double);
 
-	/**
-	@brief Generate a purple (violet) noise signal.
-	@return double * /
-	static purpleVioletNoise() {
-		double newWhite = dist(eng);  // Generate new white noise sample
-		double violet = newWhite - lastWhite; // Differentiate to get violet noise
-		lastWhite = newWhite; // Update the last white noise sample
-		return violet;
-	}*/
+		return result;
+	}
 
 	static lastWhite = 0;
 
@@ -1598,6 +1780,80 @@ class FWaveform extends Object {
 		return violet;
 	}
 } // end of FWaveform
+
+/**
+ * @brief generateWhiteGaussianNoise
+ * @param length 
+ * @returns noise
+ */
+function generateWhiteGaussianNoise(length) {
+	const noise = [];
+	for (let i = 0; i < length; i++) {
+	  noise.push(gaussianRandom());
+	}
+	return noise;
+  }
+  
+  /**
+   * @brief gaussianRandom
+   * @returns value
+   */
+  function gaussianRandom() {
+	let u = 0, v = 0;
+	while (u === 0) u = Math.random();
+	while (v === 0) v = Math.random();
+	return Math.sqrt(-2.0 * Math.log(u)) * Math.cos(2.0 * Math.PI * v);
+  }
+  
+  /**
+   * @brief applyBandpassFilter
+   * @param signal 
+   * @param sampleRate 
+   * @param lowFreq 
+   * @param highFreq 
+   * @returns filteredSignal
+   */
+  function applyBandpassFilter(signal, sampleRate, lowFreq, highFreq) {
+	const n = signal.length;
+	const filteredSignal = new Array(n).fill(0);
+  
+	for (let i = 0; i < n; i++) {
+	  for (let j = 0; j < n; j++) {
+		const freq = (j / n) * sampleRate;
+		if (freq >= lowFreq && freq <= highFreq) {
+		  filteredSignal[i] += signal[j] * Math.cos((2 * Math.PI * i * j) / n);
+		}
+	  }
+	}
+  
+	return filteredSignal;
+  }
+  
+  /*
+	Example usage: 
+	
+	We map over each sample in the phone array and check if its corresponding frequency falls within the specified frequency range (lowFreq to highFreq). If it does, we replace the sinusoidal sample with the corresponding filtered noise sample. Otherwise, we keep the original sinusoidal sample.
+This approach effectively carves the sinusoidal signal out of the filtered white Gaussian noise within the specified frequency range, similar to how diffusion models carve audio out of a Gaussian noise canvas.
+Remember to adjust the frequency range (lowFreq and highFreq) based on the desired frequency bands you want to replace with the filtered noise samples.* /
+
+  let phone = [...]; // Sinusoidal signal for speech synthesis
+  const sampleRate = 44100; // Sample rate in Hz
+  const lowFreq = 300; // Lower frequency limit of the bandpass filter
+  const highFreq = 3400; // Upper frequency limit of the bandpass filter
+  const noiseAmplitude = 0.1; // Amplitude of the added noise
+  
+  const noise = generateWhiteGaussianNoise(phone.length);
+  const filteredNoise = applyBandpassFilter(noise, sampleRate, lowFreq, highFreq);
+  
+  const carvedSignal = phone.map((value, index) => {
+  const freq = (index / phone.length) * sampleRate;
+  if (freq >= lowFreq && freq <= highFreq) {
+    return filteredNoise[index];
+  } else {
+    return value;
+  }
+});
+  */
 
 /**
 @brief linear spline (interpolation) function.
@@ -1656,7 +1912,7 @@ const interpolationUtils = {
 			throw new Error("runtime_error: Not enough inter-frame interpolation\
 			steps for sinusoidal interpolation within the specified oscillator interval: [0, 1]");
 		}
-	},
+	},*/
 
 	/**
 	@brief Calculates the sinusoidal value based on amplitude, frequency, and time.
@@ -1754,6 +2010,7 @@ class signalParameters extends Object
 		this.cumulativePhase = 0;
 	}
 }
+
 /**
  * @brief Generates a signal based on specific wave-shape parameters.
  * @details Generates a signal based on specific wave-shape parameters.
@@ -1805,263 +2062,271 @@ function do_Blend(
 	return value;
 }
 
+function assignWaveShapeFuncs(fmt, wfm){
+	for (let _fmt_ of fmt) {
+		switch(_fmt_.shape) {
+			//case 'Half-Sine':
+			//case 'Quarter-Sine':
+			//case 'quasiPeriodicNoise':
+			case 'Sine': 
+				_fmt_.shape_func = wfm.SIN;
+				_fmt_.isPhaseSensitive = true;
+				break;
+			case 'Cosine':
+				_fmt_.shape_func = wfm.cos;
+				_fmt_.isPhaseSensitive = true;
+				break;
+			case 'Square':
+				_fmt_.shape_func = wfm.square;
+				break;
+			case 'F. Sawtooth':
+				_fmt_.shape_func = function(params){ return wfm.sawtooth(params,'forward'); };
+				break;
+			case 'R. Sawtooth':
+				_fmt_.shape_func = function(params){ return wfm.sawtooth(params,'reverse'); };
+				break;
+			case 'Triangle': 
+				_fmt_.shape_func = wfm.triangle;
+				break;
+			case 'Pink Noise':
+				_fmt_.shape_func = wfm.pinkNoise;
+				break;
+			case 'Purple Noise':
+				_fmt_.shape_func = wfm.purpleVioletNoise;
+				break;
+			case 'Brown Noise':
+				_fmt_.shape_func = wfm.brownNoise;
+				break;
+			case 'Blue Noise':
+				_fmt_.shape_func = wfm.blueNoise;
+				break;
+			case 'White Gaussian Noise':
+				_fmt_.shape_func = wfm.whiteGaussianNoise;
+				break;
+			default:
+				throw (`GenerateComplexSignal > assignWaveShapeFuncs > Error: Unknown wave shape flag encountered - (${_fmt_.shape})! Aborting.`)
+				break;
+		}
+	}
+}
+
 /**
 @brief Generates complex signal based on specific wave-shape parameters.
 @details Generates complex signal based on specific wave-shape parameters.
-@param shapes_oscilatorParamsVec: The complex wave-shapes to develop (ie. Formants[]).
+@param shapes_oscillatorParamsVec: The complex wave-shapes to develop (ie. Formants[]).
 @param customUpdateCallback: An (optional) lambda that can be used to update the oscillator parameters, instead.
 @return The oscillator signal at frame N).*/
 function generateComplexSignal(
-	  shapes_oscilatorParamsVec
-	, customUpdateCallback) {
+	  shapes_oscillatorParamsVec
+	, customUpdateCallback = null) {
 
-	let idx = 0;
-	let frame_idx = 0;
 	let waveform = new FWaveform();
-	let audioFrames_float64Vec = [];
+	let channelDataLeft = [];
+	let maxAmplitude = 0;
 	var defaultInterpolationMethod = LERP;
-	var smoothInterpolationMethod = quarticEaseInOut; // cubicHermite; quarticEaseInOut; sineArcInterpolation;
-	const pcm_encoding = shapes_oscilatorParamsVec.pcm_encoding;
+	var smoothInterpolationMethod = quarticEaseInOut; // cubicHermite; //sineArcInterpolation; 
+	const pcm_encoding = shapes_oscillatorParamsVec.pcm_encoding;
 
-	const hz_pcm_encoding = pcm_encoding_docstring_options[pcm_encoding].sample_rate * 1000;
+	const hz_pcm_encoding = pcm_encoding_docstring_options[pcm_encoding].sample_rate * 1000; // to Khz //
 
+	const const_inv_hz_pcm_encoding = 1/hz_pcm_encoding;
 	const bit_depth_pcm_encoding = pcm_encoding_docstring_options[pcm_encoding].bit_depth;
+	const default_16BitDepthEncoding = "16";
 
-	const amplitude_pcm_encoding_dynamic_range = Math.pow(2, bit_depth_pcm_encoding - 1) - 1;
+	const dBFS_Saturation_Minimum = bit_depth_pcm_encoding in pcm_bit_depth_encoding_recommended_dBFS_saturation_values 
+		? pcm_bit_depth_encoding_recommended_dBFS_saturation_values[bit_depth_pcm_encoding].saturation_value_dBFS
+		: pcm_bit_depth_encoding_recommended_dBFS_saturation_values[default_16BitDepthEncoding].saturation_value_dBFS;
 
-	for (const shape_oscillatorParams of shapes_oscilatorParamsVec) {
+	const amplitude_pcm_encoding_resolution = Math.pow(2, bit_depth_pcm_encoding - 1) - 1; // preserve the sign bit //
 
-		// Ensure that the index is within the bounds of the shapes_oscilatorParamsVec array
-		if (idx >= shapes_oscilatorParamsVec.length)
-			break;
+	const amplitude_pcm_encoding_dynamic_range = amplitude_pcm_encoding_resolution / 2;
+
+	assignWaveShapeFuncs(shapes_oscillatorParamsVec, waveform);
 		
-		let outShape = 0;
+	for (const shape_oscillatorParams of shapes_oscillatorParamsVec) {
 
-		/*
-		
-		params = new signalParameters();
+		const I = shape_oscillatorParams.length - 1;
 
-		params.TIME = shape_oscillatorParams.frame + 1; 
+		const TIME = shape_oscillatorParams.last().frame + 1;
+	
+		// init waveshape params //
+		let params = new signalParameters();
+		// time characteristics //
+		params.TIME = TIME; // END // 
 		params.deltaTime = 1; // ie. 1 frame per time increment //
-
-		params.amplitude = db_start;
-		params.amplitudeStart = db_start;
-		params.amplitudeEnd = db_end;
-		params.amplitudeBlendStartFrame = frame_idx;
-		params.amplitudeBlendEndFrame = FRAME_IDX;
-		params.amplitudeBlendStrategy = shapes_oscilatorParamsVec.amplitude_as_bezierCurve_flag
-		? BLEND_STRATEGY.QIARTIC
-		: BLEND_STRATEGY.LERP;
-		
-		params.frequency = hz_start;
-		params.frequencyStart = hz_start;
-		params.frequencyEnd = hz_end;
-		params.frequencyBlendStartFrame = frame_idx;
-		params.frequencyBlendEndFrame = FRAME_IDX;
-		params.frequencyBlendStrategy = shapes_oscilatorParamsVec.frequency_as_bezierCurve_flag
-		? BLEND_STRATEGY.QUARTIC
-		: BLEND_STRATEGY.LERP;
-
+		params.sampleRate = hz_pcm_encoding;
+		// amplitude lerp targets //
+		params.amplitudeBlendStrategy = shape_oscillatorParams.amplitude_as_bezierCurve_flag
+			? BLEND_STRATEGY.QUARTIC
+			: BLEND_STRATEGY.LERP;
+		// frequency lerp targets //
+		params.frequencyBlendStrategy = shape_oscillatorParams.frequency_as_bezierCurve_flag
+			? BLEND_STRATEGY.QUARTIC
+			: BLEND_STRATEGY.LERP;
+		// phase charactersitics //
 		params.phase = 0;
 		params.cumulativePhase = 0;
 
-		*/
+		shape_oscillatorParams.map((from,i,me)=>{
 
-		// Custom updates using lambda
-		if (customUpdateCallback) {
-			outShape = customUpdateCallback(
-				this,
-				shape_oscillatorParams,
-				outShape);
-		} else {
-			const FRAME_IDX = shape_oscillatorParams.frame + 1;
-			
-			const t = frame_idx / FRAME_IDX;
-			const hz_start = shape_oscillatorParams.frequency;
-			const db_start = shape_oscillatorParams.amplitude;
-			const hz_end = shapes_oscilatorParamsVec[idx + 1].frequency;
-			const db_end = shapes_oscilatorParamsVec[idx + 1].amplitude;
-			
-			while(frame_idx < FRAME_IDX)
-			{
-				const nullShape = outShape;
+			if(i>=I) return from;
 
-				const hz_stepRatio = linearStep(t, hz_start, hz_end);
-				const db_stepRatio = linearStep(t, db_start, db_end);
+			const to = me[i+1];
+	
+			const start_frame_idx = from.frame;
+			const end_frame_idx = to.frame;
+			const db_start = from.amplitude > dBFS_Saturation_Minimum ? from.amplitude : -Infinity; // amplitude < dBFS_Saturation_Minimum ? (Audio Silence) //
+			const db_end = to.amplitude > dBFS_Saturation_Minimum ? to.amplitude : -Infinity; // amplitude < dBFS_Saturation_Minimum ? (Audio Silence) //
+			const hz_start = from.frequency;
+			const hz_end = to.frequency;
+
+			// Update next interval waveshape params //
+
+			// time characteristics //
+			params.time = from.frame; 
+			// amplitude characteristics //
+			params.amplitude = db_start;
+			params.amplitudeStart = db_start;
+			params.amplitudeEnd = db_end;
+			// amplitude lerp targets //
+			params.amplitudeBlendStartFrame = start_frame_idx;
+			params.amplitudeBlendEndFrame = end_frame_idx;
+			// frequency characteristics //
+			params.frequency = hz_start;
+			params.frequencyStart = hz_start;
+			params.frequencyEnd = hz_end;
+			// frequency lerp targets //
+			params.frequencyBlendStartFrame = start_frame_idx;
+			params.frequencyBlendEndFrame = end_frame_idx;
+
+			// frame interval targets //
+			let t = from.frame;
+			const FRAME_IDX = to.frame + 1;
+
+			while(t < FRAME_IDX){
+
+				params.time = t;
 				
-				const hz = 1 / hz_pcm_encoding * shapes_oscilatorParamsVec.frequency_as_bezierCurve_flag 
-				? smoothInterpolationMethod(hz_stepRatio, hz_start, hz_end)
-				: defaultInterpolationMethod(hz_stepRatio, hz_start, hz_end);
-				
-				const db = shapes_oscilatorParamsVec.frequency_as_bezierCurve_flag 
-				? smoothInterpolationMethod(hz_stepRatio, db_start, db_end)
-				: defaultInterpolationMethod(db_stepRatio, db_start, db_end);
+				const hz_stepRatio = linearStep(t, params.frequencyBlendStartFrame, params.frequencyBlendEndFrame);
+				const db_stepRatio = linearStep(t, params.amplitudeBlendStartFrame, params.amplitudeBlendEndFrame);
 
-				/*
-				// Use the do_Blend function to interpolate the amplitude and frequency values //
-				if (shapes_oscilatorParamsVec.amplitude_as_bezierCurve_flag) {
-					const db = do_Blend(
-						  params.amplitudeBlendStrategy
-						, db_stepRatio
-						, params.amplitudeStart
-						, params.amplitudeEnd);
+				/**
+				
+				NOTE: (For Sinusoidals)
+
+				Adjusting the phase in your algorithm to maintain smoothness, 
+				especially during frequency transitions, requires a careful approach. 
+				
+				The goal is to ensure that when the frequency changes, 
+				the phase does not introduce discontinuities or abrupt changes in the waveform. 
+
+				Here's an approach to adjust the phase dynamically to accommodate changes 
+				in frequency smoothly:
+				
+				1. Track the cumulative phase of the signal over time.
+				
+				This phase needs to be updated every time you generate a sample.
+				
+				2. Adjust Phase During Frequency Transition
+		
+				When you change the frequency, adjust the starting phase 
+				of the new frequency to match the instantaneous phase of the ongoing signal. 
+				This helps in avoiding phase discontinuities.
+				
+				**/
+
+				if (params.isPhaseSensitive) {
+					// 1. Track the cumulative phase of the signal over time. //
+					const oldFrequency = params.frequency;
+					
+					params.cumulativePhase += 2 * Math.PI * oldFrequency * params.deltaTime / params.TIME;
+				}
+				
+				params.frequency = const_inv_hz_pcm_encoding * me.frequency_as_bezierCurve_flag 
+					? smoothInterpolationMethod(hz_stepRatio, hz_start, hz_end)
+					: defaultInterpolationMethod(hz_stepRatio, hz_start, hz_end) ;
+
+				if (params.isPhaseSensitive) {
+					// 2. Adjust phase to match the instantaneous phase at the time of frequency change //
+					params.phase = params.cumulativePhase - 2 * Math.PI * params.frequency / params.TIME * (params.time + params.deltaTime);
+				}
+				
+				params.amplitude = me.amplitude_as_bezierCurve_flag 
+					? smoothInterpolationMethod(hz_stepRatio, db_start, db_end)
+					: defaultInterpolationMethod(db_stepRatio, db_start, db_end);
+
+				const outShape = shape_oscillatorParams.shape_func(params);
+
+				if(outShape != null){
+					while(channelDataLeft.length < (t + 1))
+						channelDataLeft.push(0);
+
+					const dBFS = outShape;
+
+					// Convert dBFS to linear scale //
+					// Handle -Infinity case explicitly //
+					const linearScale = (dBFS === -Infinity) ? 0 : Math.pow(10, dBFS / 20);
+
+					// Scale up N-bit PCM range to utilize full dynamic range //
+					const linearScaleUpscaledSampleValue = linearScale * amplitude_pcm_encoding_dynamic_range; 
+
+					channelDataLeft[t] += linearScaleUpscaledSampleValue;
+
+					// Careful not to saturate the audio //
+					maxAmplitude = Math.max(maxAmplitude, Math.abs(linearScaleUpscaledSampleValue));					 
+
+					++t;
+
+				} else {
+					throw (`generateComplexSignal > Error: Formant [${i}], frame [${frame_idx}] - Processing Error.`);
 				}
 
-				// Use the do_Blend function to interpolate the amplitude and frequency values //
-				if (shapes_oscilatorParamsVec.frequency_as_bezierCurve_flag) {
-					const hz = do_Blend(
-						  params.frequencyBlendStrategy
-						, hz_stepRatio
-						, params.frequencyStart
-						, params.frequencyEnd);
-				}
+			}
 
-				params.time = frame_idx;
+			return from;
 
-				if (has_shape(
-					  shape_oscillatorParams.shape
-					, WaveShape.Sine_enum))
-					outShape += waveform.SINE(params);
-				
-				*/
+		});
 
-				if (has_shape(
-					  shape_oscillatorParams.shape
-					, WaveShape.Sine_enum))
-					outShape += waveform.sine(
-						  db
-						, hz
-						, frame_idx
-						, shape_oscillatorParams.theta); 
+	} // End for(shape_oscillatorParams of shapes_oscillatorParamsVec)
+	
+	// Normalize the audio to avoid saturation- or required clamping, and subsequent clipping //
+    if (maxAmplitude > amplitude_pcm_encoding_dynamic_range) {
+		console.info(`Signal amplitude exceeds preset PCM ${bit_depth_pcm_encoding}-bit dynamic range; clipping has occurred! Normalizing audio...`);
+        const normalizationFactor = amplitude_pcm_encoding_dynamic_range / maxAmplitude;
 
-				if (has_shape(
-					  shape_oscillatorParams.shape
-					, WaveShape.Cosine_enum))
-					outShape += waveform.cosine(
-						  db
-						, hz
-						, frame_idx
-						, shape_oscillatorParams.theta);
+        for (let i = 0; i < channelDataLeft.length; i++) {
+            channelDataLeft[i] *= normalizationFactor;
+        }
 
-				if (has_shape(
-					  shape_oscillatorParams.shape
-					, WaveShape.QuarterSine_enum))
-					outShape += waveform.quarterSine(
-						  db
-						, hz
-						, frame_idx
-						, shape_oscillatorParams.theta);
+		console.info("Done.");
+    }
 
-				if (has_shape(
-					  shape_oscillatorParams.shape
-					, WaveShape.HalfSine_enum))
-					outShape += waveform.halfSine(
-						  db
-						, hz
-						, frame_idx
-						, shape_oscillatorParams.theta);
+	let channelDataRight = [...channelDataLeft];
 
-				if (has_shape(
-					  shape_oscillatorParams.shape
-					, WaveShape.Triangle_enum))
-					outShape += waveform.Triangle(
-						  db
-						, hz
-						, frame_idx);
+	// offset LEFT/RIGHT channel alignment by 1 sample (stereo) //
+	channelDataLeft.unshift(0);
+	channelDataRight.push(0);
 
-				if (has_shape(
-					  shape_oscillatorParams.shape
-					, WaveShape.Square_enum))
-					outShape += waveform.Square(
-						  db
-						, hz
-						, frame_idx);
+	// encode .WAV headers //
+	const channelLength = channelDataLeft.length;
+	const sampleRate = hz_pcm_encoding; // Unlimited Rate support (default 192000), though Javascript supports up to PCM 384000 Hz Max decodable @ 32-bit ...most of the time.
+	const bitsPerSample = bit_depth_pcm_encoding; // (default 24-bit)
 
-				if (has_shape(
-					  shape_oscillatorParams.shape
-					, WaveShape.ForwardSawtooth_enum))
-					outShape += waveform.forwardSaw(
-						  db
-						, hz
-						, frame_idx);
+	const duration = channelLength * sampleRate; // (default 1 second) //
 
-				if (has_shape(
-					  shape_oscillatorParams.shape
-					, WaveShape.ReverseSawtooth_enum))
-					outShape += waveform.ReverseSaw(
-						  db
-						, hz
-						, frame_idx);
+	// Left Channel //
+	channelDataLeft.sampleRate = sampleRate;
+	channelDataLeft.bitsPerSample = bitsPerSample;
+	channelDataLeft.duration = duration;
 
-				if (has_shape(
-					  shape_oscillatorParams.shape
-					, WaveShape.WhiteNoise_enum))
-					outShape += waveform.whiteNoise(db);
+	// Right Channel //
+	channelDataRight.sampleRate = sampleRate;
+	channelDataRight.bitsPerSample = bitsPerSample;
+	channelDataRight.duration = duration;
 
-				if (has_shape(
-					  shape_oscillatorParams.shape
-					, WaveShape.BrownNoise_enum))
-					outShape += waveform.brownNoise(
-						  db
-						, hz
-						, frame_idx);
+	return { channelDataLeft, channelDataRight };
 
-				if (has_shape(
-					  shape_oscillatorParams.shape
-					, WaveShape.PinkNoise_enum))
-					outShape += waveform.pinkNoise(
-						  db
-						, hz
-						, frame_idx);
-
-				if (has_shape(
-					  shape_oscillatorParams.shape
-					, WaveShape.YellowNoise_enum))
-					outShape += waveform.yellowNoise(
-						  db
-						, hz
-						, frame_idx);
-
-				if (has_shape(
-					  shape_oscillatorParams.shape
-					, WaveShape.BlueNoise_enum))
-					outShape += waveform.blueNoise(
-						  db
-						, hz
-						, frame_idx);
-
-				if (has_shape(
-					  shape_oscillatorParams.shape
-					, WaveShape.GreyNoise_enum))
-					outShape += waveform.greyNoise(
-						  db
-						, hz
-						, frame_idx);
-
-				if (has_shape(
-					  shape_oscillatorParams.shape
-					, WaveShape.WhiteGaussianNoise_enum))
-					outShape += waveform.whiteGaussianNoise(db);
-
-				if (has_shape(
-					  shape_oscillatorParams.shape
-					, WaveShape.PurpleVioletNoise_enum))
-					outShape += waveform.purpleVioletNoise();
-
-				if (outShape == nullShape)
-					throw ("invalid_argument to WaveShape generator - Unexpected or Unknown WaveShape type.");
-					//console.error(`Error at audio frame ${frame_idx} - Unknown or Unexpected wave-shape: ${shape_oscillatorParams.shape}`);
-					//throw std::invalid_argument("Unexpected or Unknown wave-shape.");
-				++frame_idx;
-			} // end of while statement
-		} // End of else statement
-
-		audioFrames_float64Vec.push(outShape);
-		++idx;
-	} // End of for loop
-
-	return audioFrames_float64Vec;
-}; // End of generateComplexSignal()
+} // End generateComplexSignal()
 
 function setInt24(view, offset, value) {
 	this.setUint8(offset, (value & 0xFF0000) >> 16);
@@ -2370,7 +2635,7 @@ function sinc_interpolation (x, y, t, f) {
 }
 
 AudioBTN.addEventListener('click', function() {
-
+/*
 	// Bard: Here's the JavaScript code to generate a sinusoidal audio wveform of 1s duration at PCM 24 bit/48 kHz sampling:
 
 	// Define desired .WAV audio parameters 
@@ -2395,14 +2660,15 @@ AudioBTN.addEventListener('click', function() {
 	// Generate the sine wave data
 	const I = channelDataLeft.length;
 	const maxInt24 = Math.pow(2, bitsPerSample - 1) - 1; // 2^23 - 1 = 8_388_607; preserve the sign bit
+
 	for (let i = 0; i < I; ++i) {
 		const time = i / sampleRate; // returns a value between 0 and 1
-		const value = Math.sin(2 * Math.PI * frequency * time) * amplitude;
+		const value = amplitude * Math.sin(2 * Math.PI * frequency * time) ;
 
-		// Ensure the value is positive for dBFS conversion
+		// Ensure the value is positive for linearScale to dBFS conversion
 		const absValue = Math.abs(value);
 
-		// Convert to dBFS and consider the case when absValue is 0
+		// Convert to dBFS, and consider the case when absValue is 0
 		const dBFS = absValue > 0 ? 20 * Math.log10(absValue) : -Infinity;
 
 		const nsample = value * maxInt24; // Scale for 24-bit audio
@@ -2411,8 +2677,13 @@ AudioBTN.addEventListener('click', function() {
 		channelDataRight[i] = (i > 0) ? channelDataLeft[i-1] : 0;  // offset channel samples by 1 for a perceived stereo signal
 	}
 
-	// Example usage
+	// Example usage //
 	let wavBuffer = bufferToWave([channelDataLeft, channelDataRight]);
+*/
+	const audio_frames = generateComplexSignal(Formants);
+
+	let wavBuffer = bufferToWave([ audio_frames.channelDataLeft, audio_frames.channelDataRight ]);
+
 	let blob = new Blob([wavBuffer], {type: 'audio/wav'});
 	let url = URL.createObjectURL(blob);
 
@@ -2429,8 +2700,6 @@ AudioBTN.addEventListener('click', function() {
 	audio.classList.add('audioPlaybackControls_class');
 	audioPlaybackControls.innerHTML = '';
 	audioPlaybackControls.appendChild(audio);
-
-	const audio_frames = generateComplexSignal(Formants, null);
 });
 
 // Create a new CurveViewer chart instance
@@ -2673,20 +2942,19 @@ function closeOverlay() {
 }
 
 /**
-	// Example Usage for linearStep ratio //
-	// smoothly interpolated value between 0 and 1. //
+Example Usage for linearStep ratio
+smoothly interpolated value between 0 and 1. 
 
-	value = linearStep(x, min, max);
+	value = linearStep(x, start, end);
 */
 
 /**
- * Calculates a smooth transition between 0 and 1 using a linear interpolation.
- * This function can be used to apply linear effects to your values.
- * 
- * @brief Usage example for linear
+ * @brief Calculates a smooth transition between 0 and 1 using a linear interpolation. 
+ * @details Calculates a smooth transition between 0 and 1 using a linear interpolation. 
+ * This function can be used to apply linear effects to your values. 
  * @param {number} x - The input value for which to calculate the smoothstep, typically time or a normalized parameter.
- * @param {number} min - The lower bound of the input range.
- * @param {number} max - The upper bound of the input range.
+ * @param {number} start - The lower bound of the input range.
+ * @param {number} end - The upper bound of the input range.
  * @returns {number} - The smoothly interpolated stepRatio between 0 and 1. */
 function linearStep(x, min, max) {
 	if (x <= min) return 0;
@@ -2696,7 +2964,7 @@ function linearStep(x, min, max) {
 }
 
 /**
- * Performs quartic ease-in interpolation.
+ * @details Performs quartic ease-in interpolation.
  * Starts with a slow acceleration and then speeds up.
  * @param {number} t - The interpolation factor, between 0.0 (start) and 1.0 (end).
  * @returns {number} The interpolated value at the factor t, assuming start value is 0 and end value is 1. */
@@ -2733,7 +3001,8 @@ function quarticEaseOut(t) {
 */
 
 /**
- *  Performa a Linear Interpolation between two values.
+ * @brief Performa a Linear Interpolation between two values.
+ * @details Performa a Linear Interpolation between two values.
  * @param {*} t  - The interpolation factor, ranging from 0.0 (start) to 1.0 (end).
  * @param {*} start  - The starting value of the parameter to interpolate.
  * @param {*} end  - The ending value of the parameter to interpolate.
@@ -2749,13 +3018,13 @@ function LERP(
 }
 
 /**
- * Combines quartic ease-in and ease-out into a single function.
- * Accelerates from start and decelerates to stop.
- * @param {number} startValue - The starting value of the parameter to interpolate.
- * @param {number} endValue - The ending value of the parameter to interpolate.
+ * @brief Accelerates from start and decelerates to stop.
+ * @details Combines quartic ease-in and ease-out into a single function.
  * @param {number} t - The interpolation factor, between 0.0 (start) and 1.0 (end).
+ * @param {number} start - The starting value of the parameter to interpolate.
+ * @param {number} end - The ending value of the parameter to interpolate.
  * @returns {number} The interpolated value. */
-function quarticEaseInOut(startValue, endValue, t) {
+function quarticEaseInOut(t, startValue, endValue) {
 	t = Math.max(0, Math.min(1, t)); // Clamp t to the range [0, 1] //
 	if (t < 0.5) {
 		return startValue + (endValue - startValue) * 8 * t * t * t * t;
@@ -2790,10 +3059,10 @@ function quarticEaseInOut(startValue, endValue, t) {
  * Performs cubic Hermite interpolation between two values bound within an interval.
  * 
  * @param {number} t - The interpolation factor, ranging from 0.0 (start) to 1.0 (end).
- * @param {number} p0 - The starting value of the interpolation (at t=0).
- * @param {number} p1 - The ending value of the interpolation (at t=1).
- * @param {number} m0 - The tangent (slope) at the starting point.
- * @param {number} m1 - The tangent (slope) at the ending point.
+ * @param {number} start - The starting value of the interpolation (at t=0).
+ * @param {number} end - The ending value of the interpolation (at t=1).
+ * @param {number} m0 - The tangent secant (slope) at the starting point.
+ * @param {number} m1 - The tangent secant (slope) at the ending point.
  * @returns {number} - The interpolated value. */
 function cubicHermite(t, p0, p1, m0, m1) {
 	const t2 = t * t;
