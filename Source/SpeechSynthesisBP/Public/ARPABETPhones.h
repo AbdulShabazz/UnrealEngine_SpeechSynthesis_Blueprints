@@ -4,7 +4,6 @@
 // This file is the Sara voice definition file. Todo: reimport as a .DLL
 
 #include "FPhone.h"
-#include "oscillatorConfig.h"
 
 namespace ARPABETPhone
 {
